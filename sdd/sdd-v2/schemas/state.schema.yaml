@@ -1,0 +1,271 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "SDD v2 Change State"
+type: object
+additionalProperties: false
+required:
+  - version
+  - change_name
+  - objective
+  - mode
+  - lifecycle_status
+  - current_phase
+  - phases
+  - artifacts
+  - updated_at
+properties:
+  version:
+    type: string
+    minLength: 1
+  change_name:
+    type: string
+    pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+  objective:
+    type: string
+    enum:
+      - new-feature
+      - bug-fix
+      - planner
+      - refactor-rework
+  mode:
+    type: string
+    enum:
+      - lite
+      - standard
+      - deep
+  lifecycle_status:
+    type: string
+    enum:
+      - draft
+      - planning
+      - planned
+      - implementing
+      - verifying
+      - verified
+      - verified_pending_archive
+      - archived
+      - blocked
+  current_phase:
+    type: string
+    enum:
+      - none
+      - sdd-explore
+      - sdd-propose
+      - sdd-spec
+      - sdd-design
+      - sdd-tasks
+      - sdd-apply
+      - stage-qa
+      - sdd-verify
+      - sdd-archive
+  phases:
+    type: object
+    additionalProperties: false
+    properties:
+      sdd-explore:
+        $ref: "#/$defs/phaseState"
+      sdd-propose:
+        $ref: "#/$defs/phaseState"
+      sdd-spec:
+        $ref: "#/$defs/phaseState"
+      sdd-design:
+        $ref: "#/$defs/phaseState"
+      sdd-tasks:
+        $ref: "#/$defs/phaseState"
+      sdd-apply:
+        $ref: "#/$defs/phaseState"
+      stage-qa:
+        $ref: "#/$defs/phaseState"
+      sdd-verify:
+        $ref: "#/$defs/phaseState"
+      sdd-archive:
+        $ref: "#/$defs/phaseState"
+  artifacts:
+    type: object
+    additionalProperties: false
+    properties:
+      state:
+        type: string
+      explore:
+        type: string
+      proposal:
+        type: string
+      spec:
+        type: string
+      design:
+        type: string
+      tasks:
+        type: string
+      apply_progress:
+        type: string
+      verify_report:
+        type: string
+      archive_report:
+        type: string
+  shortcuts:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - phase_scope
+        - reason
+        - approved_by_user
+        - recorded_at
+      properties:
+        id:
+          type: string
+        phase_scope:
+          type: string
+        reason:
+          type: string
+        approved_by_user:
+          type: boolean
+        recorded_at:
+          type: string
+  checkpoints:
+    type: array
+    items:
+      $ref: "#/$defs/checkpoint"
+  decisions:
+    type: array
+    items:
+      $ref: "#/$defs/decision"
+  open_risks:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - summary
+        - severity
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+        severity:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+  evidence:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - kind
+        - summary
+      properties:
+        kind:
+          type: string
+        summary:
+          type: string
+        reference:
+          type: string
+  next_recommended_phase:
+    type: string
+  updated_at:
+    type: string
+$defs:
+  phaseState:
+    type: object
+    additionalProperties: false
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum:
+          - pending
+          - in_progress
+          - completed
+          - blocked
+          - skipped
+      started_at:
+        type: string
+      completed_at:
+        type: string
+      notes:
+        type: string
+  checkpoint:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - type
+      - phase
+      - summary
+      - free_input_allowed
+      - created_at
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+        enum:
+          - language_selection
+          - missing_context
+          - shortcut_confirmation
+          - scope_change
+          - risk_review
+          - pre_apply
+          - incremental_qa
+          - closeout_review
+      phase:
+        type: string
+      summary:
+        type: string
+      options:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required:
+            - id
+            - label
+            - description
+          properties:
+            id:
+              type: string
+            label:
+              type: string
+            description:
+              type: string
+            recommended:
+              type: boolean
+      free_input_allowed:
+        type: boolean
+      response:
+        type: object
+        additionalProperties: false
+        properties:
+          selected_option_id:
+            type: string
+          free_text:
+            type: string
+      created_at:
+        type: string
+      resolved_at:
+        type: string
+  decision:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - recorded_at
+    properties:
+      id:
+        type: string
+      checkpoint_id:
+        type: string
+      selected_option_id:
+        type: string
+      free_text:
+        type: string
+      rationale:
+        type: string
+      recorded_at:
+        type: string

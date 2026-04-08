@@ -1,0 +1,43 @@
+version: "0.1"
+project:
+  name: example-project
+  root: /path/to/project
+  stack:
+    languages:
+      - typescript
+    frameworks:
+      - nextjs
+    package_manager: pnpm
+sdd:
+  persistence_mode: openspec
+  artifact_root: openspec
+  project_map_path: .sdd/project-map.md
+  skill_registry_path: .sdd/skill-registry.md
+  bootstrap:
+    generated_at: "2026-01-01T00:00:00Z"
+    last_validated_at: "2026-01-01T00:00:00Z"
+    refresh_recommended: false
+    refresh_reason_codes: []
+    observed_files:
+      lockfiles:
+        - pnpm-lock.yaml
+      tool_configs:
+        - package.json
+      docs:
+        - README.md
+    observed_paths:
+      key_directories:
+        - src
+        - tests
+  quality_commands:
+    test:
+      - pnpm test
+    build:
+      - pnpm build
+    lint:
+      - pnpm lint
+    typecheck:
+      - pnpm typecheck
+user:
+  language: es
+  preferred_mode: standard

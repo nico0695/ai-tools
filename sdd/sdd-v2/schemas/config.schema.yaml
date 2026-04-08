@@ -1,0 +1,149 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "SDD v2 Project Config"
+type: object
+additionalProperties: false
+required:
+  - version
+  - project
+  - sdd
+  - user
+properties:
+  version:
+    type: string
+    minLength: 1
+  project:
+    type: object
+    additionalProperties: false
+    required:
+      - name
+      - root
+      - stack
+    properties:
+      name:
+        type: string
+        minLength: 1
+      root:
+        type: string
+        minLength: 1
+      stack:
+        type: object
+        additionalProperties: false
+        required:
+          - languages
+          - frameworks
+          - package_manager
+        properties:
+          languages:
+            type: array
+            minItems: 1
+            items:
+              type: string
+          frameworks:
+            type: array
+            items:
+              type: string
+          package_manager:
+            type: string
+            minLength: 1
+  sdd:
+    type: object
+    additionalProperties: false
+    required:
+      - persistence_mode
+      - artifact_root
+      - project_map_path
+      - skill_registry_path
+      - quality_commands
+    properties:
+      persistence_mode:
+        type: string
+        enum:
+          - openspec
+          - hybrid
+          - none
+      artifact_root:
+        type: string
+        minLength: 1
+      project_map_path:
+        type: string
+        minLength: 1
+      skill_registry_path:
+        type: string
+        minLength: 1
+      bootstrap:
+        type: object
+        additionalProperties: false
+        properties:
+          generated_at:
+            type: string
+            minLength: 1
+          last_validated_at:
+            type: string
+            minLength: 1
+          refresh_recommended:
+            type: boolean
+          refresh_reason_codes:
+            type: array
+            items:
+              type: string
+          observed_files:
+            type: object
+            additionalProperties: false
+            properties:
+              lockfiles:
+                type: array
+                items:
+                  type: string
+              tool_configs:
+                type: array
+                items:
+                  type: string
+              docs:
+                type: array
+                items:
+                  type: string
+          observed_paths:
+            type: object
+            additionalProperties: false
+            properties:
+              key_directories:
+                type: array
+                items:
+                  type: string
+      quality_commands:
+        type: object
+        additionalProperties: false
+        properties:
+          test:
+            type: array
+            items:
+              type: string
+          build:
+            type: array
+            items:
+              type: string
+          lint:
+            type: array
+            items:
+              type: string
+          typecheck:
+            type: array
+            items:
+              type: string
+  user:
+    type: object
+    additionalProperties: false
+    required:
+      - language
+    properties:
+      language:
+        type: string
+        enum:
+          - es
+          - en
+      preferred_mode:
+        type: string
+        enum:
+          - lite
+          - standard
+          - deep

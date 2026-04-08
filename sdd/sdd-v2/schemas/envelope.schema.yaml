@@ -1,0 +1,167 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "SDD v2 Phase Envelope"
+type: object
+additionalProperties: false
+required:
+  - status
+  - executive_summary
+  - artifacts
+  - next_recommended
+  - risks
+  - skill_resolution
+properties:
+  status:
+    type: string
+    enum:
+      - success
+      - partial
+      - blocked
+  executive_summary:
+    type: string
+    minLength: 1
+  artifacts:
+    type: array
+    items:
+      oneOf:
+        - type: string
+          minLength: 1
+        - type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+            path:
+              type: string
+            kind:
+              type: string
+            role:
+              type: string
+          minProperties: 1
+  next_recommended:
+    type: object
+    additionalProperties: false
+    required:
+      - phase
+      - summary
+    properties:
+      phase:
+        type: string
+      summary:
+        type: string
+        minLength: 1
+      needs_user_confirmation:
+        type: boolean
+  risks:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - summary
+        - severity
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+          minLength: 1
+        severity:
+          type: string
+          enum:
+            - low
+            - medium
+            - high
+  skill_resolution:
+    type: object
+    additionalProperties: false
+    required:
+      - mode
+    properties:
+      mode:
+        type: string
+        enum:
+          - exact-skill
+          - merged-shortcut
+          - inline
+          - delegated
+          - resumed
+          - bootstrap-required
+      skill_id:
+        type: string
+      notes:
+        type: string
+  decision_required:
+    type: boolean
+  decision_options:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - label
+        - description
+      properties:
+        id:
+          type: string
+          minLength: 1
+        label:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        recommended:
+          type: boolean
+  evidence:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - kind
+        - summary
+      properties:
+        kind:
+          type: string
+          enum:
+            - command
+            - artifact
+            - file
+            - observation
+            - test
+        summary:
+          type: string
+          minLength: 1
+        reference:
+          type: string
+  errors:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+        retryable:
+          type: boolean
+        details:
+          type: string
+allOf:
+  - if:
+      properties:
+        decision_required:
+          const: true
+      required:
+        - decision_required
+    then:
+      required:
+        - decision_options
