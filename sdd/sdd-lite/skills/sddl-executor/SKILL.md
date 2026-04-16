@@ -17,6 +17,14 @@ Turn an approved `design-plan.md` stage into real repository changes without los
 This stage executes one planned stage per invocation.
 It must not auto-run the full plan.
 
+## Runtime operating rules
+
+- Execute the approved stage yourself. Do not become a nested orchestrator.
+- Do not launch additional workers unless a future policy explicitly allows it.
+- Use `## Project Standards (auto-resolved)` when the handoff already includes it.
+- If that block is missing, fall back to `./sdd-lite/skill-catalog.md` before broad documentation reads.
+- Prefer the approved stage scope, artifact digests, and targeted file reads over broad repo rescans.
+
 ## Scope
 
 This stage should:
@@ -46,6 +54,7 @@ Read:
 - `./sdd-lite/openspec/changes/{change-name}/execution-log.md` when it already exists
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml`
 - `./sdd-lite/openspec/config.yaml`
+- `./sdd-lite/skill-catalog.md` when runtime standards were not injected into the handoff
 - relevant source files, tests, configs, or docs for the approved stage
 
 Use `design-plan.md` as the execution source of truth for:
@@ -83,6 +92,7 @@ Rules:
 - require a `stage_approval` checkpoint for any code-touching stage
 - for non-code stages, approval may be lighter, but it must still be explicit and stage-specific
 - do not continue automatically into the next stage after a successful run
+- do not recursively orchestrate additional stage workers from inside this stage
 
 ## Preconditions
 
@@ -249,6 +259,10 @@ On success, provide:
 - `execution-log.md` in `artifacts`
 - modified repository files in `artifacts`
 - evidence for the stage run and quick checks
+- `context_resolution`
+- `standards_source`
+- `artifact_digests_used` when applicable
+- `recommended_next_stage`
 
 Use `partial` when:
 

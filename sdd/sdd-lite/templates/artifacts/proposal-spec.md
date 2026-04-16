@@ -1,5 +1,15 @@
 # Proposal Spec
 
+## Routing Digest
+
+- change_name:
+- objective:
+- route:
+- digest_summary:
+- scope_digest:
+- acceptance_digest:
+- risk_digest:
+
 ## Summary
 
 - change_name:
@@ -48,3 +58,8 @@
 ## Approval Notes
 
 - 
+
+## Budget Notes
+
+- Keep the digest short enough for downstream routing.
+- Target roughly 300 to 500 words plus tables for the full artifact when possible.

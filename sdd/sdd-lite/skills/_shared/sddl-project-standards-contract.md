@@ -29,6 +29,18 @@ Project standards should be recoverable from `./sdd-lite/openspec/config.yaml` a
 | sources of truth | manifests, lockfiles, maintained docs, executable config |
 | risk notes | legacy zones, generated code, fragile modules, unclear ownership |
 
+## Runtime standards registry
+
+`./sdd-lite/skill-catalog.md` is the runtime standards registry for delegated stage work.
+
+It should provide:
+
+- compact rules by concern
+- trigger mappings
+- support-agent references
+- delegation heuristics
+- a short `Project Standards (auto-resolved)` section suitable for direct prompt injection
+
 ## Source-of-truth order
 
 When project standards conflict, prefer this order:
@@ -79,6 +91,23 @@ If project standards are ambiguous or contradictory:
 - prefer the safer execution path
 - record the conflict in the relevant artifact or state
 - ask the user only if the ambiguity changes scope, risk, or the chosen route
+
+## Compact standards injection protocol
+
+The preferred path is:
+
+1. the orchestrator reads `./sdd-lite/skill-catalog.md` once
+2. it selects only the relevant compact rules
+3. it injects them into the delegated prompt as `## Project Standards (auto-resolved)`
+4. the worker uses those rules without rediscovering them from multiple docs
+
+Fallback order when the injected block is missing:
+
+1. `./sdd-lite/skill-catalog.md`
+2. `./sdd-lite/project-context.md`
+3. targeted repo evidence
+
+Workers should not start by scanning broad documentation if the injected standards block is already present.
 
 ## Reusable support references
 

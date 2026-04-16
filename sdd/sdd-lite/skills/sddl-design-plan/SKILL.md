@@ -17,6 +17,14 @@ Turn `proposal-spec.md` into a technical design plus staged execution plan that 
 
 This is the terminal stage for the `planner` objective.
 
+## Runtime operating rules
+
+- Execute this phase yourself. Do not become a nested orchestrator.
+- Use `## Project Standards (auto-resolved)` when the handoff already includes it.
+- If that block is missing, fall back to `./sdd-lite/skill-catalog.md` before broader documentation reads.
+- Prefer artifact digests and targeted repo evidence over broad tree scans.
+- Keep the resulting plan compact enough for `sddl-executor` and `sddl-qa-review` to reuse cheaply.
+
 ## Scope
 
 This stage should establish:
@@ -42,7 +50,7 @@ Read:
 - `./sdd-lite/openspec/changes/{change-name}/proposal-spec.md`
 - `./sdd-lite/openspec/config.yaml`
 - `./sdd-lite/project-context.md`
-- `./sdd-lite/skill-catalog.md`
+- `./sdd-lite/skill-catalog.md` as the runtime standards registry
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml`
 - relevant maintained docs or repo files only when needed to validate architecture, dependencies, or file targets
 
@@ -68,6 +76,7 @@ Use `templates/artifacts/design-plan.md` as the baseline shape for `design-plan.
 
 The design plan must keep these sections explicit:
 
+- execution digest
 - summary
 - design overview
 - affected areas
@@ -158,6 +167,8 @@ When syncing `state.yaml` from this stage:
 - The stage plan must be directly executable without reinterpretation.
 - Open technical questions must stay visible when they exist.
 - The design plan must stay compact and should not absorb execution logging or QA reporting.
+- Target roughly 500 to 800 words plus tables when possible.
+- Start with a short digest that downstream execution can read first.
 
 ## Validation
 
@@ -178,6 +189,10 @@ On success, provide:
 - `design-plan.md` in `artifacts`
 - `macro-plan.md` only when the approved route requires it
 - the next safe step, usually planner stop, user approval, or `sddl-executor`
+- `context_resolution`
+- `standards_source`
+- `artifact_digests_used` when applicable
+- `recommended_next_stage`
 
 Use `partial` when the plan is usable but a material decision still gates safe execution.
 Use `blocked` when proposal input or route approval is insufficient for a reliable plan.

@@ -10,6 +10,7 @@ Use this contract to keep all lite skills aligned on:
 - route ids
 - stage ids
 - lifecycle rules
+- thin-orchestrator rules
 - context loading order
 - common result structure
 
@@ -70,17 +71,31 @@ Recover context in this order unless a stage-specific contract requires a tighte
 
 1. `./sdd-lite/openspec/config.yaml`
 2. `./sdd-lite/openspec/changes/{change-name}/state.yaml`
-3. `./sdd-lite/project-context.md`
-4. `./sdd-lite/skill-catalog.md`
-5. current change artifacts
-6. maintained docs and executable project configuration
-7. user clarification
+3. `./sdd-lite/skill-catalog.md` as the runtime standards registry
+4. current change artifact digests or summaries
+5. `./sdd-lite/project-context.md`
+6. owned change artifacts when more detail is truly needed
+7. maintained docs and executable project configuration
+8. user clarification
 
 Rules:
 
 - persisted artifacts beat chat memory
+- the orchestrator should prefer summaries and references before full artifact bodies
 - executable repo evidence beats older summaries
 - the user should only be asked after the recoverable evidence is exhausted
+
+## Thin Orchestrator Rules
+
+The orchestrator is an event loop, not a worker.
+
+- Inline only local routing decisions that require at most 3 repo files.
+- Delegate when routing, planning, execution, or QA requires 4 or more repo files.
+- Delegate read-plus-write work together when implementation is likely.
+- Do not perform multi-file code changes inline in the orchestrator.
+- Do not perform installs, builds, or broad test runs inline in the orchestrator.
+- Prefer artifact paths and short digests over copied artifact bodies.
+- Treat `./sdd-lite/skill-catalog.md` as the source for `Project Standards (auto-resolved)`.
 
 ## Common result structure
 
@@ -104,6 +119,10 @@ Every lite stage result must be representable with:
 | `decision_options` | structured options for the pending decision |
 | `evidence` | commands, files, or observations backing the result |
 | `errors` | structured blocking issues or validation failures |
+| `context_resolution` | `injected_registry`, `fallback_registry`, `fallback_path`, or `none` |
+| `standards_source` | registry path, version, or fallback note |
+| `artifact_digests_used` | short list of digest sections or summaries consulted |
+| `recommended_next_stage` | canonical stage id or terminal stop |
 
 ## Flow rules
 
@@ -117,6 +136,8 @@ Every lite stage result must be representable with:
 - `sddl-qa-review` in `final` mode is the only lite path that may set `lifecycle_status: completed`.
 - `macro-plan.md` exists only on the `macro-plan-first` route and only after explicit approval.
 - `escalate-to-sdd-v2` should preserve lite state and recommendations without pretending the work is still safely executable in lite.
+- Stage skills execute their own phase and must not become nested orchestrators by default.
+- Runtime-critical rules should be inlined in the stage skill or injected via the handoff, not rediscovered through multi-hop document loading.
 
 ## Resume rules
 

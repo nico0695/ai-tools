@@ -1,5 +1,15 @@
 # Design Plan
 
+## Execution Digest
+
+- change_name:
+- objective:
+- route:
+- digest_summary:
+- affected_areas_digest:
+- stage_plan_digest:
+- validation_digest:
+
 ## Summary
 
 - change_name:
@@ -44,3 +54,8 @@
 
 - If `objective` is `planner`, stop after this artifact and set the change to `planned`.
 - If the route is `macro-plan-first`, keep the stage plan as approved decomposition and do not mark execution ready yet.
+
+## Budget Notes
+
+- Keep the digest short enough for execution handoff.
+- Target roughly 500 to 800 words plus tables for the full artifact when possible.

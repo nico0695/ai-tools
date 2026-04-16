@@ -14,6 +14,7 @@ You are the explicit bootstrap skill for `sdd-lite`.
 ## Goal
 
 Prepare durable project bootstrap context under `./sdd-lite/` so later lite stages can operate without rediscovering basic repository facts.
+Bootstrap should also prepare a compact runtime standards registry for delegated stage work.
 
 This skill stays shallow and high-signal.
 It should gather enough evidence to bootstrap the flow, not perform deep exploration.
@@ -192,7 +193,8 @@ Chat interaction may follow the detected or confirmed `chat_language`.
    Generate `./sdd-lite/project-context.md` from the bootstrap template using compact, reusable facts.
 
 9. Build skill catalog
-   Generate `./sdd-lite/skill-catalog.md` through an internal helper flow.
+   Generate `./sdd-lite/skill-catalog.md` through an internal helper flow as the runtime standards registry.
+   It should include compact rules, trigger mappings, delegation heuristics, and support-agent references.
    This is not a separate skill.
 
 10. Build config
@@ -220,7 +222,7 @@ Before finishing, verify:
 - bootstrap writes only target `./sdd-lite/` (except AI setup files explicitly confirmed by the user)
 - detected paths match the approved local runtime layout
 - `project-context.md` captures stack, directories, docs, commands, conventions, and risks
-- `skill-catalog.md` lists the canonical `sddl-*` skills and support agents
+- `skill-catalog.md` acts as the runtime standards registry and includes compact rules usable in delegated prompts
 - `config.yaml` includes project identity, stack, quality commands, bootstrap metadata, canonical paths, chat language support, and `ai_setups`
 - persisted artifacts remain English even when `chat_language` is `es`
 - skill files exist at the expected target paths for each configured AI
@@ -237,6 +239,7 @@ On success, provide:
 - key docs, source roots, and quality commands found
 - inferred items versus user-confirmed items
 - unresolved bootstrap questions, if any
+- whether the runtime standards registry is ready for prompt injection
 - AI setup summary:
   - AI setups detected
   - AI setups configured

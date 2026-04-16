@@ -1,5 +1,15 @@
 # QA Report
 
+## Closeout Digest
+
+- change_name:
+- review_mode:
+- reviewed_scope:
+- verdict:
+- blocking_findings_digest:
+- residual_risk_digest:
+- next_action_digest:
+
 ## Summary
 
 - change_name:
@@ -109,3 +119,8 @@ Recommended kind values:
 
 - `state.yaml` should keep only the operational QA summary, active risks, checkpoints, decisions, and next action.
 - This report owns the detailed findings, evidence, and review rationale for both `stage` and `final` mode.
+
+## Budget Notes
+
+- Keep the digest short enough for routing and resume.
+- Target roughly 300 to 500 words for stage review and 500 to 800 words for final review, plus tables, when possible.

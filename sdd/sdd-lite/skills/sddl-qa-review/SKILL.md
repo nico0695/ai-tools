@@ -18,6 +18,14 @@ Review either one meaningful execution stage or the implemented change as a whol
 This stage unifies incremental stage review and final closeout.
 It must stay read-only with respect to application code.
 
+## Runtime operating rules
+
+- Execute this review yourself. Do not become a nested orchestrator.
+- Use `## Project Standards (auto-resolved)` when the handoff already includes it.
+- If that block is missing, fall back to `./sdd-lite/skill-catalog.md` before broader documentation reads.
+- Favor the smallest meaningful validation set for the selected review scope.
+- Keep the report compact enough for the orchestrator to route from its digest and verdict.
+
 ## Scope
 
 This stage should:
@@ -44,6 +52,7 @@ Read:
 - `./sdd-lite/openspec/changes/{change-name}/execution-log.md`
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml`
 - `./sdd-lite/openspec/config.yaml`
+- `./sdd-lite/skill-catalog.md` when runtime standards were not injected into the handoff
 - existing `./sdd-lite/openspec/changes/{change-name}/qa-report.md` when rerunning
 - relevant changed files, tests, configs, docs, or outputs required for the selected review scope
 
@@ -51,14 +60,6 @@ Use these sources differently by mode:
 
 - `stage`: start from the target stage entry in `execution-log.md`, its validation notes in `design-plan.md`, and the files that stage changed
 - `final`: start from the full execution history, the full approved change scope, and the project quality commands in `config.yaml`
-
-Follow:
-
-- `skills/_shared/sddl-flow-contract.md`
-- `skills/_shared/sddl-persistence-contract.md`
-- `skills/_shared/sddl-user-interaction-contract.md`
-- `skills/_shared/sddl-project-standards-contract.md`
-- `orchestrator/SDDL-ORCHESTRATOR.md`
 
 ## Writes
 
@@ -230,6 +231,8 @@ Do not copy the full findings table or evidence log into `state.yaml`.
 - Findings must come before optimistic summary language.
 - `stage` mode and `final` mode must remain clearly distinguishable in behavior and closeout effect.
 - The report must be sufficient to resume or decide the next step without relying on chat memory.
+- Use a short closeout digest near the top.
+- Target roughly 300 to 500 words for stage review and 500 to 800 words for final review, plus tables, when possible.
 
 ## Validation
 
@@ -250,6 +253,10 @@ On success, provide:
 - `qa-report.md` in `artifacts`
 - the review verdict
 - the next safe step
+- `context_resolution`
+- `standards_source`
+- `artifact_digests_used` when applicable
+- `recommended_next_stage`
 
 Use `partial` when:
 

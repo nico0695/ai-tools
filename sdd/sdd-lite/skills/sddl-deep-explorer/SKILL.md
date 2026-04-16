@@ -18,6 +18,14 @@ Resolve one material unknown that is blocking safe routing or the next approved 
 This skill is evidence-seeking and read-only.
 It exists to reduce uncertainty without widening scope or silently turning lite work into a larger engagement.
 
+## Runtime operating rules
+
+- Stay bounded to one blocked question.
+- Use `## Project Standards (auto-resolved)` when the handoff already includes it.
+- If that block is missing, fall back to `./sdd-lite/skill-catalog.md` before broader documentation reads.
+- Prefer targeted file reads over broad repo scans.
+- Distinguish observed facts, grounded inferences, and unresolved unknowns explicitly.
+
 ## Scope
 
 This skill should:
@@ -41,16 +49,10 @@ Read only the evidence needed for the blocked question:
 
 - `./sdd-lite/openspec/config.yaml`
 - `./sdd-lite/project-context.md`
-- `./sdd-lite/skill-catalog.md`
+- `./sdd-lite/skill-catalog.md` as the runtime standards registry
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml` when a change exists
 - `proposal-spec.md`, `design-plan.md`, or `execution-log.md` only when the blocked question depends on them
 - targeted repo files, tests, configs, or docs directly related to the unknown
-
-Follow the context ladder and source-of-truth rules from:
-
-- `skills/_shared/sddl-flow-contract.md`
-- `skills/_shared/sddl-project-standards-contract.md`
-- `orchestrator/SDDL-ORCHESTRATOR.md`
 
 ## Writes
 
@@ -111,6 +113,10 @@ On success, provide:
 - a short answer to the blocked question
 - evidence references for the files, docs, or configs inspected
 - the safest next action for the orchestrator or interrupted stage
+- `context_resolution`
+- `standards_source`
+- `artifact_digests_used` when applicable
+- `recommended_next_stage`
 
 Use `partial` when the analysis narrowed the problem but one material unknown remains.
 Use `blocked` when the safest path still depends on a user decision or escalation.

@@ -1,5 +1,15 @@
 # Execution Log
 
+## Handoff Digest
+
+- change_name:
+- route:
+- latest_stage_id:
+- latest_stage_status:
+- latest_files_changed:
+- latest_check_result:
+- latest_next_action:
+
 ## Summary
 
 - change_name:
@@ -28,6 +38,7 @@
 
 ### Stage `<stage-id>`
 
+- stage_digest:
 - approval_checkpoint_id:
 - approval_decision_id:
 - planned_scope:
@@ -79,6 +90,7 @@
 
 ### Stage `<next-stage-id>`
 
+- stage_digest:
 - approval_checkpoint_id:
 - approval_decision_id:
 - planned_scope:

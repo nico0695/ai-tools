@@ -17,6 +17,14 @@ Turn the routed change into a compact artifact that makes scope, expected behavi
 This is the first canonical change stage.
 It should initialize or refresh `state.yaml` when the change starts.
 
+## Runtime operating rules
+
+- Execute this phase yourself. Do not become a nested orchestrator.
+- Use `## Project Standards (auto-resolved)` when the handoff already includes it.
+- If that block is missing, fall back to `./sdd-lite/skill-catalog.md` before scanning broader docs.
+- Prefer artifact paths and short digests over copied artifact bodies.
+- Keep the artifact compact enough for downstream stages to reuse without rereading broad evidence.
+
 ## Scope
 
 This stage should establish:
@@ -40,16 +48,10 @@ Read the minimum evidence needed to formalize safely:
 
 - `./sdd-lite/openspec/config.yaml`
 - `./sdd-lite/project-context.md`
-- `./sdd-lite/skill-catalog.md`
+- `./sdd-lite/skill-catalog.md` as the runtime standards registry
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml` when it already exists
 - existing `./sdd-lite/openspec/changes/{change-name}/proposal-spec.md` when rerunning
 - relevant maintained docs or repo files only when needed to clarify scope or acceptance behavior
-
-Follow the context ladder and source-of-truth order defined by:
-
-- `skills/_shared/sddl-flow-contract.md`
-- `skills/_shared/sddl-project-standards-contract.md`
-- `orchestrator/SDDL-ORCHESTRATOR.md`
 
 ## Writes
 
@@ -67,6 +69,7 @@ Use `templates/artifacts/proposal-spec.md` as the baseline shape.
 
 The artifact must preserve these sections in a compact form:
 
+- routing digest
 - summary
 - problem and desired outcome
 - scope
@@ -136,6 +139,8 @@ Do not pretend the change is execution-ready from this stage alone.
 
 - `proposal-spec.md` must retain scope, acceptance targets, risks, and open questions.
 - The artifact must be short enough for lite, but specific enough to detect drift later.
+- Target roughly 300 to 500 words plus tables when possible.
+- Start with a short digest that downstream stages can reuse cheaply.
 - If there is no real alternative or open question, say so explicitly instead of padding the artifact.
 
 ## Validation
@@ -157,6 +162,10 @@ On success, provide:
 - `proposal-spec.md` in `artifacts`
 - a short summary of the chosen direction
 - the next safe step, usually `sddl-design-plan`
+- `context_resolution`
+- `standards_source`
+- `artifact_digests_used` when applicable
+- `recommended_next_stage`
 
 Use `partial` when the artifact is usable but a material checkpoint still gates safe planning.
 Use `blocked` when the change cannot be formalized safely without a material user decision.

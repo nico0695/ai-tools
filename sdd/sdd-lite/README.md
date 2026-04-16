@@ -2,11 +2,8 @@
 
 Status: MVP ready for use.
 
-`sdd-lite` is a separate package for a lighter SDD workflow.
-It keeps the contract-first discipline of `sdd-v2` while reducing artifact volume, phase count, and operating cost for bounded changes.
-
-This package is intentionally separate from `sdd-v2`.
-It does not reuse a root-level `openspec/` directory and does not require runtime coexistence with `sdd-v2`.
+`sdd-lite` is a lighter SDD package for bounded changes.
+It keeps explicit bootstrap, persisted artifacts, approvals, and resumability, but it now treats the orchestrator as a thin coordinator rather than a deep worker.
 
 ## What It Is
 
@@ -15,35 +12,36 @@ Use `sdd-lite` when you want:
 - explicit bootstrap before change work
 - persisted source of truth instead of chat-memory dependence
 - compact functional and technical formalization
-- stage-by-stage execution with explicit approval before code work
+- one approved execution stage at a time
 - unified QA for stage review and final closeout
 - a lighter lifecycle than `sdd-v2`
 
-`sdd-lite` is meant for bounded work.
-It is not a shortcut for large migrations, broad cross-cutting redesigns, or heavy governance workflows.
+`sdd-lite` is for bounded work.
+It is not the right fit for migrations, broad redesigns, or repo-wide coordination problems.
 
-## When To Use It
+## Runtime Model
 
-Good fit:
+`sdd-lite` follows a thin-orchestrator model:
 
-- a local bug fix
-- a bounded feature or enhancement
-- a small or medium refactor
-- a planner-only request that should stop after the plan
-- a repo where you want resumable artifacts without the full weight of `sdd-v2`
+- the orchestrator reads only the minimum persisted evidence needed to route safely
+- real stage work runs in fresh workers
+- the orchestrator passes artifact paths, short digests, and compact standards
+- stage workers execute; they do not orchestrate other stages by default
 
-Bad fit:
+This is the core rule:
 
-- migrations
-- broad architectural redesign
-- work that touches many subsystems with unclear blast radius
-- requests with unresolved product or risk ambiguity that exceed lite governance
-- workflows that need archive, PR, branch, or git-side-effect automation
+- if a task inflates orchestrator context without need, delegate it
 
-When the work no longer fits lite safely, the correct outcome is:
+## Delegation Rules
 
-- `macro-plan-first`, or
-- `escalate-to-sdd-v2`
+Default runtime heuristics:
+
+- inline only local routing decisions that require at most 3 repo files
+- delegate bounded analysis when routing or planning needs 4 or more files
+- delegate `sddl-proposal-spec`, `sddl-design-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default
+- do not run multi-file edits inline in the orchestrator
+- do not run builds, installs, or broad test suites inline in the orchestrator
+- do not delegate per file; delegate per phase or per approved execution stage
 
 ## Core Rules
 
@@ -64,8 +62,6 @@ When the work no longer fits lite safely, the correct outcome is:
 ```text
 sdd/sdd-lite/
   README.md
-  SDD_LITE_IDEA.md
-  SDD_LITE_PLAN.md
   orchestrator/
     SDDL-ORCHESTRATOR.md
   skills/
@@ -109,7 +105,7 @@ All runtime files live under `./sdd-lite/`:
 ```text
 ./sdd-lite/
   project-context.md
-  skill-catalog.md
+  skill-catalog.md         # runtime standards registry
   openspec/
     config.yaml
     changes/
@@ -119,34 +115,33 @@ All runtime files live under `./sdd-lite/`:
         design-plan.md
         execution-log.md
         qa-report.md
-        macro-plan.md            # only when explicitly needed and approved
+        macro-plan.md      # only when explicitly needed and approved
 ```
-
-## Current Package Status
-
-The package currently has these completed stages:
-
-- Stage 0: frozen runtime, language, interaction, naming, and closure decisions
-- Stage 1: bootstrap surface, runtime scaffolding, and `sddl-init`
-- Stage 2: shared lite contracts and schemas
-- Stage 3: orchestration contract with routing, resume, gating rules, and on-demand `sddl-deep-explorer`
-- Stage 4: compact formalization with `sddl-proposal-spec`, `sddl-design-plan`, and their artifact templates, including `macro-plan.md` for approved `macro-plan-first` flows
-- Stage 5: controlled execution with `sddl-executor` and the resumable `execution-log.md` ledger
-- Stage 6: unified QA review with `sddl-qa-review`, `stage` and `final` modes, and the reusable `qa-report.md` artifact
-- Stage 7: hardening walkthroughs completed across bootstrap, resume, planner, oversized requests, contradiction-before-execution, and realistic staged-change flows
-
-There is no further implementation stage in the MVP plan.
 
 ## Core Skills
 
 | Skill | Role | Primary writes |
 |---|---|---|
-| `sddl-init` | bootstrap the repo for lite usage | `project-context.md`, `skill-catalog.md`, `openspec/config.yaml` |
+| `sddl-init` | bootstrap the repo for lite usage and build the runtime standards registry | `project-context.md`, `skill-catalog.md`, `openspec/config.yaml` |
 | `sddl-proposal-spec` | compact functional formalization | `proposal-spec.md`, `state.yaml` |
 | `sddl-design-plan` | technical design plus staged execution plan | `design-plan.md`, `state.yaml`, `macro-plan.md` when approved |
 | `sddl-executor` | execute one approved stage at a time | repo files in approved scope, `execution-log.md`, `state.yaml` |
 | `sddl-deep-explorer` | bounded read-only analysis | no persistent artifact by default |
 | `sddl-qa-review` | stage review and final closeout | `qa-report.md`, `state.yaml` |
+
+## Runtime Standards Registry
+
+`./sdd-lite/skill-catalog.md` is the hot-path standards file for delegated work.
+
+It should contain:
+
+- skill triggers
+- compact rules
+- support-agent references
+- delegation heuristics
+- `Project Standards (auto-resolved)` blocks suitable for direct prompt injection
+
+The orchestrator should resolve this file once and inject only the relevant compact rules into each worker prompt.
 
 ## Orchestrator Responsibilities
 
@@ -155,19 +150,21 @@ The orchestrator is the entry point.
 It is responsible for:
 
 - bootstrap preflight
-- context loading
 - route selection
 - resume behavior
-- stage handoff safety
 - approval gating
+- stage handoff safety
 - stop conditions
+- compact prompt assembly for delegated workers
 
 It is not responsible for:
 
 - replacing `sddl-init`
-- absorbing stage logic
+- deep repo exploration when delegation is cheaper
+- multi-file implementation
+- broad test/build/install work
 - writing stage-owned artifacts
-- assuming chat memory is trustworthy when persisted evidence exists
+- trusting chat memory over persisted evidence
 
 ## Objectives And Routes
 
@@ -190,8 +187,8 @@ Normal flow:
 
 ```text
 preflight
-  -> sddl-init when bootstrap is missing or incomplete
-  -> complexity assessment
+  -> sddl-init when bootstrap is missing or materially stale
+  -> sddl-deep-explorer only when bounded evidence is needed
   -> sddl-proposal-spec
   -> sddl-design-plan
   -> sddl-executor (one approved stage at a time)
@@ -205,31 +202,21 @@ Key points:
 - `proposal-spec.md` owns scope and acceptance targets
 - `design-plan.md` owns the execution plan
 - `execution-log.md` owns implementation traceability
-- `qa-report.md` owns review findings and final closeout evidence
+- `qa-report.md` owns review findings and closeout evidence
+- the orchestrator should route from digests and metadata before rereading full artifacts
 
 ## Alternative Flows
 
 ### Planner Flow
 
-Use `planner` when the work should stop at formalization:
-
 ```text
 preflight
-  -> complexity assessment
   -> sddl-proposal-spec
   -> sddl-design-plan
   -> stop(planned)
 ```
 
-In this flow:
-
-- execution does not start
-- QA does not auto-run
-- `lifecycle_status` stops at `planned`
-
 ### Macro-Plan-First Flow
-
-Use this when the work still belongs in lite, but direct execution would be unsafe:
 
 ```text
 preflight
@@ -240,110 +227,50 @@ preflight
   -> stop(planned)
 ```
 
-In this flow:
-
-- `macro-plan.md` exists only after explicit approval
-- the result is planning-only
-- later execution needs a fresh approval cycle and may require reassessment
-
 ### Escalation Flow
 
-Use `escalate-to-sdd-v2` when:
+If the work behaves like a migration, large redesign, or broad coordination problem:
 
-- the blast radius is too broad
-- the request behaves like a migration or large redesign
-- safety requires a richer lifecycle than lite provides
+- stop lite routing
+- persist the escalation reason in `state.yaml`
+- recommend `sdd-v2`
 
-In this flow:
-
-- lite routing stops
-- the escalation reason is preserved in `state.yaml`
-- lite must not pretend the work can continue safely inside `sdd-lite`
-
-## Change Artifacts
+## Artifact Ownership
 
 | Artifact | Owner | Purpose |
 |---|---|---|
-| `project-context.md` | `sddl-init` | reusable project facts |
-| `skill-catalog.md` | `sddl-init` internal helper | canonical lite skill catalog |
-| `config.yaml` | `sddl-init` | runtime paths, stack, quality commands, bootstrap metadata |
-| `state.yaml` | orchestrator plus active stage | operational memory for route, lifecycle, checkpoints, decisions, next action |
-| `proposal-spec.md` | `sddl-proposal-spec` | functional scope, expected behavior, acceptance targets, risks |
-| `design-plan.md` | `sddl-design-plan` | technical approach and staged plan |
-| `execution-log.md` | `sddl-executor` | implementation history and stage-by-stage resume anchor |
-| `qa-report.md` | `sddl-qa-review` | findings, evidence, verdict, next action |
-| `macro-plan.md` | `sddl-design-plan` | approved decomposition for macro-plan-first work |
+| `project-context.md` | `sddl-init` | reusable repo context |
+| `skill-catalog.md` | `sddl-init` | runtime standards registry |
+| `config.yaml` | `sddl-init` | project identity, paths, quality commands |
+| `state.yaml` | orchestrator + active stage | lifecycle, checkpoints, next action |
+| `proposal-spec.md` | `sddl-proposal-spec` | scope and acceptance contract |
+| `design-plan.md` | `sddl-design-plan` | technical plan and staged execution |
+| `execution-log.md` | `sddl-executor` | stage-by-stage execution ledger |
+| `qa-report.md` | `sddl-qa-review` | review findings and closeout evidence |
 
-## Resume Model
+## Artifact Budget Guidance
 
-`state.yaml` is the operational resume anchor.
+Recommended runtime targets:
 
-Resume order is:
+| Artifact | Budget |
+|---|---|
+| `proposal-spec.md` | 300 to 500 words |
+| `design-plan.md` | 500 to 800 words |
+| one `execution-log.md` stage entry | 150 to 300 words plus tables |
+| `qa-report.md` stage summary | 300 to 500 words |
+| `qa-report.md` final summary | 500 to 800 words |
 
-1. unresolved checkpoint
-2. missing or stale owning artifact
-3. next approved stage
-4. planned or blocked stop state
+Each artifact should begin with a short digest that downstream stages can reuse cheaply.
 
-The package should be able to resume from:
+## How To Use It
 
-- pending approvals
-- blocked contradictions
-- macro-plan checkpoints
-- planner stops
-- partial execution progress
-- final review states
-
-## User Interaction Model
-
-`sdd-lite` is intentionally interactive, but not chatty.
-
-Rules:
-
-- ask only when the answer changes scope, risk, route, recovery, or the next stage
-- do not ask for facts already recoverable from persisted artifacts or repo reality
-- require explicit approval before each later stage
-- avoid micro-confirmations for obvious local choices
-
-Checkpoint types include:
-
-- `language_selection`
-- `missing_context`
-- `scope_change`
-- `risk_review`
-- `stage_approval`
-- `macro_plan_review`
-- `escalation_review`
-- `final_review`
-
-## Safety Rules
-
-- `sddl-executor` must stop on contradiction, scope drift, or blast-radius expansion
-- `sddl-executor` must not auto-run later stages
-- `sddl-qa-review` must not edit code
-- `stage` QA must not pretend to be final closeout
-- `final` QA may close the change only on a clean `pass`
-- stale bootstrap may not be ignored before risky code-touching execution
-- persisted content stays English even when chat is Spanish
-
-## How To Use `sdd-lite`
-
-Recommended operating pattern:
-
-1. Bootstrap the repo
-   Run `sddl-init` once in the repo, or rerun it when bootstrap becomes stale.
-2. Enter through the orchestrator
-   Treat the orchestrator as the normal entry point for new work and resume.
-3. Let the orchestrator choose the route
-   Do not force execution before route and scope are explicit.
-4. Formalize the change
-   Use `sddl-proposal-spec` and `sddl-design-plan` before implementation.
-5. Approve execution stage by stage
-   `sddl-executor` should run only one approved stage at a time.
-6. Review proportionally
-   Use `sddl-qa-review` in `stage` mode when a stage deserves structured review and in `final` mode at closeout.
-7. Resume from artifacts, not from memory
-   When interrupted, recover the next safe move from `state.yaml` and the owning artifacts.
+1. Run bootstrap first when `./sdd-lite/` is missing or stale.
+2. Enter through the orchestrator for both new work and resume.
+3. Let the orchestrator choose the route.
+4. Use `sddl-proposal-spec` and `sddl-design-plan` before implementation.
+5. Approve execution stage by stage.
+6. Use `sddl-qa-review` in `stage` mode when review is useful and in `final` mode at closeout.
+7. Resume from `state.yaml` and owned artifacts, not from prior chat memory.
 
 ## How It Should Not Be Used
 
@@ -355,6 +282,7 @@ Do not use `sdd-lite` like this:
 - forcing oversized work to stay in lite after the orchestrator recommends escalation
 - writing runtime artifacts outside `./sdd-lite/`
 - letting git side effects happen implicitly
+- turning the orchestrator into the main repo worker
 
 ## Relationship To `sdd-v2`
 
@@ -363,31 +291,9 @@ Do not use `sdd-lite` like this:
 | `sdd-v2` tendency | `sdd-lite` equivalent |
 |---|---|
 | more phases and artifacts | fewer phases and artifacts |
+| heavier orchestration | thin coordinator plus delegated workers |
 | separate stage QA and final verify | one `sddl-qa-review` skill with `stage` and `final` modes |
-| heavier lifecycle for serious or broad work | bounded lifecycle for local or decomposable work |
-| stronger full-process governance | faster flow with explicit escalation when safety drops |
+| heavier governance | faster flow with explicit escalation when safety drops |
 
 Use `sdd-lite` first for bounded work.
 Escalate to `sdd-v2` when the lite route is no longer safe.
-
-## Hardening Conclusion
-
-Stage 7 walkthroughs passed for:
-
-- bootstrap from thin context
-- resume from persisted state
-- `planner` terminal behavior
-- oversized request handling
-- contradiction-before-execution handling
-- realistic staged code changes
-- realistic low-risk non-code changes
-
-The package is ready to use as an MVP.
-
-## Remaining Non-Blocking Gaps
-
-- there is no worked example change directory under `./sdd-lite/openspec/changes/`
-- there is no automated consistency check across contracts, templates, and schemas
-- host-specific wrappers and usage examples are still lighter than the ones in `sdd-v2`
-
-These are follow-up improvements, not missing core flow behavior.
