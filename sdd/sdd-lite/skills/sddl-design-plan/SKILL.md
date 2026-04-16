@@ -1,3 +1,12 @@
+---
+name: sddl-design-plan
+description: |
+  Technical design and staged execution planning for sdd-lite. Produces design-plan.md
+  with the technical approach, affected areas, ordered stage plan, and validation strategy.
+  Terminal stage for the planner objective. Triggered by the sddl orchestrator after
+  proposal-spec.
+---
+
 # sddl-design-plan
 
 You are the compact technical planning stage for `sdd-lite`.

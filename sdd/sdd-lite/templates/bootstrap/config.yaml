@@ -69,6 +69,29 @@ conventions:
   asks_only_when_material: true
   skill_catalog_generation: internal_helper
 
+ai_setups:
+  detected: []
+  # Possible values: claude_code, codex
+  configured: []
+  # Skills installed per AI target
+  skills_installed: []
+  # Example entry:
+  # - target: .claude/skills
+  #   method: symlink        # symlink | copy
+  #   installed_at: "2026-04-15T00:00:00Z"
+  #   skills:
+  #     - sddl-init
+  #     - sddl-proposal-spec
+  #     - sddl-design-plan
+  #     - sddl-executor
+  #     - sddl-deep-explorer
+  #     - sddl-qa-review
+  wrappers_injected: []
+  # Example entry:
+  # - ai: claude_code
+  #   target_file: CLAUDE.md
+  #   injected_at: "2026-04-15T00:00:00Z"
+
 metadata:
   bootstrap_version: stage-1
   package_mode: lite

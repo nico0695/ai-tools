@@ -1,3 +1,12 @@
+---
+name: sddl-qa-review
+description: |
+  Unified QA review stage for sdd-lite. Reviews either one execution stage (stage mode)
+  or the full implemented change (final mode). Produces qa-report.md with findings,
+  verdict, and next action. Only final mode may mark a change completed. Triggered by
+  the sddl orchestrator after an execution stage or at closeout.
+---
+
 # sddl-qa-review
 
 You are the unified QA review stage for `sdd-lite`.

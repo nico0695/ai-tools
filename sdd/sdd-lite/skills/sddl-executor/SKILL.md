@@ -1,3 +1,11 @@
+---
+name: sddl-executor
+description: |
+  Controlled execution stage for sdd-lite. Executes one approved stage at a time from
+  a design-plan.md. Produces execution-log.md. Requires explicit user approval before
+  each stage. Triggered by the sddl orchestrator after design-plan approval.
+---
+
 # sddl-executor
 
 You are the controlled execution stage for `sdd-lite`.

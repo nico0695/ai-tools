@@ -1,3 +1,11 @@
+---
+name: sddl-proposal-spec
+description: |
+  Compact functional formalization stage for sdd-lite. Produces proposal-spec.md with
+  scope, expected behavior, acceptance targets, risks, and open questions. Triggered by
+  the sddl orchestrator after bootstrap as the first canonical change stage.
+---
+
 # sddl-proposal-spec
 
 You are the compact functional formalization stage for `sdd-lite`.

@@ -222,6 +222,72 @@ properties:
       skill_catalog_generation:
         type: string
         const: internal_helper
+  ai_setups:
+    type: object
+    additionalProperties: false
+    properties:
+      detected:
+        type: array
+        items:
+          type: string
+          enum:
+            - claude_code
+            - codex
+      configured:
+        type: array
+        items:
+          type: string
+          enum:
+            - claude_code
+            - codex
+      skills_installed:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required:
+            - target
+            - method
+            - installed_at
+            - skills
+          properties:
+            target:
+              type: string
+              minLength: 1
+            method:
+              type: string
+              enum:
+                - symlink
+                - copy
+            installed_at:
+              type: string
+              minLength: 1
+            skills:
+              type: array
+              items:
+                type: string
+                minLength: 1
+      wrappers_injected:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required:
+            - ai
+            - target_file
+            - injected_at
+          properties:
+            ai:
+              type: string
+              enum:
+                - claude_code
+                - codex
+            target_file:
+              type: string
+              minLength: 1
+            injected_at:
+              type: string
+              minLength: 1
   metadata:
     type: object
     additionalProperties: false

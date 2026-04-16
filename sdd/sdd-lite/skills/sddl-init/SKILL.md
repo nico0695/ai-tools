@@ -1,3 +1,12 @@
+---
+name: sddl-init
+description: |
+  Bootstrap or refresh sdd-lite in the current project. Use when sdd-lite has not been
+  initialized yet, when the bootstrap context is stale, or when AI wrappers and skills
+  need to be installed. Triggers on: "sddl-init", "bootstrap sdd-lite", "init sdd",
+  "inicializar sdd", "instalar sdd-lite".
+---
+
 # sddl-init
 
 You are the explicit bootstrap skill for `sdd-lite`.
@@ -30,8 +39,15 @@ Write or refresh only:
 - `./sdd-lite/skill-catalog.md`
 - `./sdd-lite/openspec/config.yaml`
 
+When AI setup configuration is confirmed by the user:
+
+- `.claude/skills/<skill-name>/SKILL.md` (symlink or copy per user choice) for Claude Code
+- `.agents/skills/<skill-name>/SKILL.md` (symlink or copy per user choice) for Codex
+- `CLAUDE.md` (wrapper block injection, demarcated) for Claude Code
+- `AGENTS.md` (wrapper block injection, demarcated) for Codex
+
 Do not write change-scoped artifacts.
-Do not write outside `./sdd-lite/`.
+Do not write outside `./sdd-lite/` except for AI setup files explicitly confirmed by the user.
 
 ## User Interaction
 
@@ -51,6 +67,9 @@ Valid reasons to ask include:
 - missing or contradictory quality commands
 - ambiguous source roots in a multi-app or multi-package repository
 - unclear preferred chat language between `es` and `en`
+- which AI setups to configure (step 4)
+- whether to install skills as symlinks or copies (step 5)
+- whether to inject the wrapper into a detected AI file (step 6)
 
 Do not ask for confirmation of obvious local choices already implied by the approved runtime.
 
@@ -61,36 +80,152 @@ Chat interaction may follow the detected or confirmed `chat_language`.
 
 1. Preflight
    Read existing bootstrap files if they exist and determine whether bootstrap is missing, stale, or already usable.
+
 2. Shallow repo scan
    Inspect only high-signal files and directories to detect:
    - languages, frameworks, runtime, and package manager
    - maintained docs and operating conventions
    - source roots, test roots, and config roots
    - candidate quality commands
-3. Infer project bootstrap facts
-   Infer project identity, canonical runtime paths, and bootstrap metadata from visible evidence.
-4. Build project context
+
+3. AI setup detection
+   Scan the project root for known AI setup signals. Do not modify any files in this step.
+
+   | Signal found | AI detected |
+   |---|---|
+   | `CLAUDE.md` exists | Claude Code |
+   | `.claude/` directory exists | Claude Code |
+   | `AGENTS.md` exists | Codex |
+   | `.codex/` directory exists | Codex |
+
+   If both are found, list both. Record the detection results for step 4.
+
+4. AI configuration selection (checkpoint)
+   Present the detection results and ask the user which AI setups to configure.
+
+   - If exactly one AI detected:
+     ```
+     Detected: Claude Code (CLAUDE.md found)
+     Configure sdd-lite for Claude Code? [y/n]
+     ```
+   - If multiple AIs detected:
+     ```
+     Detected AI setups:
+       [1] Claude Code (CLAUDE.md / .claude/ found)
+       [2] Codex (AGENTS.md found)
+     Configure sdd-lite for: all / 1 / 2 / none
+     ```
+   - If no AI detected:
+     ```
+     No AI setup found in this project.
+     Which AI would you like to configure sdd-lite for?
+       [1] Claude Code (will create CLAUDE.md if missing)
+       [2] Codex (will create AGENTS.md if missing)
+       [3] Both
+       [4] Skip AI setup
+     ```
+
+   If the user selects `none` or `skip`, omit steps 5 and 6 and proceed to step 7.
+
+5. Skill installation
+   For each AI selected in step 4, ask the installation method:
+
+   ```
+   Install sdd-lite skills as:
+     [1] Symlink — points to package files, no copy needed
+                   (recommended when the package stays in this repo)
+     [2] Copy    — copies SKILL.md files to the target directory
+                   (use when the package may move or symlinks are unsupported)
+   ```
+
+   **Skills to install** (all 6 canonical skills):
+   - `sddl-init`
+   - `sddl-proposal-spec`
+   - `sddl-design-plan`
+   - `sddl-executor`
+   - `sddl-deep-explorer`
+   - `sddl-qa-review`
+
+   **If symlink:**
+   - Target directory for Claude Code: `.claude/skills/<skill-name>/`
+   - Target directory for Codex: `.agents/skills/<skill-name>/`
+   - Create directories if they do not exist.
+   - Create symlink: `<target-dir>/SKILL.md` → relative path back to `<package-root>/skills/<skill-name>/SKILL.md`
+   - On re-run: if the symlink already exists and points to the correct source, skip. If it points elsewhere, warn and ask the user.
+   - After installing: include a note in the final summary that internal package-relative paths in the skills resolve correctly when used through the orchestrator wrapper (via CLAUDE.md), but direct slash command invocation may have path resolution issues for contract references. Use copy mode if direct invocation is the primary use case.
+
+   **If copy:**
+   - Create directories if they do not exist.
+   - Copy the content of each `<package-root>/skills/<skill-name>/SKILL.md`.
+   - In the copied content, rewrite package-relative path prefixes to be project-relative:
+     - `skills/_shared/` → `<package-root>/skills/_shared/`
+     - `orchestrator/` → `<package-root>/orchestrator/`
+     - `templates/artifacts/` → `<package-root>/templates/artifacts/`
+     - `templates/bootstrap/` → `<package-root>/templates/bootstrap/`
+   - Do not rewrite `./sdd-lite/` paths — they are already project-relative.
+   - On re-run: if a copied file already exists, replace it (it is a generated output, not user content).
+
+6. Wrapper injection
+   For each AI configured in step 4:
+
+   a. Read the corresponding wrapper template:
+      - Claude Code: `<package-root>/templates/wrappers/claude-orchestrator.md`
+      - Codex: `<package-root>/templates/wrappers/codex-orchestrator.md`
+   b. Resolve placeholders in the template:
+      - `<package-root>` → the value of `project.package_root` being written to `config.yaml`
+      - `<generated_at>` → current ISO timestamp
+   c. Show a short preview of the block to the user (first 5 lines are enough).
+   d. Ask for confirmation:
+      ```
+      Insert sdd-lite wrapper into CLAUDE.md? [y/n]
+      ```
+   e. If confirmed:
+      - If the target file exists and contains `<!-- sdd-lite:start -->`: replace the entire block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` with the resolved template.
+      - If the target file exists but has no `<!-- sdd-lite:start -->` marker: append the resolved block at the end of the file.
+      - If the target file does not exist: create it containing only the resolved block.
+   f. If the user declines: show the resolved block as plain text with instructions on where to paste it manually.
+
+7. Infer project bootstrap facts
+   Infer project identity, canonical runtime paths, and bootstrap metadata from the evidence collected in step 2.
+
+8. Build project context
    Generate `./sdd-lite/project-context.md` from the bootstrap template using compact, reusable facts.
-5. Build skill catalog
+
+9. Build skill catalog
    Generate `./sdd-lite/skill-catalog.md` through an internal helper flow.
    This is not a separate skill.
-6. Build config
-   Generate `./sdd-lite/openspec/config.yaml` with the approved local runtime:
-   - runtime root: `./sdd-lite/`
-   - artifact root: `./sdd-lite/openspec/`
-7. Final summary
-   Return a short bootstrap summary that distinguishes reads, writes, inferences, and any questions asked.
+
+10. Build config
+    Generate `./sdd-lite/openspec/config.yaml` with the approved local runtime:
+    - runtime root: `./sdd-lite/`
+    - artifact root: `./sdd-lite/openspec/`
+    - `ai_setups` section recording the results of steps 3–6:
+      - `detected`: list of AI ids found in step 3
+      - `configured`: list of AI ids the user selected in step 4
+      - `skills_installed`: one entry per AI with `target`, `method`, `installed_at`, and `skills` list
+      - `wrappers_injected`: one entry per AI where wrapper injection was confirmed, with `ai`, `target_file`, and `injected_at`
+
+11. Final summary
+    Return a short bootstrap summary that distinguishes reads, writes, inferences, and any questions asked.
+    Include a dedicated AI setup section in the summary covering:
+    - AI setups detected
+    - AI setups configured
+    - Skills installed (method and target directory per AI)
+    - Wrapper injection status per AI (injected, declined, or skipped)
 
 ## Validation
 
 Before finishing, verify:
 
-- bootstrap writes only target `./sdd-lite/`
+- bootstrap writes only target `./sdd-lite/` (except AI setup files explicitly confirmed by the user)
 - detected paths match the approved local runtime layout
 - `project-context.md` captures stack, directories, docs, commands, conventions, and risks
 - `skill-catalog.md` lists the canonical `sddl-*` skills and support agents
-- `config.yaml` includes project identity, stack, quality commands, bootstrap metadata, canonical paths, and chat language support
+- `config.yaml` includes project identity, stack, quality commands, bootstrap metadata, canonical paths, chat language support, and `ai_setups`
 - persisted artifacts remain English even when `chat_language` is `es`
+- skill files exist at the expected target paths for each configured AI
+- wrapper blocks in `CLAUDE.md` / `AGENTS.md` use demarcated markers and contain the correct resolved `package_root`
+- no wrapper block was inserted without explicit user confirmation
 
 ## Expected Output
 
@@ -102,6 +237,11 @@ On success, provide:
 - key docs, source roots, and quality commands found
 - inferred items versus user-confirmed items
 - unresolved bootstrap questions, if any
+- AI setup summary:
+  - AI setups detected
+  - AI setups configured
+  - skills installed per AI (method: symlink or copy, target directory)
+  - wrapper injection status per AI (injected / declined / skipped)
 
-Use `partial` when bootstrap is usable but one or more high-value signals remain uncertain.
+Use `partial` when bootstrap is usable but one or more high-value signals remain uncertain, or when AI setup was skipped or partially declined.
 Use `blocked` only when the project cannot be scanned safely or a material contradiction prevents a reliable bootstrap.
