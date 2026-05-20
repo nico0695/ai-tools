@@ -76,8 +76,10 @@ properties:
     enum:
       - none
       - sddl-deep-explorer
-      - sddl-proposal-spec
-      - sddl-design-plan
+      - sddl-proposal
+      - sddl-spec
+      - sddl-design
+      - sddl-plan
       - sddl-executor
       - sddl-qa-review
   stages:
@@ -85,16 +87,22 @@ properties:
     additionalProperties: false
     required:
       - sddl-deep-explorer
-      - sddl-proposal-spec
-      - sddl-design-plan
+      - sddl-proposal
+      - sddl-spec
+      - sddl-design
+      - sddl-plan
       - sddl-executor
       - sddl-qa-review
     properties:
       sddl-deep-explorer:
         $ref: "#/$defs/stageState"
-      sddl-proposal-spec:
+      sddl-proposal:
         $ref: "#/$defs/stageState"
-      sddl-design-plan:
+      sddl-spec:
+        $ref: "#/$defs/stageState"
+      sddl-design:
+        $ref: "#/$defs/stageState"
+      sddl-plan:
         $ref: "#/$defs/stageState"
       sddl-executor:
         $ref: "#/$defs/stageState"
@@ -105,18 +113,26 @@ properties:
     additionalProperties: false
     required:
       - state
-      - proposal_spec
-      - design_plan
+      - proposal
+      - spec
+      - design
+      - plan
       - execution_log
       - qa_report
     properties:
       state:
         type: string
         minLength: 1
-      proposal_spec:
+      proposal:
         type: string
         minLength: 1
-      design_plan:
+      spec:
+        type: string
+        minLength: 1
+      design:
+        type: string
+        minLength: 1
+      plan:
         type: string
         minLength: 1
       execution_log:
@@ -244,6 +260,7 @@ $defs:
           - missing_context
           - scope_change
           - risk_review
+          - phase_validation
           - stage_approval
           - macro_plan_review
           - escalation_review
@@ -253,8 +270,10 @@ $defs:
         enum:
           - orchestrator
           - sddl-deep-explorer
-          - sddl-proposal-spec
-          - sddl-design-plan
+          - sddl-proposal
+          - sddl-spec
+          - sddl-design
+          - sddl-plan
           - sddl-executor
           - sddl-qa-review
       summary:

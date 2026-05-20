@@ -58,8 +58,10 @@ Recommended category values:
 
 Recommended source values:
 
-- `proposal-spec`
-- `design-plan`
+- `proposal`
+- `spec`
+- `design`
+- `plan`
 - `execution-log`
 - `config`
 - `repo-state`

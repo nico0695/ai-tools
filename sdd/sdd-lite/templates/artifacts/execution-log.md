@@ -17,7 +17,7 @@
 - route:
 - lifecycle_status:
 - current_stage_id:
-- execution_source: design-plan-stage-table
+- execution_source: plan-stage-table
 - qa_handoff_policy: recommend `sddl-qa-review` when a completed stage needs structured review before continuing
 - git_side_effects: none
 
@@ -29,7 +29,7 @@
 ## Execution Rules
 
 - Execute one approved stage per invocation.
-- Use `design-plan.md` as the source of truth for stage order, expected scope, and validation.
+- Use `plan.md` as the source of truth for stage order, expected scope, and validation.
 - Keep prior stage history visible; do not erase earlier entries.
 - Use this artifact as the execution ledger and resume anchor for implementation progress.
 - Record contradiction, scope drift, and blast-radius findings explicitly when they occur.

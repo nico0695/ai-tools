@@ -78,8 +78,10 @@ These lite artifact names are fixed for the MVP:
 - `skill-catalog.md`
 - `config.yaml`
 - `state.yaml`
-- `proposal-spec.md`
-- `design-plan.md`
+- `proposal.md`
+- `spec.md`
+- `design.md`
+- `plan.md`
 - `execution-log.md`
 - `qa-report.md`
 - `macro-plan.md`

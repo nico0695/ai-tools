@@ -1,4 +1,4 @@
-# Proposal Spec
+# Spec
 
 ## Routing Digest
 
@@ -8,26 +8,25 @@
 - digest_summary:
 - scope_digest:
 - acceptance_digest:
-- risk_digest:
 
 ## Summary
 
 - change_name:
 - objective:
 - route:
-- proposal_spec_status:
+- spec_status:
 
-## Problem And Desired Outcome
-
-- 
-
-## Scope
+## Scope Boundary
 
 ### In Scope
 
 - 
 
-### Out Of Scope And Non-Goals
+### Out Of Scope
+
+- 
+
+### Non-Goals
 
 - 
 
@@ -36,14 +35,10 @@
 | Scenario | Expected Outcome | Evidence Or Notes |
 |---|---|---|
 
-## Acceptance Targets
+## Acceptance Criteria
 
-| Target Id | Acceptance Target | Validation Hint | Priority |
+| Criteria Id | Acceptance Criteria | Validation Hint | Priority |
 |---|---|---|---|
-
-## Functional Approach Summary
-
-- 
 
 ## Risks And Trade-Offs
 
@@ -61,5 +56,4 @@
 
 ## Budget Notes
 
-- Keep the digest short enough for downstream routing.
 - Target roughly 300 to 500 words plus tables for the full artifact when possible.

@@ -51,7 +51,7 @@ Read only the evidence needed for the blocked question:
 - `./sdd-lite/project-context.md`
 - `./sdd-lite/skill-catalog.md` as the runtime standards registry
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml` when a change exists
-- `proposal-spec.md`, `design-plan.md`, or `execution-log.md` only when the blocked question depends on them
+- `proposal.md`, `spec.md`, `design.md`, `plan.md`, or `execution-log.md` only when the blocked question depends on them
 - targeted repo files, tests, configs, or docs directly related to the unknown
 
 ## Writes

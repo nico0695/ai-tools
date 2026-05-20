@@ -305,7 +305,7 @@ properties:
         const: lite
       planner_terminal_skill:
         type: string
-        const: sddl-design-plan
+        const: sddl-plan
       final_closure_skill:
         type: string
         const: sddl-qa-review

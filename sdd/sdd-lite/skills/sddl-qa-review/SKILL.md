@@ -47,8 +47,10 @@ This stage should not:
 
 Read:
 
-- `./sdd-lite/openspec/changes/{change-name}/proposal-spec.md`
-- `./sdd-lite/openspec/changes/{change-name}/design-plan.md`
+- `./sdd-lite/openspec/changes/{change-name}/proposal.md`
+- `./sdd-lite/openspec/changes/{change-name}/spec.md`
+- `./sdd-lite/openspec/changes/{change-name}/design.md`
+- `./sdd-lite/openspec/changes/{change-name}/plan.md`
 - `./sdd-lite/openspec/changes/{change-name}/execution-log.md`
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml`
 - `./sdd-lite/openspec/config.yaml`
@@ -58,7 +60,7 @@ Read:
 
 Use these sources differently by mode:
 
-- `stage`: start from the target stage entry in `execution-log.md`, its validation notes in `design-plan.md`, and the files that stage changed
+- `stage`: start from the target stage entry in `execution-log.md`, its validation notes in `plan.md`, and the files that stage changed
 - `final`: start from the full execution history, the full approved change scope, and the project quality commands in `config.yaml`
 
 ## Writes
@@ -109,7 +111,7 @@ Rules:
 `sddl-qa-review` may proceed only when all are true:
 
 - the active objective is not `planner`
-- `proposal-spec.md`, `design-plan.md`, and `state.yaml` exist
+- `proposal.md`, `spec.md`, `design.md`, `plan.md`, and `state.yaml` exist
 - `execution-log.md` exists and contains usable implementation evidence
 - the selected review mode is explicit or recoverable from the user request and current state
 
@@ -143,7 +145,7 @@ Persisted QA artifacts stay in English even if chat is Spanish.
 3. Build a proportionate review set
    Choose artifact checks, file checks, behavioral checks, and commands that match the selected review scope.
 4. Inspect artifacts and current repo reality
-   Compare the actual result against `proposal-spec.md`, `design-plan.md`, `execution-log.md`, and the relevant changed files.
+   Compare the actual result against `spec.md`, `plan.md`, `execution-log.md`, and the relevant changed files.
 5. Run justified validation commands
    Use the smallest meaningful command set for `stage` mode and a broader but still justified set for `final` mode.
 6. Record findings and assign severity
@@ -162,8 +164,8 @@ Persisted QA artifacts stay in English even if chat is Spanish.
 
 Start from these evidence sources in order:
 
-1. the approved acceptance targets in `proposal-spec.md`
-2. the technical and per-stage validation notes in `design-plan.md`
+1. the approved acceptance criteria in `spec.md`
+2. the technical validation notes in `design.md` and per-stage validation notes in `plan.md`
 3. the actual changed scope, quick checks, and blockers in `execution-log.md`
 4. current repo reality
 5. quality commands from `config.yaml`

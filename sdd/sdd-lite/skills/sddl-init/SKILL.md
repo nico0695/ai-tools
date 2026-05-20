@@ -139,10 +139,12 @@ Chat interaction may follow the detected or confirmed `chat_language`.
                    (use when the package may move or symlinks are unsupported)
    ```
 
-   **Skills to install** (all 6 canonical skills):
+   **Skills to install** (all 8 canonical skills):
    - `sddl-init`
-   - `sddl-proposal-spec`
-   - `sddl-design-plan`
+   - `sddl-proposal`
+   - `sddl-spec`
+   - `sddl-design`
+   - `sddl-plan`
    - `sddl-executor`
    - `sddl-deep-explorer`
    - `sddl-qa-review`

@@ -17,6 +17,7 @@ This contract defines how `sdd-lite` asks the user for decisions without turning
 | `missing_context` | essential context cannot be recovered safely | conditional |
 | `scope_change` | the requested work expands or redirects materially | conditional |
 | `risk_review` | two viable paths have meaningful trade-offs | conditional |
+| `phase_validation` | between formalization phases to confirm output before advancing | conditional — skip when the user already approved advancement implicitly |
 | `stage_approval` | immediately before a code-touching execution stage | mandatory when code will change |
 | `macro_plan_review` | the best lite path is to stop and write `macro-plan.md` first | conditional |
 | `escalation_review` | the request no longer fits safe lite execution | conditional |
@@ -31,6 +32,26 @@ Each checkpoint should be representable with:
 - 2 to 4 options when options are useful
 - one recommended option when the system has a justified preference
 - free-form input allowed
+
+## `phase_validation` minimum content
+
+Each `phase_validation` checkpoint should include:
+
+- phase name and artifact written
+- a concise summary of the artifact content
+- the next phase that would follow
+
+Recommended options:
+
+- approve and continue
+- revise this phase
+- stop
+
+Smart behavior:
+
+- If the user already indicated advancement (e.g., "continue with spec", "go ahead"), skip the checkpoint and record it as implicitly approved.
+- If there is ambiguity in scope, risk, or multiple plausible interpretations, always present the checkpoint.
+- If the artifact contains open questions or risks above medium severity, always present the checkpoint.
 
 ## `stage_approval` minimum content
 

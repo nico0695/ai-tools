@@ -13,8 +13,10 @@ This contract defines where `sdd-lite` stores durable data, who owns each artifa
     changes/
       {change-name}/
         state.yaml
-        proposal-spec.md
-        design-plan.md
+        proposal.md
+        spec.md
+        design.md
+        plan.md
         execution-log.md
         qa-report.md
         macro-plan.md            # only when explicitly approved
@@ -51,11 +53,13 @@ Rules:
 | Artifact | Canonical path | Owner |
 |---|---|---|
 | change state | `./sdd-lite/openspec/changes/{change-name}/state.yaml` | orchestrator plus active stage |
-| proposal and spec | `./sdd-lite/openspec/changes/{change-name}/proposal-spec.md` | `sddl-proposal-spec` |
-| design and stage plan | `./sdd-lite/openspec/changes/{change-name}/design-plan.md` | `sddl-design-plan` |
+| proposal | `./sdd-lite/openspec/changes/{change-name}/proposal.md` | `sddl-proposal` |
+| spec | `./sdd-lite/openspec/changes/{change-name}/spec.md` | `sddl-spec` |
+| design | `./sdd-lite/openspec/changes/{change-name}/design.md` | `sddl-design` |
+| plan | `./sdd-lite/openspec/changes/{change-name}/plan.md` | `sddl-plan` |
 | execution ledger | `./sdd-lite/openspec/changes/{change-name}/execution-log.md` | `sddl-executor` |
 | QA report | `./sdd-lite/openspec/changes/{change-name}/qa-report.md` | `sddl-qa-review` |
-| macro plan | `./sdd-lite/openspec/changes/{change-name}/macro-plan.md` | `sddl-design-plan` on approved macro-plan-first flows |
+| macro plan | `./sdd-lite/openspec/changes/{change-name}/macro-plan.md` | `sddl-plan` on approved macro-plan-first flows |
 
 ## Ownership rules
 
@@ -72,8 +76,10 @@ Use this split consistently:
 - `project-context.md` for reusable repository context
 - `skill-catalog.md` for the runtime standards registry, trigger map, compact rules, and support-agent references
 - `config.yaml` for project identity, canonical paths, bootstrap metadata, and quality commands
-- `proposal-spec.md` for problem framing, scope, expected behavior, acceptance targets, and open questions
-- `design-plan.md` for technical approach, staged execution, validation plan, and planning status
+- `proposal.md` for problem framing, desired outcome, initial scope sketch, and feasibility signal
+- `spec.md` for firm scope boundary, acceptance criteria, expected behavior, and non-goals
+- `design.md` for technical approach, architecture, patterns, interfaces, and affected areas
+- `plan.md` for staged execution plan, dependencies, validation strategy, and planning status
 - `execution-log.md` for stage-by-stage execution trace
 - `qa-report.md` for stage review findings or final closeout findings
 - `state.yaml` for lifecycle, resume, checkpoints, decisions, escalation route, and next action
@@ -93,8 +99,10 @@ These are runtime targets, not hard schema limits:
 
 | Artifact | Recommended budget |
 |---|---|
-| `proposal-spec.md` | 300 to 500 words |
-| `design-plan.md` | 500 to 800 words |
+| `proposal.md` | 200 to 400 words |
+| `spec.md` | 300 to 500 words |
+| `design.md` | 400 to 600 words |
+| `plan.md` | 300 to 500 words |
 | one `execution-log.md` stage entry | 150 to 300 words plus tables |
 | `qa-report.md` stage summary | 300 to 500 words |
 | `qa-report.md` final summary | 500 to 800 words |

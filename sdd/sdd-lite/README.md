@@ -38,7 +38,7 @@ Default runtime heuristics:
 
 - inline only local routing decisions that require at most 3 repo files
 - delegate bounded analysis when routing or planning needs 4 or more files
-- delegate `sddl-proposal-spec`, `sddl-design-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default
+- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default
 - do not run multi-file edits inline in the orchestrator
 - do not run builds, installs, or broad test suites inline in the orchestrator
 - do not delegate per file; delegate per phase or per approved execution stage
@@ -72,9 +72,13 @@ sdd/sdd-lite/
       sddl-project-standards-contract.md
     sddl-init/
       SKILL.md
-    sddl-proposal-spec/
+    sddl-proposal/
       SKILL.md
-    sddl-design-plan/
+    sddl-spec/
+      SKILL.md
+    sddl-design/
+      SKILL.md
+    sddl-plan/
       SKILL.md
     sddl-executor/
       SKILL.md
@@ -88,8 +92,10 @@ sdd/sdd-lite/
       project-context.md
       skill-catalog.md
     artifacts/
-      proposal-spec.md
-      design-plan.md
+      proposal.md
+      spec.md
+      design.md
+      plan.md
       execution-log.md
       qa-report.md
       macro-plan.md
@@ -111,8 +117,10 @@ All runtime files live under `./sdd-lite/`:
     changes/
       {change-name}/
         state.yaml
-        proposal-spec.md
-        design-plan.md
+        proposal.md
+        spec.md
+        design.md
+        plan.md
         execution-log.md
         qa-report.md
         macro-plan.md      # only when explicitly needed and approved
@@ -123,8 +131,10 @@ All runtime files live under `./sdd-lite/`:
 | Skill | Role | Primary writes |
 |---|---|---|
 | `sddl-init` | bootstrap the repo for lite usage and build the runtime standards registry | `project-context.md`, `skill-catalog.md`, `openspec/config.yaml` |
-| `sddl-proposal-spec` | compact functional formalization | `proposal-spec.md`, `state.yaml` |
-| `sddl-design-plan` | technical design plus staged execution plan | `design-plan.md`, `state.yaml`, `macro-plan.md` when approved |
+| `sddl-proposal` | consolidate the change idea with optional lightweight exploration | `proposal.md`, `state.yaml` |
+| `sddl-spec` | formal functional specification with firm scope boundary | `spec.md`, `state.yaml` |
+| `sddl-design` | technical design: architecture, patterns, affected areas | `design.md`, `state.yaml` |
+| `sddl-plan` | staged execution plan with dependencies and validation | `plan.md`, `state.yaml`, `macro-plan.md` when approved |
 | `sddl-executor` | execute one approved stage at a time | repo files in approved scope, `execution-log.md`, `state.yaml` |
 | `sddl-deep-explorer` | bounded read-only analysis | no persistent artifact by default |
 | `sddl-qa-review` | stage review and final closeout | `qa-report.md`, `state.yaml` |
@@ -189,8 +199,10 @@ Normal flow:
 preflight
   -> sddl-init when bootstrap is missing or materially stale
   -> sddl-deep-explorer only when bounded evidence is needed
-  -> sddl-proposal-spec
-  -> sddl-design-plan
+  -> sddl-proposal
+  -> sddl-spec
+  -> sddl-design
+  -> sddl-plan
   -> sddl-executor (one approved stage at a time)
   -> sddl-qa-review (stage) when useful
   -> sddl-executor / sddl-qa-review (stage) as needed
@@ -199,8 +211,10 @@ preflight
 
 Key points:
 
-- `proposal-spec.md` owns scope and acceptance targets
-- `design-plan.md` owns the execution plan
+- `proposal.md` owns problem framing and feasibility signal
+- `spec.md` owns scope boundary and acceptance criteria
+- `design.md` owns the technical approach and affected areas
+- `plan.md` owns the execution plan
 - `execution-log.md` owns implementation traceability
 - `qa-report.md` owns review findings and closeout evidence
 - the orchestrator should route from digests and metadata before rereading full artifacts
@@ -211,8 +225,10 @@ Key points:
 
 ```text
 preflight
-  -> sddl-proposal-spec
-  -> sddl-design-plan
+  -> sddl-proposal
+  -> sddl-spec
+  -> sddl-design
+  -> sddl-plan
   -> stop(planned)
 ```
 
@@ -221,9 +237,11 @@ preflight
 ```text
 preflight
   -> complexity assessment = macro-plan-first
-  -> sddl-proposal-spec
+  -> sddl-proposal
+  -> sddl-spec
+  -> sddl-design
   -> macro_plan_review checkpoint
-  -> sddl-design-plan
+  -> sddl-plan
   -> stop(planned)
 ```
 
@@ -243,8 +261,10 @@ If the work behaves like a migration, large redesign, or broad coordination prob
 | `skill-catalog.md` | `sddl-init` | runtime standards registry |
 | `config.yaml` | `sddl-init` | project identity, paths, quality commands |
 | `state.yaml` | orchestrator + active stage | lifecycle, checkpoints, next action |
-| `proposal-spec.md` | `sddl-proposal-spec` | scope and acceptance contract |
-| `design-plan.md` | `sddl-design-plan` | technical plan and staged execution |
+| `proposal.md` | `sddl-proposal` | problem framing and feasibility signal |
+| `spec.md` | `sddl-spec` | scope boundary and acceptance criteria |
+| `design.md` | `sddl-design` | technical approach and affected areas |
+| `plan.md` | `sddl-plan` | staged execution plan |
 | `execution-log.md` | `sddl-executor` | stage-by-stage execution ledger |
 | `qa-report.md` | `sddl-qa-review` | review findings and closeout evidence |
 
@@ -254,8 +274,10 @@ Recommended runtime targets:
 
 | Artifact | Budget |
 |---|---|
-| `proposal-spec.md` | 300 to 500 words |
-| `design-plan.md` | 500 to 800 words |
+| `proposal.md` | 200 to 400 words |
+| `spec.md` | 300 to 500 words |
+| `design.md` | 400 to 600 words |
+| `plan.md` | 300 to 500 words |
 | one `execution-log.md` stage entry | 150 to 300 words plus tables |
 | `qa-report.md` stage summary | 300 to 500 words |
 | `qa-report.md` final summary | 500 to 800 words |
@@ -267,7 +289,7 @@ Each artifact should begin with a short digest that downstream stages can reuse 
 1. Run bootstrap first when `./sdd-lite/` is missing or stale.
 2. Enter through the orchestrator for both new work and resume.
 3. Let the orchestrator choose the route.
-4. Use `sddl-proposal-spec` and `sddl-design-plan` before implementation.
+4. Use `sddl-proposal`, `sddl-spec`, `sddl-design`, and `sddl-plan` before implementation.
 5. Approve execution stage by stage.
 6. Use `sddl-qa-review` in `stage` mode when review is useful and in `final` mode at closeout.
 7. Resume from `state.yaml` and owned artifacts, not from prior chat memory.
@@ -276,7 +298,7 @@ Each artifact should begin with a short digest that downstream stages can reuse 
 
 Do not use `sdd-lite` like this:
 
-- jumping directly into `sddl-executor` without proposal and design artifacts
+- jumping directly into `sddl-executor` without proposal, spec, design, and plan artifacts
 - treating `stage` QA as if it were final completion
 - using `macro-plan-first` as implicit approval to implement
 - forcing oversized work to stay in lite after the orchestrator recommends escalation

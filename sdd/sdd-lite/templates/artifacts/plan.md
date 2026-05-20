@@ -1,4 +1,4 @@
-# Design Plan
+# Plan
 
 ## Execution Digest
 
@@ -6,7 +6,6 @@
 - objective:
 - route:
 - digest_summary:
-- affected_areas_digest:
 - stage_plan_digest:
 - validation_digest:
 
@@ -17,19 +16,7 @@
 - route:
 - planner_terminal: false
 - execution_ready: false
-
-## Design Overview
-
-- 
-
-## Affected Areas
-
-| Path Or Module | Planned Change | Risk |
-|---|---|---|
-
-## Interfaces, Data, And State
-
-- 
+- plan_status:
 
 ## Stage Plan
 
@@ -40,22 +27,19 @@
 
 - 
 
-## Alternatives And Trade-Offs
+## Dependencies And Sequencing
 
-| Option | Decision | Why |
-|---|---|---|
-
-## Open Technical Questions
-
-| Item | Why It Matters | Needed Before | Status |
-|---|---|---|---|
+- 
 
 ## Planner Stop Note
 
 - If `objective` is `planner`, stop after this artifact and set the change to `planned`.
 - If the route is `macro-plan-first`, keep the stage plan as approved decomposition and do not mark execution ready yet.
 
+## Approval Notes
+
+- 
+
 ## Budget Notes
 
-- Keep the digest short enough for execution handoff.
-- Target roughly 500 to 800 words plus tables for the full artifact when possible.
+- Target roughly 300 to 500 words plus tables for the full artifact when possible.

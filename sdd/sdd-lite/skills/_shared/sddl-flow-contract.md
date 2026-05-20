@@ -40,8 +40,10 @@ These ids are the canonical change-stage names used in state and contracts.
 | Value | Meaning |
 |---|---|
 | `sddl-deep-explorer` | bounded deep analysis when shallow context is not enough |
-| `sddl-proposal-spec` | compact functional framing and acceptance contract |
-| `sddl-design-plan` | technical approach plus staged execution plan |
+| `sddl-proposal` | lightweight problem framing, feasibility signal, and initial scope sketch |
+| `sddl-spec` | formal functional specification with firm scope boundary and acceptance criteria |
+| `sddl-design` | technical design: architecture, patterns, interfaces, affected areas |
+| `sddl-plan` | staged execution plan with dependencies and validation strategy |
 | `sddl-executor` | approved stage-by-stage execution |
 | `sddl-qa-review` | stage review or final closeout |
 
@@ -127,9 +129,11 @@ Every lite stage result must be representable with:
 ## Flow rules
 
 - `sddl-init` is bootstrap-only and does not create change-scoped artifacts.
-- `sddl-proposal-spec` is the first canonical change stage and should initialize `state.yaml` when the change starts.
-- `sddl-design-plan` requires `proposal-spec.md` and defines the executable stage plan.
-- `planner` stops after `sddl-design-plan` and leaves `lifecycle_status: planned`.
+- `sddl-proposal` is the first canonical change stage and should initialize `state.yaml` when the change starts.
+- `sddl-spec` requires `proposal.md` and defines the firm scope boundary and acceptance criteria.
+- `sddl-design` requires `spec.md` and defines the technical approach and affected areas.
+- `sddl-plan` requires `design.md` and defines the staged execution plan.
+- `planner` stops after `sddl-plan` and leaves `lifecycle_status: planned`.
 - `sddl-executor` must not start a code-touching stage without an explicit recorded approval.
 - `sddl-deep-explorer` is read-only and on-demand.
 - `sddl-qa-review` in `stage` mode never marks the change `completed`.
@@ -142,5 +146,5 @@ Every lite stage result must be representable with:
 ## Resume rules
 
 - `state.yaml` is the operational resume anchor.
-- `proposal-spec.md`, `design-plan.md`, `execution-log.md`, and `qa-report.md` hold the semantic detail for their owning stages.
+- `proposal.md`, `spec.md`, `design.md`, `plan.md`, `execution-log.md`, and `qa-report.md` hold the semantic detail for their owning stages.
 - Resume should rebuild the next safe move from persisted files, not from chat memory.

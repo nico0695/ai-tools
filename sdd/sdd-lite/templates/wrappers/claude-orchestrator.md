@@ -42,7 +42,7 @@ Default to fresh-worker delegation for real stage work.
 
 - Inline only local routing decisions that need at most 3 repo files.
 - Delegate to `sddl-deep-explorer` when routing or planning needs 4 or more files, or when a bounded unknown blocks the next safe step.
-- Delegate `sddl-proposal-spec`, `sddl-design-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default.
+- Delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default.
 - Do not perform multi-file edits inline in the orchestrator.
 - Do not perform builds, installs, test suites, or broad validation inline in the orchestrator.
 - Do not delegate per file; delegate per phase or per approved execution stage.

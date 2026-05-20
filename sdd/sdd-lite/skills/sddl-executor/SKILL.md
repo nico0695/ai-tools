@@ -2,8 +2,8 @@
 name: sddl-executor
 description: |
   Controlled execution stage for sdd-lite. Executes one approved stage at a time from
-  a design-plan.md. Produces execution-log.md. Requires explicit user approval before
-  each stage. Triggered by the sddl orchestrator after design-plan approval.
+  plan.md. Produces execution-log.md. Requires explicit user approval before
+  each stage. Triggered by the sddl orchestrator after plan approval.
 ---
 
 # sddl-executor
@@ -12,7 +12,7 @@ You are the controlled execution stage for `sdd-lite`.
 
 ## Goal
 
-Turn an approved `design-plan.md` stage into real repository changes without losing scope control, approval discipline, or resumable traceability.
+Turn an approved `plan.md` stage into real repository changes without losing scope control, approval discipline, or resumable traceability.
 
 This stage executes one planned stage per invocation.
 It must not auto-run the full plan.
@@ -29,7 +29,7 @@ It must not auto-run the full plan.
 
 This stage should:
 
-- execute one approved planned stage from `design-plan.md`
+- execute one approved planned stage from `plan.md`
 - validate that the current repo still matches the approved stage assumptions
 - stop when execution would contradict the approved artifacts
 - stop when scope drift or blast-radius expansion appears
@@ -49,15 +49,17 @@ This stage should not:
 
 Read:
 
-- `./sdd-lite/openspec/changes/{change-name}/proposal-spec.md`
-- `./sdd-lite/openspec/changes/{change-name}/design-plan.md`
+- `./sdd-lite/openspec/changes/{change-name}/proposal.md`
+- `./sdd-lite/openspec/changes/{change-name}/spec.md`
+- `./sdd-lite/openspec/changes/{change-name}/design.md`
+- `./sdd-lite/openspec/changes/{change-name}/plan.md`
 - `./sdd-lite/openspec/changes/{change-name}/execution-log.md` when it already exists
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml`
 - `./sdd-lite/openspec/config.yaml`
 - `./sdd-lite/skill-catalog.md` when runtime standards were not injected into the handoff
 - relevant source files, tests, configs, or docs for the approved stage
 
-Use `design-plan.md` as the execution source of truth for:
+Use `plan.md` as the execution source of truth for:
 
 - stage ids
 - stage order
@@ -65,7 +67,7 @@ Use `design-plan.md` as the execution source of truth for:
 - validation expectations
 - code-touching boundaries
 
-Use `proposal-spec.md` to detect whether the stage is drifting away from the approved functional contract.
+Use `spec.md` to detect whether the stage is drifting away from the approved functional contract.
 
 ## Writes
 
@@ -83,7 +85,7 @@ Do not perform commits, stashes, rebases, or other git history actions.
 
 `sddl-executor` is stage-scoped.
 
-The canonical execution source is the `Stage Plan` table in `design-plan.md`.
+The canonical execution source is the `Stage Plan` table in `plan.md`.
 
 Rules:
 
@@ -98,8 +100,8 @@ Rules:
 
 `sddl-executor` may proceed only when all are true:
 
-- `proposal-spec.md` exists and still matches the approved direction
-- `design-plan.md` exists and contains a usable stage plan
+- `proposal.md` and `spec.md` exist and still match the approved direction
+- `plan.md` exists and contains a usable stage plan
 - the active objective is not `planner`
 - the selected route is not `macro-plan-first`
 - the user approved the specific stage being executed
@@ -132,7 +134,7 @@ Use this stop when the requested or discovered work changes the intended outcome
 Examples:
 
 - a "small fix" now requires behavior changes beyond the planned acceptance target
-- the stage would need a new deliverable that is not in `design-plan.md`
+- the stage would need a new deliverable that is not in `plan.md`
 
 Required behavior:
 
@@ -172,7 +174,7 @@ After a stage runs, perform only proportionate validation.
 
 Sources for quick checks:
 
-- the stage validation notes from `design-plan.md`
+- the stage validation notes from `plan.md`
 - quality commands from `config.yaml`
 - targeted file or test checks relevant to the stage
 
@@ -204,7 +206,7 @@ Record the recommendation or deferral in `execution-log.md` and `state.yaml`.
 
 It should:
 
-- keep a stage overview table derived from `design-plan.md`
+- keep a stage overview table derived from `plan.md`
 - append a stage entry for each attempted or completed stage
 - record approval references, planned scope, actual changed files, quick checks, blockers, and next action
 - preserve prior entries instead of rewriting history

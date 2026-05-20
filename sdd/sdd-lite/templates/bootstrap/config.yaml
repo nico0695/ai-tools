@@ -81,8 +81,10 @@ ai_setups:
   #   installed_at: "2026-04-15T00:00:00Z"
   #   skills:
   #     - sddl-init
-  #     - sddl-proposal-spec
-  #     - sddl-design-plan
+  #     - sddl-proposal
+  #     - sddl-spec
+  #     - sddl-design
+  #     - sddl-plan
   #     - sddl-executor
   #     - sddl-deep-explorer
   #     - sddl-qa-review
@@ -95,5 +97,5 @@ ai_setups:
 metadata:
   bootstrap_version: stage-1
   package_mode: lite
-  planner_terminal_skill: sddl-design-plan
+  planner_terminal_skill: sddl-plan
   final_closure_skill: sddl-qa-review
