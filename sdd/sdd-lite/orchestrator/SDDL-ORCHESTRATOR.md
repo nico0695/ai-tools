@@ -76,7 +76,7 @@ Default orchestration rules:
 - inline only local routing decisions that require at most 3 repo files
 - delegate to `sddl-deep-explorer` when routing or planning needs 4 or more repo files
 - delegate read-plus-write work together when implementation is likely
-- delegate `sddl-proposal-spec`, `sddl-design-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default
+- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default
 - do not perform multi-file edits inline in the orchestrator
 - do not perform builds, installs, or broad verification inline in the orchestrator
 - do not delegate per file; delegate per phase or per approved execution stage
@@ -149,13 +149,15 @@ Do not paste the full README or broad repo summaries into each worker unless rec
 | bootstrap is `missing` or `incomplete` | stop and run `sddl-init` | no | no change stage may start |
 | bootstrap is `stale` but non-material to the immediate step | continue with warning | no | refresh before risky execution if needed |
 | route cannot be chosen safely without bounded evidence | `sddl-deep-explorer` | yes | read-only; returns to the blocked decision point |
-| no active change artifact exists for the selected lite route | `sddl-proposal-spec` | yes | normal entry stage |
-| `proposal-spec.md` is missing, stale, or contradicted by approved direction | `sddl-proposal-spec` | yes | proposal owns compact functional framing |
-| `proposal-spec.md` is usable but `design-plan.md` is missing or outdated | `sddl-design-plan` | yes | planning source is ready |
-| objective is `planner` and `design-plan.md` is complete | stop with `lifecycle_status: planned` | no | do not auto-route to execution or QA |
+| no active change artifact exists for the selected lite route | `sddl-proposal` | yes | normal entry stage |
+| `proposal.md` is missing, stale, or contradicted by approved direction | `sddl-proposal` | yes | proposal consolidates the idea |
+| `proposal.md` is usable but `spec.md` is missing or outdated | `sddl-spec` | yes | proposal is ready for formalization |
+| `spec.md` is usable but `design.md` is missing or outdated | `sddl-design` | yes | spec provides the scope contract |
+| `design.md` is usable but `plan.md` is missing or outdated | `sddl-plan` | yes | design provides the technical approach |
+| objective is `planner` and `plan.md` is complete | stop with `lifecycle_status: planned` | no | do not auto-route to execution or QA |
 | route is `macro-plan-first` and `macro-plan.md` is not yet approved | ask `macro_plan_review` checkpoint | no | do not write `macro-plan.md` before approval |
-| route is `macro-plan-first` and approval exists | `sddl-design-plan` | yes | this stage owns `macro-plan.md` |
-| approved implementation work is ready from `design-plan.md` | `sddl-executor` | yes | stage approval is mandatory before code changes |
+| route is `macro-plan-first` and approval exists | `sddl-plan` | yes | this stage owns `macro-plan.md` |
+| approved implementation work is ready from `plan.md` | `sddl-executor` | yes | stage approval is mandatory before code changes |
 | an execution stage finished and needs review | `sddl-qa-review` in `stage` mode | yes | does not close the change |
 | final execution is complete and the user wants closeout | `sddl-qa-review` in `final` mode | yes | only final mode may set `completed` |
 | route is `escalate-to-sdd-v2` | stop and recommend `sdd-v2` | no | persist the blocker and next action |
