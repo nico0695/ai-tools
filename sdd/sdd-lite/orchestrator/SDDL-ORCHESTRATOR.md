@@ -69,17 +69,44 @@ If bootstrap is stale:
 - formalization or resume may continue with a visible warning when the stale risk is local and bounded
 - code-touching execution must not start until stale signals are accepted as non-material or bootstrap is refreshed
 
-## Delegation Thresholds
+## Delegation Rules
 
-Default orchestration rules:
+Core principle: does this inflate orchestrator context without need? If yes, delegate. If no, do it inline.
 
-- inline only local routing decisions that require at most 3 repo files
-- delegate to `sddl-deep-explorer` when routing or planning needs 4 or more repo files
-- delegate read-plus-write work together when implementation is likely
-- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default
-- do not perform multi-file edits inline in the orchestrator
-- do not perform builds, installs, or broad verification inline in the orchestrator
-- do not delegate per file; delegate per phase or per approved execution stage
+### Delegation decision table
+
+| Action | Inline | Delegate |
+|---|---|---|
+| Read to decide or verify (1-3 files) | yes | -- |
+| Read to explore or understand (4+ files) | -- | yes |
+| Read as preparation for writing | -- | yes, together with write |
+| Write atomic (one file, already known) | yes | -- |
+| Write with analysis (multiple files, new logic) | -- | yes |
+| Bash for state (git status, file checks) | yes | -- |
+| Bash for execution (test, build, install) | -- | yes |
+
+Default stage delegation: `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, and `sddl-qa-review` run as fresh workers. Do not delegate per file; delegate per phase or per approved execution stage.
+
+### Mandatory delegation triggers
+
+Once any trigger fires, the orchestrator must delegate or explain to the user why delegation would be unsafe or wasteful for this exact case. Do not pass these rules to child workers as permission to spawn more agents.
+
+1. **4-file read rule**: if understanding requires reading 4 or more repo files, delegate to `sddl-deep-explorer` or the appropriate stage worker.
+2. **Multi-file write rule**: if implementation touches 2 or more non-trivial files, delegate to `sddl-executor` or the appropriate stage worker. Do not perform multi-file edits inline.
+3. **Long-session rule**: after approximately 20 tool calls or 5 exploratory file reads without having delegated, pause and evaluate whether to delegate instead of continuing inline.
+4. **Incident rule**: after a wrong working directory, accidental mutation, confusing environment state, or unexpected error, stop and audit the current state before continuing. If the incident is material, delegate a fresh worker.
+5. **Fresh review rule**: use fresh context for adversarial review of diffs, conflicts, and incidents. Do not review your own deep work inline. Delegate `sddl-qa-review` for structured review.
+
+### Delegation anti-patterns
+
+These always inflate context without need:
+
+- accumulating 5 or more reads inline to avoid a delegation
+- performing multi-file edits inline to save time
+- running builds, test suites, or installs inline in the orchestrator
+- reviewing your own deep work instead of delegating a fresh review
+- continuing after an incident without auditing state
+- delegating per file instead of per phase or approved stage
 
 ## Complexity Assessment
 
@@ -126,9 +153,18 @@ Each delegated stage should receive a compact envelope with:
 - artifact paths
 - short artifact digests
 - `## Project Standards (auto-resolved)` copied from `./sdd-lite/skill-catalog.md`
+- worker execution boundary instruction
 - expected result fields
 
-Expected result fields:
+### Worker execution boundary
+
+Every delegated worker must receive this instruction in the handoff envelope:
+
+> You are a phase executor. Do NOT launch sub-agents, do NOT call Task tools, do NOT orchestrate further stages. Complete your phase work and return the result contract.
+
+The orchestrator is the only agent that routes between stages. If a worker discovers that its phase requires work beyond its assigned scope, it must return `partial` or `blocked` with a clear `next_action` instead of attempting to orchestrate the extra work.
+
+### Expected result fields
 
 - `status`
 - `executive_summary`
@@ -141,6 +177,33 @@ Expected result fields:
 - `recommended_next_stage`
 
 Do not paste the full README or broad repo summaries into each worker unless recovery truly requires it.
+
+## Result Processing Protocol
+
+When a delegated worker returns a result, the orchestrator processes it in this order before routing to the next action.
+
+1. **Check `status`**:
+   - `success`: validate that the result is consistent with approved scope, then route to the next stage per the Stage Routing Table.
+   - `partial`: evaluate what was accomplished. Surface `decision_required` and `decision_options` to the user if present. Wait for resolution before routing further.
+   - `blocked`: surface the blocking reason to the user immediately. Do not attempt to work around a blocked result without user input.
+
+2. **Check `context_resolution`**:
+   - if the worker reports `fallback_registry`, `fallback_path`, or `none`, re-resolve standards from `./sdd-lite/skill-catalog.md` before the next delegation. The standards injection was lost during worker execution.
+
+3. **Check `open_risks`**:
+   - medium or high severity: surface to the user before routing to the next stage.
+   - low severity: carry forward with a visible note but do not require user acknowledgment.
+
+4. **Validate `recommended_next_stage`**:
+   - cross-check the worker recommendation against the Stage Routing Table.
+   - the worker recommendation is a signal, not an override.
+   - if it conflicts with the routing table or the approved route, follow the routing table and note the discrepancy.
+
+5. **Show phase summary to user**:
+   - what the worker produced (artifacts, key outcomes)
+   - current lifecycle status
+   - what the next step will be
+   - keep it short: 3 to 5 lines
 
 ## Stage Routing Table
 
