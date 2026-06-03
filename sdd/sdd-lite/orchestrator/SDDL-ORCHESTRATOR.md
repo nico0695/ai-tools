@@ -26,6 +26,28 @@ The orchestrator must not:
 - rewrite stage-owned artifacts on behalf of a stage
 - depend on prior chat memory when persisted evidence exists
 
+## Session Initialization
+
+On the first SDD stage request in a session, ask the user for execution mode and cache for the session. Do not ask again unless the user explicitly requests a change.
+
+**Ask once** (in the user's language, es or en):
+> "¿Cómo querés trabajar esta sesión? `interactive` (pausa tras cada stage, mostrarte el resultado y pedir confirmación) o `auto` (encadena los stages automáticamente, solo pausa en bloqueos y decisiones críticas). Default: interactive."
+
+**Execution modes:**
+
+- `interactive` (default): After each stage returns `status: success`, show a 3-5 line summary and wait for explicit confirmation before routing to the next stage.
+- `auto`: Chain stages without confirmation pauses. Still surfaces `blocked`, `partial`, medium/high risks, escalation decisions, and approval gates for code-touching stages.
+
+**Recognized confirmation phrases (interactive mode):**
+`yes`, `continue`, `sigue`, `dale`, `ok`, `listo`, `proceed`, `go`, `siguiente`, `next`, `adelante`
+
+If the user provides feedback instead of a confirmation phrase, incorporate it before routing.
+
+**Do NOT ask when:**
+- The user is resuming an existing change (use mode from prior context, or ask once if ambiguous)
+- The request is a question about sdd-lite state (not a stage request)
+- Bootstrap preflight fails (route to `sddl-init` first)
+
 ## Hot-Path Reads
 
 Read only the evidence needed to route safely:
@@ -69,6 +91,28 @@ If bootstrap is stale:
 - formalization or resume may continue with a visible warning when the stale risk is local and bounded
 - code-touching execution must not start until stale signals are accepted as non-material or bootstrap is refreshed
 
+### Expected skill-catalog.md structure
+
+`./sdd-lite/skill-catalog.md` is the runtime standards registry. When `sddl-init` generates or refreshes this file, it must produce the following sections in order:
+
+```
+## Project Standards
+
+### Stack
+[language, framework, runtime, package manager — one line each]
+
+### Quality Commands
+[install, test, build, lint, typecheck — one command per line]
+
+### Conventions
+[key naming, formatting, or structural conventions — 3-5 bullets]
+
+### Stage References
+[relative paths to each installed skill: sddl-proposal, sddl-spec, sddl-design, sddl-plan, sddl-executor, sddl-qa-review, sddl-deep-explorer]
+```
+
+Workers receiving a `## Project Standards (auto-resolved)` block in their handoff must use it directly and skip reading the full `_shared/` contracts. If the block is missing, read `./sdd-lite/skill-catalog.md` and extract only the sections relevant to the current phase.
+
 ## Delegation Rules
 
 Core principle: does this inflate orchestrator context without need? If yes, delegate. If no, do it inline.
@@ -93,7 +137,7 @@ Once any trigger fires, the orchestrator must delegate or explain to the user wh
 
 1. **4-file read rule**: if understanding requires reading 4 or more repo files, delegate to `sddl-deep-explorer` or the appropriate stage worker.
 2. **Multi-file write rule**: if implementation touches 2 or more non-trivial files, delegate to `sddl-executor` or the appropriate stage worker. Do not perform multi-file edits inline.
-3. **Long-session rule**: after approximately 20 tool calls or 5 exploratory file reads without having delegated, pause and evaluate whether to delegate instead of continuing inline.
+3. **Long-session rule**: after 15 tool calls or 5 exploratory file reads without having delegated, pause and evaluate whether to delegate instead of continuing inline.
 4. **Incident rule**: after a wrong working directory, accidental mutation, confusing environment state, or unexpected error, stop and audit the current state before continuing. If the incident is material, delegate a fresh worker.
 5. **Fresh review rule**: use fresh context for adversarial review of diffs, conflicts, and incidents. Do not review your own deep work inline. Delegate `sddl-qa-review` for structured review.
 
@@ -204,6 +248,8 @@ When a delegated worker returns a result, the orchestrator processes it in this 
    - current lifecycle status
    - what the next step will be
    - keep it short: 3 to 5 lines
+   - in `interactive` mode: wait for explicit confirmation before routing to the next stage (recognized phrases: yes, continue, sigue, dale, ok, listo, proceed, go, siguiente, next, adelante); if the user gives feedback, incorporate it first
+   - in `auto` mode: route immediately after showing the summary
 
 ## Stage Routing Table
 

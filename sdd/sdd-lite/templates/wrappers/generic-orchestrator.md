@@ -35,35 +35,14 @@ Rules:
 - Recover context from persisted artifacts before asking the user for missing facts.
 - Persisted artifacts must remain in English. Chat interaction may be `es` or `en`.
 
-## Platform: Codex
+## Platform: Generic (inline sequential mode)
 
-Codex supports native sub-agent delegation when `multi_agent` is available. When sdd-lite is active, prefer **native-workers mode** so delegated stages run in fresh contexts as required by `SDDL-ORCHESTRATOR.md`.
+This agent does not support native sub-agent delegation. When sdd-lite is active, operate in **inline sequential mode**:
 
-### Ask once for worker mode
-
-On the first sdd-lite stage request in a session, ask for worker mode together with the canonical `interactive` / `auto` execution-mode question. Cache both choices for the session. Do not ask again unless the user explicitly requests a change.
-
-Worker modes:
-
-- `native-workers` (recommended): use Codex sub-agents for canonical stage delegation and mandatory delegation triggers.
-- `inline-sequential`: execute within the parent conversation. Use only when the user explicitly selects it or native sub-agents are unavailable.
-
-`interactive` / `auto` controls pauses between stages. It does not grant or revoke permission to delegate, edit code, or bypass approval gates. Background processes and Codex cloud tasks are not the default delegation mechanism for sdd-lite.
-
-### Native-workers mode
-
-- Launch a fresh worker for each stage delegated by the canonical contract, including exploration, approved execution, and QA review.
-- Delegate per phase or approved execution stage, not per file.
-- Parallelize only independent read-only tasks or disjoint write scopes.
-- Pass the compact canonical handoff envelope and collect worker results before routing.
-- Child workers must not launch descendants.
-
-### Inline-sequential fallback
-
-When native sub-agents are unavailable or the user selects `inline-sequential`:
-
-- State visibly that stages will run without fresh-context isolation.
+- Execute each stage sequentially within the same session (no fresh worker spawning).
+- Before starting each stage, compress context: keep only `state.yaml` content, key decisions, and the next stage handoff envelope. Drop full artifact bodies from active context.
 - Persist `state.yaml` immediately after each stage completes before continuing.
-- Prefer persisted digests, targeted reads, and compact handoffs. Do not claim that active conversation context can be manually dropped.
-- Apply all canonical result-processing, routing, and approval rules. When a mandatory delegation trigger fires, explain the degradation before continuing inline.
+- All other orchestrator rules (session initialization, delegation triggers, result processing, approval gates) apply as defined in `SDDL-ORCHESTRATOR.md`.
+
+Delegation triggers still apply: when a trigger fires, compress and checkpoint instead of spawning a fresh worker.
 <!-- sdd-lite:end -->

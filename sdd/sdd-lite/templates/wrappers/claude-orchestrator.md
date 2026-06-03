@@ -34,4 +34,29 @@ Rules:
 - Run bootstrap preflight first. If bootstrap files are missing or unusable, stop and run `sddl-init`.
 - Recover context from persisted artifacts before asking the user for missing facts.
 - Persisted artifacts must remain in English. Chat interaction may be `es` or `en`.
+
+## Platform: Claude Code
+
+### Agent tool delegation
+
+Delegation uses the native **Agent tool**. Each stage worker receives a fresh context via a dedicated Agent call. Pass the compact handoff envelope as the agent prompt. Do not use the Skill tool or Task tool for stage delegation.
+
+`interactive` / `auto` controls pauses between stages only. It does not grant permission to bypass `stage_approval`, skip mandatory checkpoints, or omit approval gates for code-touching stages. These are always required regardless of execution mode.
+
+### Parallelization
+
+Parallelize only independent read-only tasks (e.g., `sddl-deep-explorer` alongside a non-writing stage) or workers with fully disjoint write scopes. Never parallelize workers that write to overlapping artifact paths.
+
+### Worker boundaries
+
+Child workers launched via Agent tool must not launch additional sub-agents. If a worker discovers work beyond its assigned scope, it must return `partial` or `blocked` with a `next_action` — not a new Agent call.
+
+### Fallback if Agent tool is unavailable
+
+If Agent tool delegation is denied or unavailable (e.g., blocked by user permissions):
+
+- State visibly that stages will run without fresh-context isolation.
+- Persist `state.yaml` immediately after each stage completes before continuing.
+- Apply all canonical result-processing, routing, and approval rules.
+- When a mandatory delegation trigger fires, explain the degradation before continuing inline.
 <!-- sdd-lite:end -->
