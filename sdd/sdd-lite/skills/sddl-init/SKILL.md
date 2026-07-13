@@ -42,8 +42,8 @@ Write or refresh only:
 
 When AI setup configuration is confirmed by the user:
 
-- `.claude/skills/<skill-name>/SKILL.md` (symlink or copy per user choice) for Claude Code
-- `.agents/skills/<skill-name>/SKILL.md` (symlink or copy per user choice) for Codex
+- `.claude/skills/<skill-name>/` (skill directory symlink or copy per user choice, including `references/` when present) for Claude Code
+- `.agents/skills/<skill-name>/` (skill directory symlink or copy per user choice, including `references/` when present) for Codex
 - `CLAUDE.md` (wrapper block injection, demarcated) for Claude Code
 - `AGENTS.md` (wrapper block injection, demarcated) for Codex
 
@@ -139,34 +139,39 @@ Chat interaction may follow the detected or confirmed `chat_language`.
                    (use when the package may move or symlinks are unsupported)
    ```
 
-   **Skills to install** (all 8 canonical skills):
+   **Skills to install** (all 10 canonical skills):
    - `sddl-init`
    - `sddl-proposal`
    - `sddl-spec`
    - `sddl-design`
    - `sddl-plan`
    - `sddl-executor`
+   - `sddl-code-review`
+   - `sddl-judgment-day`
    - `sddl-deep-explorer`
    - `sddl-qa-review`
 
+   Some skills ship extra protocol files in a `references/` directory next to their `SKILL.md` (currently `sddl-code-review` and `sddl-judgment-day`). Installation always covers the whole skill directory, not only `SKILL.md`.
+
    **If symlink:**
-   - Target directory for Claude Code: `.claude/skills/<skill-name>/`
-   - Target directory for Codex: `.agents/skills/<skill-name>/`
-   - Create directories if they do not exist.
-   - Create symlink: `<target-dir>/SKILL.md` → relative path back to `<package-root>/skills/<skill-name>/SKILL.md`
-   - On re-run: if the symlink already exists and points to the correct source, skip. If it points elsewhere, warn and ask the user.
+   - Target parent directory for Claude Code: `.claude/skills/`
+   - Target parent directory for Codex: `.agents/skills/`
+   - Create the parent directory if it does not exist.
+   - Create a directory symlink: `<parent-dir>/<skill-name>` → relative path back to `<package-root>/skills/<skill-name>` (the whole skill directory, so `SKILL.md` and `references/` resolve together).
+   - On re-run: if the symlink already exists and points to the correct source, skip. If it points elsewhere, warn and ask the user. If a legacy file-level symlink (`<skill-name>/SKILL.md`) exists from an older install, replace it with the directory symlink.
    - After installing: include a note in the final summary that internal package-relative paths in the skills resolve correctly when used through the orchestrator wrapper (via CLAUDE.md), but direct slash command invocation may have path resolution issues for contract references. Use copy mode if direct invocation is the primary use case.
 
    **If copy:**
    - Create directories if they do not exist.
-   - Copy the content of each `<package-root>/skills/<skill-name>/SKILL.md`.
-   - In the copied content, rewrite package-relative path prefixes to be project-relative:
+   - Copy the full content of each `<package-root>/skills/<skill-name>/` directory: `SKILL.md` plus `references/` when present.
+   - In each copied `.md` file, rewrite package-relative path prefixes to be project-relative:
      - `skills/_shared/` → `<package-root>/skills/_shared/`
      - `orchestrator/` → `<package-root>/orchestrator/`
      - `templates/artifacts/` → `<package-root>/templates/artifacts/`
      - `templates/bootstrap/` → `<package-root>/templates/bootstrap/`
    - Do not rewrite `./sdd-lite/` paths — they are already project-relative.
-   - On re-run: if a copied file already exists, replace it (it is a generated output, not user content).
+   - Do not rewrite `references/` paths — they are skill-relative and the directory is copied alongside `SKILL.md`.
+   - On re-run: if copied files already exist, replace them (they are generated output, not user content).
 
 6. Wrapper injection
    For each AI configured in step 4:
@@ -227,7 +232,7 @@ Before finishing, verify:
 - `skill-catalog.md` acts as the runtime standards registry and includes compact rules usable in delegated prompts
 - `config.yaml` includes project identity, stack, quality commands, bootstrap metadata, canonical paths, chat language support, and `ai_setups`
 - persisted artifacts remain English even when `chat_language` is `es`
-- skill files exist at the expected target paths for each configured AI
+- skill files exist at the expected target paths for each configured AI, including `references/` files for skills that ship them
 - wrapper blocks in `CLAUDE.md` / `AGENTS.md` use demarcated markers and contain the correct resolved `package_root`
 - no wrapper block was inserted without explicit user confirmation
 

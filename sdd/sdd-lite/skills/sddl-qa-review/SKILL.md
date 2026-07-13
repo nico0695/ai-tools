@@ -56,6 +56,7 @@ Read:
 - `./sdd-lite/openspec/config.yaml`
 - `./sdd-lite/skill-catalog.md` when runtime standards were not injected into the handoff
 - existing `./sdd-lite/openspec/changes/{change-name}/qa-report.md` when rerunning
+- `./sdd-lite/openspec/changes/{change-name}/review-ledger.md` when a `sddl-code-review` or `sddl-judgment-day` protocol ran for this change
 - relevant changed files, tests, configs, docs, or outputs required for the selected review scope
 
 Use these sources differently by mode:
@@ -148,16 +149,18 @@ Persisted QA artifacts stay in English even if chat is Spanish.
    Compare the actual result against `spec.md`, `plan.md`, `execution-log.md`, and the relevant changed files.
 5. Run justified validation commands
    Use the smallest meaningful command set for `stage` mode and a broader but still justified set for `final` mode.
-6. Record findings and assign severity
+6. Consume the review ledger when it exists
+   Read the `review-ledger.md` digest and open/verified rows as review evidence instead of repeating that analysis. Record its verdict and counts in the Review Evidence section. Open severe ledger findings must be reflected in the QA verdict; do not close over them.
+7. Record findings and assign severity
    Keep findings concrete, evidence-backed, and actionable.
-7. Decide the verdict
+8. Decide the verdict
    Use `pass`, `pass_with_warnings`, or `fail` based on the observed evidence, not on optimism.
-8. Apply mode-specific closeout rules
+9. Apply mode-specific closeout rules
    `stage` mode never closes the change.
    `final` mode may close the change only on a clean `pass`.
-9. Write `qa-report.md`
-   Keep the latest review summary explicit and preserve a compact review history.
-10. Sync `state.yaml`
+10. Write `qa-report.md`
+    Keep the latest review summary explicit and preserve a compact review history.
+11. Sync `state.yaml`
    Update QA summary, lifecycle status, open risks, checkpoints, decisions, and next action without copying the full report into state.
 
 ## Validation Selection Rules

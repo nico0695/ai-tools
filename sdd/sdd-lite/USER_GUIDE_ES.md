@@ -30,15 +30,18 @@ No se activa automaticamente para preguntas simples o fixes triviales.
 
 ```
 sddl-init (bootstrap, una sola vez)
-  -> sddl-proposal   (consolida la idea, exploracion liviana opcional)
-  -> sddl-spec       (formaliza scope y criterios de aceptacion)
-  -> sddl-design     (diseno tecnico: arquitectura y areas afectadas)
-  -> sddl-plan       (plan de ejecucion por etapas)
-  -> sddl-executor   (ejecuta UNA etapa aprobada)
-  -> sddl-qa-review  (revision por etapa o final)
+  -> sddl-proposal      (consolida la idea, exploracion liviana opcional)
+  -> sddl-spec          (formaliza scope y criterios de aceptacion)
+  -> sddl-design        (diseno tecnico: arquitectura y areas afectadas)
+  -> sddl-plan          (plan de ejecucion por etapas)
+  -> sddl-executor      (ejecuta UNA etapa aprobada)
+  -> sddl-code-review   (ofrecido si el diff no es trivial: review 4R con ledger)
+  -> sddl-qa-review     (revision por etapa o final; la final consume el ledger)
 ```
 
 Cada etapa necesita tu aprobacion antes de avanzar. El executor nunca avanza solo a la siguiente etapa.
+
+**Reviews independientes** (sin cambio activo): `"review este diff/PR"` corre `sddl-code-review`; `"judgment day sobre X"` corre `sddl-judgment-day`. El resultado queda en `./sdd-lite/openspec/reviews/{target}/review-ledger.md`.
 
 ---
 
@@ -92,7 +95,7 @@ Lee `state.yaml` y retoma desde donde quedo.
 
 ---
 
-## Las 8 skills
+## Las 10 skills
 
 | Skill | Que hace |
 |---|---|
@@ -102,8 +105,16 @@ Lee `state.yaml` y retoma desde donde quedo.
 | `sddl-design` | Diseno tecnico: arquitectura, patrones y areas afectadas |
 | `sddl-plan` | Plan de ejecucion por etapas con dependencias y validacion |
 | `sddl-executor` | Ejecuta UNA etapa aprobada. No hace commits ni modifica git |
+| `sddl-code-review` | Review 4R de un diff (Risk, Readability, Reliability, Resilience) con triage por riesgo y ledger de hallazgos |
+| `sddl-judgment-day` | Review adversarial opt-in: dos jueces ciegos en paralelo; lo que ambos confirman se puede arreglar, las contradicciones escalan a vos |
 | `sddl-deep-explorer` | Analisis read-only para resolver incognitas antes de disenar |
 | `sddl-qa-review` | Revision por etapa (`stage`) o cierre final (`final`) |
+
+### Los 2 loops de review en corto
+
+**`sddl-code-review` (4R)** — el default, proporcional al riesgo del diff: trivial no corre nada, standard corre 1 lente, hot-path (auth/seguridad/pagos) o >400 lineas corre los 4 lentes + 1 refuter. Solo hallazgos BLOCKER/CRITICAL disparan fixes (siempre via `plan.md` y con tu aprobacion); el resto queda informativo. Maximo 2 rondas de fix.
+
+**`sddl-judgment-day`** — el caro y preciso, solo a pedido explicito ("judgment day", "dual review", "juzgar"). Dos jueces ciegos revisan lo mismo sin verse: si ambos coinciden en algo severo queda `confirmed`, si solo uno lo ve queda `suspect` (no se arregla solo), si se contradicen escala a decision tuya. Sirve para codigo (`mode: code`, reemplaza al 4R en ese target) o para artefactos de planning (`mode: artifact`: juzgar un `design.md` o `plan.md` antes de ejecutar). Termina en `APPROVED` o `ESCALATED`.
 
 ---
 
@@ -133,20 +144,7 @@ Lee `state.yaml` y retoma desde donde quedo.
       plan.md                 # plan de ejecucion por etapas
       execution-log.md        # registro de ejecucion
       qa-report.md            # hallazgos y cierre
+      review-ledger.md        # solo si corrio un review 4R o judgment-day
+    reviews/{target}/
+      review-ledger.md        # reviews independientes sin cambio activo
 ```
-
----
-
-## Seccion extra: preferencias de usuario
-
-Archivo opcional `./sdd-lite/user-prefs.yaml`. Se configura en `sddl-init` o editando el archivo directo.
-
-**Presets disponibles:**
-
-| Preset | Comportamiento |
-|---|---|
-| `autonomous` | Menos checkpoints, ejecuta acciones reversibles sin preguntar |
-| `balanced` (default) | Pregunta en cambios materiales, validacion proporcional |
-| `cautious` | Checkpoints frecuentes, explicaciones detalladas, validacion completa |
-
-Knobs configurables: idioma del chat, profundidad de explicaciones, frecuencia de validacion, nivel de autonomia. Ver `schemas/user-prefs.schema.yaml` para el detalle completo.

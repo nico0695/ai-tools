@@ -57,6 +57,7 @@ Read:
 - `./sdd-lite/project-context.md`
 - `./sdd-lite/skill-catalog.md` as the runtime standards registry
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml`
+- `./sdd-lite/openspec/changes/{change-name}/review-ledger.md` only on a fix stage request (see Fix Stage Requests)
 
 Treat `design.md` as the technical source of truth unless newer approved state or repo evidence materially contradicts it.
 
@@ -129,6 +130,18 @@ When presenting the checkpoint, include:
 - a concise summary of the stage plan
 - the next action (executor approval, planner stop, or macro-plan review)
 - recommended options: approve and start execution, stop as planned, revise the plan
+
+## Fix Stage Requests
+
+The orchestrator may rerun this stage with a fix stage request in the envelope: confirmed severe finding ids from `review-ledger.md` (produced by `sddl-code-review` or `sddl-judgment-day`).
+
+Rules:
+
+- append one bounded fix stage to the Stage Plan table; do not rebuild the whole plan
+- the fix stage scope is exactly the confirmed ledger ids listed in the envelope — one atomic work unit per id, nothing else
+- carry each id into the stage validation notes so the scoped re-review can verify the fix delta against the ledger
+- the fix stage requires `stage_approval` like any other code-touching stage
+- if a confirmed finding cannot be fixed within the approved change scope, say so and route back to the orchestrator instead of widening the plan
 
 ## Planner And Macro-Plan Rules
 

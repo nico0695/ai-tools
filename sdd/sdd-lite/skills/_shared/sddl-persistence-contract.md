@@ -20,6 +20,10 @@ This contract defines where `sdd-lite` stores durable data, who owns each artifa
         execution-log.md
         qa-report.md
         macro-plan.md            # only when explicitly approved
+        review-ledger.md         # only when a review ran for this change
+    reviews/
+      {target-slug}/
+        review-ledger.md         # standalone reviews without an active change
 ```
 
 No persisted lite artifact should be written outside `./sdd-lite/`.
@@ -60,6 +64,23 @@ Rules:
 | execution ledger | `./sdd-lite/openspec/changes/{change-name}/execution-log.md` | `sddl-executor` |
 | QA report | `./sdd-lite/openspec/changes/{change-name}/qa-report.md` | `sddl-qa-review` |
 | macro plan | `./sdd-lite/openspec/changes/{change-name}/macro-plan.md` | `sddl-plan` on approved macro-plan-first flows |
+| review ledger | `./sdd-lite/openspec/changes/{change-name}/review-ledger.md` | orchestrator, running the `sddl-code-review` or `sddl-judgment-day` protocol |
+
+## Standalone review artifacts
+
+Reviews without an active change persist under `./sdd-lite/openspec/reviews/{target-slug}/`:
+
+| Artifact | Canonical path | Owner |
+|---|---|---|
+| review ledger | `./sdd-lite/openspec/reviews/{target-slug}/review-ledger.md` | orchestrator |
+
+`target-slug` rules (same charset as `change-name`):
+
+- a PR target uses `pr-{number}`
+- a branch target uses the branch name in kebab-case
+- any other target uses a short kebab-case slug of the target description
+
+A standalone review has no `state.yaml`; the Review Digest at the top of its ledger is the only resume anchor and must always be current.
 
 ## Ownership rules
 
@@ -82,6 +103,7 @@ Use this split consistently:
 - `plan.md` for staged execution plan, dependencies, validation strategy, and planning status
 - `execution-log.md` for stage-by-stage execution trace
 - `qa-report.md` for stage review findings or final closeout findings
+- `review-ledger.md` for 4R or judgment-day findings, corroboration, and fix-round history
 - `state.yaml` for lifecycle, resume, checkpoints, decisions, escalation route, and next action
 
 `state.yaml` is operational memory, not a chat transcript and not a substitute for the stage artifacts.
@@ -106,6 +128,7 @@ These are runtime targets, not hard schema limits:
 | one `execution-log.md` stage entry | 150 to 300 words plus tables |
 | `qa-report.md` stage summary | 300 to 500 words |
 | `qa-report.md` final summary | 500 to 800 words |
+| `review-ledger.md` | 200 to 400 words plus tables |
 
 Rules:
 
@@ -116,6 +139,8 @@ Rules:
 ## Lite persistence rules
 
 - `macro-plan.md` must not exist unless the route is `macro-plan-first` and the user approved that path.
+- `review-ledger.md` must not exist unless a `sddl-code-review` or `sddl-judgment-day` protocol ran for that change or target.
+- Review workers (lenses, judges, refuter) never write files; only the orchestrator writes the review ledger.
 - `sdd-lite` does not define archive persistence in the MVP.
 - `sddl-qa-review` in `final` mode is the closeout point; there is no archive phase after it.
 - If the safest path is `escalate-to-sdd-v2`, the lite change state should record that route and stop claiming lite completion.

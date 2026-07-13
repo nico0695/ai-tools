@@ -36,7 +36,7 @@ On the first SDD stage request in a session, ask the user for execution mode and
 **Execution modes:**
 
 - `interactive` (default): After each stage returns `status: success`, show a 3-5 line summary and wait for explicit confirmation before routing to the next stage.
-- `auto`: Chain stages without confirmation pauses. Still surfaces `blocked`, `partial`, medium/high risks, escalation decisions, and approval gates for code-touching stages.
+- `auto`: Chain stages without confirmation pauses. Still surfaces `blocked`, `partial`, critical/high/medium risks, escalation decisions, and approval gates for code-touching stages.
 
 **Recognized confirmation phrases (interactive mode):**
 `yes`, `continue`, `sigue`, `dale`, `ok`, `listo`, `proceed`, `go`, `siguiente`, `next`, `adelante`
@@ -108,7 +108,7 @@ If bootstrap is stale:
 [key naming, formatting, or structural conventions — 3-5 bullets]
 
 ### Stage References
-[relative paths to each installed skill: sddl-proposal, sddl-spec, sddl-design, sddl-plan, sddl-executor, sddl-qa-review, sddl-deep-explorer]
+[relative paths to each installed skill: sddl-proposal, sddl-spec, sddl-design, sddl-plan, sddl-executor, sddl-code-review, sddl-judgment-day, sddl-qa-review, sddl-deep-explorer]
 ```
 
 Workers receiving a `## Project Standards (auto-resolved)` block in their handoff must use it directly and skip reading the full `_shared/` contracts. If the block is missing, read `./sdd-lite/skill-catalog.md` and extract only the sections relevant to the current phase.
@@ -139,7 +139,7 @@ Once any trigger fires, the orchestrator must delegate or explain to the user wh
 2. **Multi-file write rule**: if implementation touches 2 or more non-trivial files, delegate to `sddl-executor` or the appropriate stage worker. Do not perform multi-file edits inline.
 3. **Long-session rule**: after 15 tool calls or 5 exploratory file reads without having delegated, pause and evaluate whether to delegate instead of continuing inline.
 4. **Incident rule**: after a wrong working directory, accidental mutation, confusing environment state, or unexpected error, stop and audit the current state before continuing. If the incident is material, delegate a fresh worker.
-5. **Fresh review rule**: use fresh context for adversarial review of diffs, conflicts, and incidents. Do not review your own deep work inline. Delegate `sddl-qa-review` for structured review.
+5. **Fresh review rule**: use fresh context for adversarial review of diffs, conflicts, and incidents. Do not review your own deep work inline. Run the `sddl-code-review` protocol (or `sddl-judgment-day` when the user asked for it) for adversarial diff review, and delegate `sddl-qa-review` for stage/final QA.
 
 ### Delegation anti-patterns
 
@@ -150,7 +150,7 @@ These always inflate context without need:
 - running builds, test suites, or installs inline in the orchestrator
 - reviewing your own deep work instead of delegating a fresh review
 - continuing after an incident without auditing state
-- delegating per file instead of per phase or approved stage
+- delegating per file instead of per phase or approved stage (per-dimension review fan-out — one worker per lens or judge — is not this anti-pattern; see Review Operations)
 
 ## Complexity Assessment
 
@@ -222,6 +222,55 @@ The orchestrator is the only agent that routes between stages. If a worker disco
 
 Do not paste the full README or broad repo summaries into each worker unless recovery truly requires it.
 
+## Review Operations
+
+`sddl-code-review` (4R) and `sddl-judgment-day` are review protocols the orchestrator executes, not linear stage workers. Each protocol's rules live in its `SKILL.md`; this section defines the orchestration mechanics shared by both.
+
+### Operating rules
+
+- Freeze the target first: record an immutable reference (commit SHA, diff hash, or artifact digest). Every review worker reviews that reference, never a moving tree.
+- The two protocols are mutually exclusive per target. `sddl-code-review` is the default, auto-offered path; `sddl-judgment-day` is opt-in only, never auto-routed, and replaces 4R for its target.
+- Review workers (lenses, judges, refuter) are read-only and return `findings`; only the orchestrator merges results and writes `review-ledger.md` (see `skills/_shared/sddl-review-ledger-contract.md`).
+- Launching several review workers for one target is per-dimension fan-out over the same frozen target. It is allowed only for read-only review workers and does not license per-file delegation elsewhere.
+- Budgets are hard caps: lens sweeps per triage tier, exactly one refuter pass (full-4r only), maximum two fix rounds per review lineage.
+- Neither protocol closes a change; `sddl-qa-review` in `final` mode remains the only closer and consumes the ledger as evidence.
+
+### Review Worker Envelope
+
+Extension of the Standard Worker Handoff for lens, judge, and refuter workers:
+
+- role prompt injected from the owning skill's `references/` file (`lens-prompts.md` or `judge-prompt.md`)
+- immutable target reference and exact scope (paths or diff)
+- `## Project Standards (auto-resolved)` block
+- the standard worker execution boundary, plus: read-only — no file writes, no state-changing commands
+- expected result: the common result contract with `findings` rows per `skills/_shared/sddl-review-ledger-contract.md`
+
+Judgment-day judges must receive byte-identical envelopes except the judge letter and must never see each other's output before the orchestrator merges both results.
+
+### Platform execution modes
+
+| Platform capability | Review execution |
+|---|---|
+| parallel workers (e.g. Claude Agent tool) | launch lenses/judges in parallel; wait for every result before merging |
+| native sub-agents (e.g. Codex spawn/wait) | same fan-out via native workers; each is a waited handoff, never fire-and-forget |
+| inline sequential (generic or fallback) | run each lens/judge pass sequentially in orchestrator context, persisting only each pass's findings before starting the next; judge blindness is weaker inline and must be noted in the ledger |
+
+The active wrapper (`templates/wrappers/`) declares which mode applies.
+
+### Triage and offer
+
+- After a successful `sddl-executor` stage, triage the stage diff with the `sddl-code-review` rubric: `trivial` diffs skip review silently; otherwise raise a `review_gate` offering the review in `interactive` mode or chain it in `auto` mode.
+- Standalone review requests (no active change) run the same protocol and persist only `./sdd-lite/openspec/reviews/{target-slug}/review-ledger.md`; resume standalone reviews from the ledger digest, which must always be current.
+
+### Fix routing
+
+Confirmed severe findings never trigger direct edits. Raise a `review_gate` suggesting one route; the user decides:
+
+- active change, findings inside approved scope: rerun `sddl-plan` to insert a fix stage from confirmed ledger ids, then `stage_approval`, then `sddl-executor`
+- active change, findings beyond spec/design scope: reopen `sddl-design`/`sddl-plan` with the findings in the envelope, or record a follow-up via `scope_change`
+- standalone, bounded findings: open a mini change seeded from the ledger (`proposal.md` first), expedited formalization, then normal execution
+- standalone, substantial findings: open a full new change with the ledger seeding `proposal.md`
+
 ## Result Processing Protocol
 
 When a delegated worker returns a result, the orchestrator processes it in this order before routing to the next action.
@@ -231,19 +280,23 @@ When a delegated worker returns a result, the orchestrator processes it in this 
    - `partial`: evaluate what was accomplished. Surface `decision_required` and `decision_options` to the user if present. Wait for resolution before routing further.
    - `blocked`: surface the blocking reason to the user immediately. Do not attempt to work around a blocked result without user input.
 
-2. **Check `context_resolution`**:
+2. **Ingest `findings` (review workers only)**:
+   - merge the returned rows into `review-ledger.md` per `skills/_shared/sddl-review-ledger-contract.md`; this write belongs to the orchestrator, never the worker.
+   - verify the worker reported no created or updated files in `artifacts`. A review worker that wrote anything is an incident: stop, audit per the incident rule, and distrust its findings.
+
+3. **Check `context_resolution`**:
    - if the worker reports `fallback_registry`, `fallback_path`, or `none`, re-resolve standards from `./sdd-lite/skill-catalog.md` before the next delegation. The standards injection was lost during worker execution.
 
-3. **Check `open_risks`**:
-   - medium or high severity: surface to the user before routing to the next stage.
+4. **Check `open_risks`**:
+   - critical, high, or medium severity: surface to the user before routing to the next stage.
    - low severity: carry forward with a visible note but do not require user acknowledgment.
 
-4. **Validate `recommended_next_stage`**:
+5. **Validate `recommended_next_stage`**:
    - cross-check the worker recommendation against the Stage Routing Table.
    - the worker recommendation is a signal, not an override.
    - if it conflicts with the routing table or the approved route, follow the routing table and note the discrepancy.
 
-5. **Show phase summary to user**:
+6. **Show phase summary to user**:
    - what the worker produced (artifacts, key outcomes)
    - current lifecycle status
    - what the next step will be
@@ -267,6 +320,10 @@ When a delegated worker returns a result, the orchestrator processes it in this 
 | route is `macro-plan-first` and `macro-plan.md` is not yet approved | ask `macro_plan_review` checkpoint | no | do not write `macro-plan.md` before approval |
 | route is `macro-plan-first` and approval exists | `sddl-plan` | yes | this stage owns `macro-plan.md` |
 | approved implementation work is ready from `plan.md` | `sddl-executor` | yes | stage approval is mandatory before code changes |
+| an execution stage finished and its diff triages `standard` or `full-4r` | offer `sddl-code-review` via `review_gate` (chain in `auto`) | no | trivial diffs skip silently; evaluated before the QA row below |
+| the user explicitly requests judgment-day on a target | `sddl-judgment-day` | no | opt-in only; replaces 4R for that target; never auto-routed |
+| a review protocol finished with confirmed severe findings | fix routing per Review Operations via `review_gate` | yes | fixes always flow through `sddl-plan` and `stage_approval` |
+| a review protocol finished clean or with only `info` findings | continue routing; ledger feeds `sddl-qa-review` | no | review never closes the change |
 | an execution stage finished and needs review | `sddl-qa-review` in `stage` mode | yes | does not close the change |
 | final execution is complete and the user wants closeout | `sddl-qa-review` in `final` mode | yes | only final mode may set `completed` |
 | route is `escalate-to-sdd-v2` | stop and recommend `sdd-v2` | no | persist the blocker and next action |
@@ -343,6 +400,8 @@ Stop and consult the user when:
 - all persisted artifacts, contracts, schemas, and Markdown stay in English
 - chat interaction may use `es` or `en`
 - `macro-plan.md` exists only on approved `macro-plan-first` flows
+- `review-ledger.md` exists only when a `sddl-code-review` or `sddl-judgment-day` protocol ran
+- review workers (lenses, judges, refuter) stay read-only; only the orchestrator writes the review ledger
 - `sdd-lite` MVP does not define archive, git, PR, or issue workflows
 - `sddl-deep-explorer` stays read-only
 - resume and routing must be explainable from persisted state and artifacts

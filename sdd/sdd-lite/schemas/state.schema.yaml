@@ -81,6 +81,8 @@ properties:
       - sddl-design
       - sddl-plan
       - sddl-executor
+      - sddl-code-review
+      - sddl-judgment-day
       - sddl-qa-review
   stages:
     type: object
@@ -105,6 +107,10 @@ properties:
       sddl-plan:
         $ref: "#/$defs/stageState"
       sddl-executor:
+        $ref: "#/$defs/stageState"
+      sddl-code-review:
+        $ref: "#/$defs/stageState"
+      sddl-judgment-day:
         $ref: "#/$defs/stageState"
       sddl-qa-review:
         $ref: "#/$defs/stageState"
@@ -142,6 +148,9 @@ properties:
         type: string
         minLength: 1
       macro_plan:
+        type: string
+        minLength: 1
+      review_ledger:
         type: string
         minLength: 1
   checkpoints:
@@ -184,6 +193,58 @@ properties:
         type: string
         minLength: 1
       report_path:
+        type: string
+        minLength: 1
+  review_summary:
+    type: object
+    additionalProperties: false
+    required:
+      - mode
+      - verdict
+      - round
+      - summary
+      - reported_at
+      - ledger_path
+    properties:
+      mode:
+        type: string
+        enum:
+          - 4r
+          - judgment-day
+      verdict:
+        type: string
+        enum:
+          - pass
+          - pass_with_warnings
+          - fail
+          - not_reached
+      round:
+        type: integer
+        minimum: 0
+        maximum: 2
+      counts:
+        type: object
+        additionalProperties: false
+        properties:
+          confirmed:
+            type: integer
+            minimum: 0
+          suspect:
+            type: integer
+            minimum: 0
+          escalated:
+            type: integer
+            minimum: 0
+          info:
+            type: integer
+            minimum: 0
+      summary:
+        type: string
+        minLength: 1
+      reported_at:
+        type: string
+        minLength: 1
+      ledger_path:
         type: string
         minLength: 1
   next_action:
@@ -263,6 +324,7 @@ $defs:
           - phase_validation
           - stage_approval
           - macro_plan_review
+          - review_gate
           - escalation_review
           - final_review
       stage:
@@ -275,6 +337,8 @@ $defs:
           - sddl-design
           - sddl-plan
           - sddl-executor
+          - sddl-code-review
+          - sddl-judgment-day
           - sddl-qa-review
       summary:
         type: string

@@ -13,9 +13,8 @@ Persisted artifacts stay in English. Chat interaction may be Spanish or English.
 3. [Key concepts](#3-key-concepts)
 4. [Setup and basic configuration (`sddl-init`)](#4-setup-and-basic-configuration-sddl-init)
 5. [The `config.yaml` file (settings)](#5-the-configyaml-file-settings)
-5.1. [Personal preferences (`user-prefs.yaml`)](#51-personal-preferences-user-prefsyaml)
 6. [Runtime file layout](#6-runtime-file-layout)
-7. [The 8 available skills](#7-the-8-available-skills)
+7. [The 10 available skills](#7-the-10-available-skills)
 8. [Standard flow and alternative flows](#8-standard-flow-and-alternative-flows)
 9. [How changes to the code are controlled](#9-how-changes-to-the-code-are-controlled)
 10. [Usage examples](#10-usage-examples)
@@ -104,10 +103,10 @@ In those cases, **escalate to `sdd-v2`**.
 
    | Method | Description | Use when |
    |---|---|---|
-   | **Symlink** | Creates a symlink from `.claude/skills/<skill>/SKILL.md` (or `.agents/skills/...`) to the package files. | The package stays in this repo. Recommended. |
-   | **Copy** | Copies each `SKILL.md` to the target directory and rewrites package-relative paths. | The package may move, or symlinks are unsupported. |
+   | **Symlink** | Creates a directory symlink from `.claude/skills/<skill>` (or `.agents/skills/<skill>`) to the package skill directory, so `SKILL.md` and `references/` resolve together. | The package stays in this repo. Recommended. |
+   | **Copy** | Copies each skill directory (`SKILL.md` plus `references/` when present) to the target and rewrites package-relative paths. | The package may move, or symlinks are unsupported. |
 
-   All 8 canonical skills are installed: `sddl-init`, `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-deep-explorer`, `sddl-qa-review`.
+   All 10 canonical skills are installed: `sddl-init`, `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-code-review`, `sddl-judgment-day`, `sddl-deep-explorer`, `sddl-qa-review`.
 
 6. **Wrapper injection.** Inserts a demarcated block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` in `CLAUDE.md` and/or `AGENTS.md`. If the block already exists, it is replaced; if the file is missing, it is created with only the wrapper. Confirmation is always required before inserting.
 
@@ -137,7 +136,7 @@ Main sections (validated by `schemas/config.schema.yaml`):
 |---|---|
 | `version` | Schema version. |
 | `project` | Identity: `name`, `slug`, `root`, `package_root`, `runtime_root` (`./sdd-lite`), `stack` (languages, frameworks, runtime, package manager). |
-| `paths` | Fixed canonical paths: `runtime_root`, `project_context_path`, `skill_catalog_path`, `artifact_root`, `config_path`, `changes_root`, and optional `user_prefs_path`. |
+| `paths` | Fixed canonical paths: `runtime_root`, `project_context_path`, `skill_catalog_path`, `artifact_root`, `config_path`, `changes_root`, and optional `reviews_root`. |
 | `quality_commands` | Commands for `install`, `test`, `build`, `lint`, `typecheck`, and optional `format`, `dev`. |
 | `bootstrap` | Metadata: `status` (`created`/`refreshed`/`already_usable`), `strategy`, timestamps, refresh flags, observed files and paths. |
 | `conventions` | `persisted_language: en`, `chat_language` (`es`/`en`), `asks_only_when_material`, etc. |
@@ -145,50 +144,6 @@ Main sections (validated by `schemas/config.schema.yaml`):
 | `metadata` | `bootstrap_version`, `package_mode: lite`, `planner_terminal_skill: sddl-plan`, `final_closure_skill: sddl-qa-review`. |
 
 All internal paths live under `./sdd-lite/`. A root-level `openspec/` is never used.
-
----
-
-## 5.1 Personal preferences (`user-prefs.yaml`)
-
-`./sdd-lite/user-prefs.yaml` is a per-user, per-project preferences file, initialized by `sddl-init` (step 11). Absence is valid and equals `preset: balanced` — the current default behavior of `sdd-lite`.
-
-Schema: `schemas/user-prefs.schema.yaml`. Full contract: `skills/_shared/sddl-user-preferences-contract.md`.
-
-### Presets
-
-| Preset | Behavior |
-|---|---|
-| `autonomous` | Fewer checkpoints, reversible recommendations can proceed, minimal validation, no automatic preference capture. |
-| `balanced` (default) | Ask on material change, brief rationales, validation proportionate to blast radius. Reproduces the current `sdd-lite` behavior. |
-| `cautious` | Frequent checkpoints with guards, `learning`-style explanations, full validation after each stage. |
-
-### Knobs (custom mode)
-
-- `interaction.approval_scope`: `stage-only`, `material`, `frequent`
-- `interaction.preference_capture`: `auto_propose`, `ask_always`, `disabled`
-- `communication.style`: `technical-direct`, `learning`, `non-technical`
-- `communication.language`: `es`, `en`
-- `communication.explanation_depth`: `brief`, `standard`, `detailed`
-- `validation.frequency`: `always`, `material-only`, `minimal`
-- `validation.autonomy_on_recommendation`: `wait`, `recommend-then-wait`, `execute-if-reversible`
-
-### Captured decisions and free rules
-
-During normal flow, the orchestrator may detect recurring overrides and raise a `preference_capture` checkpoint at natural stops only (stage end, existing checkpoint, or explicit user stop). On approval, the decision is appended to `captured_decisions[]` and either updates the matching knob or joins the `free_rules[]` array with `source: captured`. Free rules pass four validation checks: anti-redundancy with existing knobs and rules, and anti-contradiction with invariants or active knobs.
-
-Captured decisions persist in `./sdd-lite/user-prefs.yaml` only — not in Claude Code host memory or any external store.
-
-### Invariants preferences cannot override
-
-- `stage_approval` for code-touching stages is always required
-- `escalation_review` always fires on material contradiction
-- persisted artifacts stay in English regardless of `communication.language`
-- `sddl-deep-explorer` stays read-only
-- `sddl-qa-review` in `stage` mode never closes a change
-
-### Reconfiguring
-
-Re-run `sddl-init` — step 11 detects the existing file and offers `keep`, `change preset`, or `reconfigure knob by knob`. Or edit `./sdd-lite/user-prefs.yaml` directly and let the schema validate the result.
 
 ---
 
@@ -212,6 +167,10 @@ All runtime files live under `./sdd-lite/`:
         execution-log.md     # execution ledger
         qa-report.md         # findings and closeout
         macro-plan.md        # only on approved macro-plan-first route
+        review-ledger.md     # only when a 4R or judgment-day review ran
+    reviews/
+      {target-slug}/
+        review-ledger.md     # standalone reviews without an active change
 ```
 
 | Artifact | Owner | Purpose |
@@ -226,6 +185,7 @@ All runtime files live under `./sdd-lite/`:
 | `plan.md` | `sddl-plan` | Staged execution plan. |
 | `execution-log.md` | `sddl-executor` | Stage-by-stage execution ledger. |
 | `qa-report.md` | `sddl-qa-review` | Review findings and closeout evidence. |
+| `review-ledger.md` | orchestrator (via `sddl-code-review` / `sddl-judgment-day`) | 4R or judgment-day findings, corroboration, and fix rounds. |
 
 ### Artifact budget (guidance)
 
@@ -238,10 +198,11 @@ All runtime files live under `./sdd-lite/`:
 | One `execution-log.md` stage entry | 150 to 300 words plus tables |
 | `qa-report.md` stage summary | 300 to 500 words |
 | `qa-report.md` final summary | 500 to 800 words |
+| `review-ledger.md` | 200 to 400 words plus tables |
 
 ---
 
-## 7. The 8 available skills
+## 7. The 10 available skills
 
 | Skill | Role | Writes |
 |---|---|---|
@@ -251,6 +212,8 @@ All runtime files live under `./sdd-lite/`:
 | `sddl-design` | Technical design: architecture, patterns, affected areas. | `design.md`, `state.yaml`. |
 | `sddl-plan` | Staged execution plan. Terminal stage for the `planner` objective. | `plan.md`, `state.yaml`, (and `macro-plan.md` when the approved route requires it). |
 | `sddl-executor` | Executes **one** approved stage per invocation. | Repo files inside approved scope, `execution-log.md`, `state.yaml`. |
+| `sddl-code-review` | 4R code review protocol (Risk, Readability, Reliability, Resilience): triage, read-only lens sweeps, findings ledger, refuter corroboration. | `review-ledger.md` and `state.yaml` (written by the orchestrator). |
+| `sddl-judgment-day` | Opt-in adversarial dual review: two blind judges over one immutable target; convergence confirms, contradiction escalates. Works on code or planning artifacts. | `review-ledger.md` and `state.yaml` (written by the orchestrator). |
 | `sddl-deep-explorer` | Bounded, **read-only** analysis when a material unknown blocks routing. | Nothing persistent by default. |
 | `sddl-qa-review` | Unified review in `stage` or `final` mode. | `qa-report.md`, `state.yaml`. |
 
@@ -259,6 +222,24 @@ Key rules:
 - `sddl-executor` performs no hidden git side effects (no commits, rebases, or stashes).
 - `sddl-deep-explorer` is strictly read-only.
 - `sddl-qa-review` in `stage` mode never marks the change `completed`. Only `final` mode with a `pass` verdict may close it.
+- `sddl-code-review` and `sddl-judgment-day` are orchestrator-executed protocols: their lens/judge workers are read-only and only the orchestrator writes `review-ledger.md`. They never close a change and never apply fixes directly — fixes always flow through `plan.md` and `stage_approval`.
+- `sddl-judgment-day` is opt-in only and replaces the 4R review for its target (never run both on the same target).
+
+### The two review loops in short
+
+**`sddl-code-review` (4R)** — the default, cost-proportional review:
+
+1. The target diff is frozen and triaged: trivial (docs/formatting only) → no review; standard → exactly one lens by dominant risk; hot path (auth/security/payments/data) or >400 changed lines → all four lenses plus one refuter pass.
+2. Each lens (R1 Risk, R2 Readability, R3 Reliability, R4 Resilience) runs one exhaustive read-only sweep and returns findings.
+3. Findings land in `review-ledger.md` with severities `BLOCKER/CRITICAL/WARNING/SUGGESTION`. Only BLOCKER/CRITICAL enter the fix loop; the rest is informational.
+4. Fixes are user-approved and flow through a fix stage in `plan.md`; maximum two fix rounds.
+
+**`sddl-judgment-day`** — the expensive, high-confidence review (explicit request only: "judgment day", "dual review", "adversarial review"):
+
+1. Two blind judges review the same frozen target independently.
+2. Both agree on a severe defect → `confirmed` (fixable). Only one reports it → `suspect` (recorded, never auto-fixed). They contradict → `escalated` to you.
+3. Works in `code` mode (a diff/PR) or `artifact` mode (judging a `proposal.md`, `spec.md`, `design.md`, or `plan.md` before execution).
+4. Ends in `JUDGMENT: APPROVED` or `JUDGMENT: ESCALATED`; maximum two fix rounds.
 
 ---
 
@@ -275,10 +256,22 @@ preflight
   -> sddl-design
   -> sddl-plan
   -> sddl-executor (one approved stage at a time)
+  -> sddl-code-review offer when the stage diff is non-trivial (4R; skipped for trivial diffs)
   -> sddl-qa-review (stage) when useful
-  -> sddl-executor / sddl-qa-review (stage) as needed
-  -> sddl-qa-review (final)
+  -> sddl-executor / sddl-code-review / sddl-qa-review (stage) as needed
+  -> sddl-qa-review (final, consumes review-ledger.md as evidence when it exists)
 ```
+
+### Standalone review flows
+
+Both review loops also run without an active change, persisting only `./sdd-lite/openspec/reviews/{target-slug}/review-ledger.md`:
+
+```text
+"review this diff/PR"            -> sddl-code-review (triage -> lenses -> ledger)
+"judgment day on X"              -> sddl-judgment-day (two blind judges -> convergence -> verdict)
+```
+
+If a standalone review confirms severe findings, the orchestrator suggests opening a change (mini or full) seeded from the ledger — it never fixes directly.
 
 ### `planner` flow
 

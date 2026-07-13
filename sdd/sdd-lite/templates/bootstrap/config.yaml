@@ -20,6 +20,7 @@ paths:
   artifact_root: ./sdd-lite/openspec
   config_path: ./sdd-lite/openspec/config.yaml
   changes_root: ./sdd-lite/openspec/changes
+  reviews_root: ./sdd-lite/openspec/reviews
 
 quality_commands:
   install:
@@ -86,6 +87,8 @@ ai_setups:
   #     - sddl-design
   #     - sddl-plan
   #     - sddl-executor
+  #     - sddl-code-review
+  #     - sddl-judgment-day
   #     - sddl-deep-explorer
   #     - sddl-qa-review
   wrappers_injected: []

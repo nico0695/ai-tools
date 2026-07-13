@@ -58,6 +58,12 @@ Worker modes:
 - Pass the compact canonical handoff envelope and collect worker results before routing.
 - Child workers must not launch descendants.
 
+### Review protocols
+
+- `native-workers`: launch `sddl-code-review` lenses and `sddl-judgment-day` judges as parallel native sub-agents; each is a waited handoff, never fire-and-forget. Wait for both judges before merging and never let one judge see the other's output.
+- `inline-sequential`: run each lens/judge pass sequentially, persisting only each pass's `findings` result before starting the next. Judge blindness is weaker inline — note it in the ledger.
+- In both modes, review workers return `findings` only; the orchestrator writes `review-ledger.md`.
+
 ### Inline-sequential fallback
 
 When native sub-agents are unavailable or the user selects `inline-sequential`:

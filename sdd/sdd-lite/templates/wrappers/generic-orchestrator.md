@@ -45,4 +45,8 @@ This agent does not support native sub-agent delegation. When sdd-lite is active
 - All other orchestrator rules (session initialization, delegation triggers, result processing, approval gates) apply as defined in `SDDL-ORCHESTRATOR.md`.
 
 Delegation triggers still apply: when a trigger fires, compress and checkpoint instead of spawning a fresh worker.
+
+### Review protocols
+
+Run `sddl-code-review` lenses and `sddl-judgment-day` judges as sequential inline passes: complete one pass, persist only its `findings` result, then start the next without carrying the previous pass's reasoning forward. Judge blindness is weaker inline — note it in the ledger. Only the orchestrator writes `review-ledger.md`.
 <!-- sdd-lite:end -->

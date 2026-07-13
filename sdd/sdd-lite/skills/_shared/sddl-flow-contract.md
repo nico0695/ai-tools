@@ -45,6 +45,8 @@ These ids are the canonical change-stage names used in state and contracts.
 | `sddl-design` | technical design: architecture, patterns, interfaces, affected areas |
 | `sddl-plan` | staged execution plan with dependencies and validation strategy |
 | `sddl-executor` | approved stage-by-stage execution |
+| `sddl-code-review` | on-demand 4R code review of a frozen diff, producing `review-ledger.md` |
+| `sddl-judgment-day` | opt-in adversarial dual review (two blind judges) of a code target or planning artifact |
 | `sddl-qa-review` | stage review or final closeout |
 
 ### Stage status ids
@@ -120,6 +122,7 @@ Every lite stage result must be representable with:
 | `decision_required` | true when the next safe step depends on the user |
 | `decision_options` | structured options for the pending decision |
 | `evidence` | commands, files, or observations backing the result |
+| `findings` | structured review findings rows per `sddl-review-ledger-contract.md`; used by review workers (lenses, judges, refuter) |
 | `errors` | structured blocking issues or validation failures |
 | `context_resolution` | `injected_registry`, `fallback_registry`, `fallback_path`, or `none` |
 | `standards_source` | registry path, version, or fallback note |
@@ -138,6 +141,10 @@ Every lite stage result must be representable with:
 - `sddl-deep-explorer` is read-only and on-demand.
 - `sddl-qa-review` in `stage` mode never marks the change `completed`.
 - `sddl-qa-review` in `final` mode is the only lite path that may set `lifecycle_status: completed`.
+- `sddl-code-review` and `sddl-judgment-day` are review protocols executed by the orchestrator: their lens/judge workers are read-only, only the orchestrator writes `review-ledger.md`, and neither protocol may close a change or apply fixes directly.
+- `sddl-code-review` and `sddl-judgment-day` are mutually exclusive per target; judgment-day replaces the 4R review for its target.
+- `sddl-judgment-day` is opt-in only and never auto-routed.
+- Review fixes always flow through `plan.md`: a fix stage from confirmed ledger ids, `stage_approval`, then `sddl-executor`.
 - `macro-plan.md` exists only on the `macro-plan-first` route and only after explicit approval.
 - `escalate-to-sdd-v2` should preserve lite state and recommendations without pretending the work is still safely executable in lite.
 - Stage skills execute their own phase and must not become nested orchestrators by default.

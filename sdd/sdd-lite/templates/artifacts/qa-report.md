@@ -43,6 +43,21 @@
 - review_trigger:
 - review_notes:
 
+## Review Evidence
+
+Filled only when `review-ledger.md` exists for this change.
+
+- review_ledger_path:
+- review_mode: 4r | judgment-day
+- ledger_verdict:
+- ledger_counts: confirmed= suspect= escalated= info=
+- open_severe_findings:
+- ledger_findings_reused_instead_of_reanalyzed: true | false
+- notes:
+
+Severity mapping when citing ledger rows in QA findings (QA scale has no `critical`): `BLOCKER -> high` with `Blocking: yes`, `CRITICAL -> high`, `WARNING -> medium`, `SUGGESTION -> low`. In `state.yaml` `open_risks`, `BLOCKER` maps to `critical`.
+Open severe ledger findings must be reflected in the QA verdict.
+
 ## Validation Plan And Results
 
 | Check Id | Category | Source | Planned Check | Outcome | Notes |

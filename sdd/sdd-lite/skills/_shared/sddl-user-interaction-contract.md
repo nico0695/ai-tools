@@ -20,6 +20,7 @@ This contract defines how `sdd-lite` asks the user for decisions without turning
 | `phase_validation` | between formalization phases to confirm output before advancing | conditional — skip when the user already approved advancement implicitly |
 | `stage_approval` | immediately before a code-touching execution stage | mandatory when code will change |
 | `macro_plan_review` | the best lite path is to stop and write `macro-plan.md` first | conditional |
+| `review_gate` | offering a post-execution code review, approving a review fix round, or adjudicating a judge contradiction | conditional — mandatory before any fix round and for every judge contradiction |
 | `escalation_review` | the request no longer fits safe lite execution | conditional |
 | `final_review` | final QA found warnings, blockers, or a closeout decision is still needed | conditional |
 
@@ -82,6 +83,22 @@ Recommended options:
 - create the macro plan
 - narrow the scope
 - stop
+
+## `review_gate` minimum content
+
+Each `review_gate` checkpoint should include:
+
+- the review protocol (`sddl-code-review` or `sddl-judgment-day`) and target
+- the gate purpose: offer review, approve a fix round, or adjudicate a contradiction
+- the current ledger digest (counts and verdict) when a ledger exists
+- for fix rounds: the confirmed ledger ids and the suggested fix route
+- for contradictions: both judges' claims and evidence, side by side
+
+Recommended options by purpose:
+
+- offer review: run the review / skip / run judgment-day instead
+- fix round: approve the fix route / defer findings / stop
+- contradiction: accept judge A / accept judge B / dismiss both / investigate manually
 
 ## `escalation_review` minimum content
 

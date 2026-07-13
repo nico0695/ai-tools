@@ -39,6 +39,7 @@ Default runtime heuristics:
 - inline only local routing decisions that require at most 3 repo files
 - delegate bounded analysis when routing or planning needs 4 or more files
 - delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default
+- run `sddl-code-review` and `sddl-judgment-day` as orchestrator-executed protocols: read-only lens/judge workers, ledger written by the orchestrator
 - do not run multi-file edits inline in the orchestrator
 - do not run builds, installs, or broad test suites inline in the orchestrator
 - do not delegate per file; delegate per phase or per approved execution stage
@@ -53,6 +54,9 @@ Default runtime heuristics:
 - Every later stage requires explicit approval before it starts.
 - `sddl-executor` must not perform hidden git side effects.
 - `sddl-deep-explorer` is read-only.
+- Review workers (4R lenses, judges, refuter) are read-only; only the orchestrator writes `review-ledger.md`.
+- `sddl-judgment-day` is opt-in only and replaces the 4R review for its target.
+- Review fixes always flow through `plan.md` and `stage_approval`; reviews never edit code directly.
 - `sddl-qa-review` in `stage` mode never closes the change.
 - Only `sddl-qa-review` in `final` mode may mark the change `completed`.
 - Resume must be explainable from persisted state and artifacts, not from prior chat memory.
@@ -70,6 +74,7 @@ sdd/sdd-lite/
       sddl-persistence-contract.md
       sddl-user-interaction-contract.md
       sddl-project-standards-contract.md
+      sddl-review-ledger-contract.md
     sddl-init/
       SKILL.md
     sddl-proposal/
@@ -82,6 +87,14 @@ sdd/sdd-lite/
       SKILL.md
     sddl-executor/
       SKILL.md
+    sddl-code-review/
+      SKILL.md
+      references/
+        lens-prompts.md
+    sddl-judgment-day/
+      SKILL.md
+      references/
+        judge-prompt.md
     sddl-deep-explorer/
       SKILL.md
     sddl-qa-review/
@@ -99,6 +112,7 @@ sdd/sdd-lite/
       execution-log.md
       qa-report.md
       macro-plan.md
+      review-ledger.md
   schemas/
     config.schema.yaml
     state.schema.yaml
@@ -124,6 +138,10 @@ All runtime files live under `./sdd-lite/`:
         execution-log.md
         qa-report.md
         macro-plan.md      # only when explicitly needed and approved
+        review-ledger.md   # only when a 4R or judgment-day review ran
+    reviews/
+      {target-slug}/
+        review-ledger.md   # standalone reviews without an active change
 ```
 
 ## Core Skills
@@ -136,6 +154,8 @@ All runtime files live under `./sdd-lite/`:
 | `sddl-design` | technical design: architecture, patterns, affected areas | `design.md`, `state.yaml` |
 | `sddl-plan` | staged execution plan with dependencies and validation | `plan.md`, `state.yaml`, `macro-plan.md` when approved |
 | `sddl-executor` | execute one approved stage at a time | repo files in approved scope, `execution-log.md`, `state.yaml` |
+| `sddl-code-review` | 4R review protocol: triage, lens sweeps, refuter, findings ledger | `review-ledger.md`, `state.yaml` (orchestrator-written) |
+| `sddl-judgment-day` | opt-in adversarial dual review with two blind judges (code or planning artifacts) | `review-ledger.md`, `state.yaml` (orchestrator-written) |
 | `sddl-deep-explorer` | bounded read-only analysis | no persistent artifact by default |
 | `sddl-qa-review` | stage review and final closeout | `qa-report.md`, `state.yaml` |
 
@@ -204,9 +224,10 @@ preflight
   -> sddl-design
   -> sddl-plan
   -> sddl-executor (one approved stage at a time)
+  -> sddl-code-review offer when the stage diff is non-trivial (trivial diffs skip silently)
   -> sddl-qa-review (stage) when useful
-  -> sddl-executor / sddl-qa-review (stage) as needed
-  -> sddl-qa-review (final)
+  -> sddl-executor / sddl-code-review / sddl-qa-review (stage) as needed
+  -> sddl-qa-review (final, consumes review-ledger.md as evidence when it exists)
 ```
 
 Key points:
@@ -216,8 +237,33 @@ Key points:
 - `design.md` owns the technical approach and affected areas
 - `plan.md` owns the execution plan
 - `execution-log.md` owns implementation traceability
+- `review-ledger.md` owns 4R / judgment-day findings and fix-round history
 - `qa-report.md` owns review findings and closeout evidence
 - the orchestrator should route from digests and metadata before rereading full artifacts
+
+## Review Loops
+
+Two review protocols complement the QA stage. Both produce `review-ledger.md`, run their reviewers as read-only workers, and never close a change or edit code — fixes always flow through a fix stage in `plan.md` with `stage_approval`.
+
+### `sddl-code-review` (4R)
+
+Default, cost-proportional diff review. The frozen target is triaged:
+
+| Tier | Criteria | Lenses |
+|---|---|---|
+| trivial | only docs/comments/formatting | none |
+| standard | everything else | exactly 1 (dominant risk) |
+| full-4r | auth/security/payments/data, or > 400 changed lines | all 4 plus one refuter pass |
+
+Severities: `BLOCKER/CRITICAL/WARNING/SUGGESTION`; only the first two enter the fix loop (max 2 rounds). Offered automatically after a non-trivial execution stage, or standalone ("review this diff/PR").
+
+### `sddl-judgment-day`
+
+Opt-in adversarial review (explicit request only: "judgment day", "dual review", "adversarial review"). Two blind judges review the same immutable target independently: both agree = `confirmed`, one reports = `suspect` (never auto-fixed), they contradict = `escalated` to the user. Works on code targets (`mode: code`, replaces 4R for that target) or planning artifacts (`mode: artifact`, feeds a rerun of the owning stage). Terminal states: `JUDGMENT: APPROVED` or `JUDGMENT: ESCALATED`.
+
+### Standalone reviews
+
+Both protocols run without an active change, persisting only `./sdd-lite/openspec/reviews/{target-slug}/review-ledger.md`. Confirmed severe findings suggest opening a change (mini or full) seeded from the ledger.
 
 ## Alternative Flows
 
@@ -266,6 +312,7 @@ If the work behaves like a migration, large redesign, or broad coordination prob
 | `design.md` | `sddl-design` | technical approach and affected areas |
 | `plan.md` | `sddl-plan` | staged execution plan |
 | `execution-log.md` | `sddl-executor` | stage-by-stage execution ledger |
+| `review-ledger.md` | orchestrator (via review protocols) | 4R / judgment-day findings and fix rounds |
 | `qa-report.md` | `sddl-qa-review` | review findings and closeout evidence |
 
 ## Artifact Budget Guidance
@@ -281,6 +328,7 @@ Recommended runtime targets:
 | one `execution-log.md` stage entry | 150 to 300 words plus tables |
 | `qa-report.md` stage summary | 300 to 500 words |
 | `qa-report.md` final summary | 500 to 800 words |
+| `review-ledger.md` | 200 to 400 words plus tables |
 
 Each artifact should begin with a short digest that downstream stages can reuse cheaply.
 
