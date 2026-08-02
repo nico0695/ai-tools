@@ -38,7 +38,7 @@ Default runtime heuristics:
 
 - inline only local routing decisions that require at most 3 repo files
 - delegate bounded analysis when routing or planning needs 4 or more files
-- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, and `sddl-qa-review` as fresh workers by default
+- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, and `sddl-archive` as fresh workers by default
 - run `sddl-code-review` and `sddl-judgment-day` as orchestrator-executed protocols: read-only lens/judge workers, ledger written by the orchestrator
 - do not run multi-file edits inline in the orchestrator
 - do not run builds, installs, or broad test suites inline in the orchestrator
@@ -59,6 +59,7 @@ Default runtime heuristics:
 - Review fixes always flow through `plan.md` and `stage_approval`; reviews never edit code directly.
 - `sddl-qa-review` in `stage` mode never closes the change.
 - Only `sddl-qa-review` in `final` mode may mark the change `completed`.
+- Only `sddl-archive` may set `lifecycle_status: archived`; it never deletes, never merges, and always confirms per change.
 - Resume must be explainable from persisted state and artifacts, not from prior chat memory.
 
 ## Package Layout
@@ -99,6 +100,8 @@ sdd/sdd-lite/
       SKILL.md
     sddl-qa-review/
       SKILL.md
+    sddl-archive/
+      SKILL.md
   templates/
     bootstrap/
       config.yaml
@@ -113,6 +116,7 @@ sdd/sdd-lite/
       qa-report.md
       macro-plan.md
       review-ledger.md
+      archive-report.md
   schemas/
     config.schema.yaml
     state.schema.yaml
@@ -142,7 +146,14 @@ All runtime files live under `./sdd-lite/`:
     reviews/
       {target-slug}/
         review-ledger.md   # standalone reviews without an active change
+    archive/
+      {YYYY-MM-DD}-{change-name}/
+        archive-report.md  # plus every artifact the change had
+      _discarded/
+        {YYYY-MM-DD}-{change-name}/   # abandoned, pending manual deletion
 ```
+
+`archive/` is a sibling of `changes/`, so `changes/*/` always lists active changes only.
 
 ## Core Skills
 
@@ -158,6 +169,7 @@ All runtime files live under `./sdd-lite/`:
 | `sddl-judgment-day` | opt-in adversarial dual review with two blind judges (code or planning artifacts) | `review-ledger.md`, `state.yaml` (orchestrator-written) |
 | `sddl-deep-explorer` | bounded read-only analysis | no persistent artifact by default |
 | `sddl-qa-review` | stage review and final closeout | `qa-report.md`, `state.yaml` |
+| `sddl-archive` | move finished, planned, or abandoned changes into the archive tree | `archive/{YYYY-MM-DD}-{change-name}/archive-report.md` |
 
 ## Runtime Standards Registry
 
@@ -228,6 +240,7 @@ preflight
   -> sddl-qa-review (stage) when useful
   -> sddl-executor / sddl-code-review / sddl-qa-review (stage) as needed
   -> sddl-qa-review (final, consumes review-ledger.md as evidence when it exists)
+  -> sddl-archive offer once the change is completed (opt-in, never automatic)
 ```
 
 Key points:
@@ -239,6 +252,7 @@ Key points:
 - `execution-log.md` owns implementation traceability
 - `review-ledger.md` owns 4R / judgment-day findings and fix-round history
 - `qa-report.md` owns review findings and closeout evidence
+- `archive-report.md` owns the disposition, final verdict, and reopen steps of an archived change
 - the orchestrator should route from digests and metadata before rereading full artifacts
 
 ## Review Loops
@@ -264,6 +278,34 @@ Opt-in adversarial review (explicit request only: "judgment day", "dual review",
 ### Standalone reviews
 
 Both protocols run without an active change, persisting only `./sdd-lite/openspec/reviews/{target-slug}/review-ledger.md`. Confirmed severe findings suggest opening a change (mini or full) seeded from the ledger.
+
+## Archive
+
+`sddl-archive` moves changes out of `changes/` once they no longer belong in the active tree. It is bookkeeping, not a second quality gate: it trusts the QA verdict and never compensates for a missing or failed review.
+
+Each archived change gets a short `archive-report.md` with its disposition, verdict, and explicit reopen steps.
+
+| `disposition` | Meaning | Destination |
+|---|---|---|
+| `closed` | finished change, QA final passed | `archive/` |
+| `planned` | `planner` objective that ended at `planned` | `archive/` |
+| `abandoned` | work stopped and will not continue | `archive/_discarded/` |
+| `superseded` | replaced by another change | `archive/` |
+
+Two modes:
+
+- `single` — one change; offered after `sddl-qa-review` in `final` mode, or on request
+- `batch` — interactive triage of every candidate, with an explicit action set (`all`, `none`, indices, `inspect N`, `skip N`, `done`)
+
+Classification uses a fixed rubric over `lifecycle_status`, QA verdict, and age. Only `ready` candidates are ever preselected; stale and blocked ones need individual confirmation.
+
+Hard rules:
+
+- **never deletes** — `abandoned` changes go to `_discarded/` and the user deletes that one literal path manually
+- **never merges** — related changes are cross-referenced via `related_changes`, never combined; a real merge is a new change
+- **never automatic** — every archive move needs a recorded decision
+
+The orchestrator offers cleanup once per session when archivable changes reach `archive.suggest_threshold` in `config.yaml` (default 15). The threshold counts archivable changes, not total ones.
 
 ## Alternative Flows
 
@@ -314,6 +356,7 @@ If the work behaves like a migration, large redesign, or broad coordination prob
 | `execution-log.md` | `sddl-executor` | stage-by-stage execution ledger |
 | `review-ledger.md` | orchestrator (via review protocols) | 4R / judgment-day findings and fix rounds |
 | `qa-report.md` | `sddl-qa-review` | review findings and closeout evidence |
+| `archive-report.md` | `sddl-archive` | disposition, final verdict, and explicit reopen steps |
 
 ## Artifact Budget Guidance
 
@@ -340,7 +383,8 @@ Each artifact should begin with a short digest that downstream stages can reuse 
 4. Use `sddl-proposal`, `sddl-spec`, `sddl-design`, and `sddl-plan` before implementation.
 5. Approve execution stage by stage.
 6. Use `sddl-qa-review` in `stage` mode when review is useful and in `final` mode at closeout.
-7. Resume from `state.yaml` and owned artifacts, not from prior chat memory.
+7. Use `sddl-archive` to move closed, planned, or abandoned changes out of `changes/` when they pile up.
+8. Resume from `state.yaml` and owned artifacts, not from prior chat memory.
 
 ## How It Should Not Be Used
 

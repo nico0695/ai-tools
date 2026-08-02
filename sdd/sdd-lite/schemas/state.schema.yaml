@@ -71,6 +71,7 @@ properties:
       - reviewing
       - completed
       - blocked
+      - archived
   current_stage:
     type: string
     enum:
@@ -84,6 +85,7 @@ properties:
       - sddl-code-review
       - sddl-judgment-day
       - sddl-qa-review
+      - sddl-archive
   stages:
     type: object
     additionalProperties: false
@@ -113,6 +115,8 @@ properties:
       sddl-judgment-day:
         $ref: "#/$defs/stageState"
       sddl-qa-review:
+        $ref: "#/$defs/stageState"
+      sddl-archive:
         $ref: "#/$defs/stageState"
   artifacts:
     type: object
@@ -151,6 +155,9 @@ properties:
         type: string
         minLength: 1
       review_ledger:
+        type: string
+        minLength: 1
+      archive_report:
         type: string
         minLength: 1
   checkpoints:
@@ -263,6 +270,7 @@ properties:
           - review_output
           - create_macro_plan
           - escalate_to_sdd_v2
+          - archive
           - complete
           - halt
       target:
@@ -327,6 +335,7 @@ $defs:
           - review_gate
           - escalation_review
           - final_review
+          - archive_review
       stage:
         type: string
         enum:
@@ -340,6 +349,7 @@ $defs:
           - sddl-code-review
           - sddl-judgment-day
           - sddl-qa-review
+          - sddl-archive
       summary:
         type: string
         minLength: 1

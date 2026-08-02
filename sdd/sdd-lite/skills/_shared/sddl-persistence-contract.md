@@ -24,6 +24,11 @@ This contract defines where `sdd-lite` stores durable data, who owns each artifa
     reviews/
       {target-slug}/
         review-ledger.md         # standalone reviews without an active change
+    archive/
+      {YYYY-MM-DD}-{change-name}/
+        archive-report.md        # plus every artifact the change had
+      _discarded/
+        {YYYY-MM-DD}-{change-name}/   # abandoned, pending manual deletion
 ```
 
 No persisted lite artifact should be written outside `./sdd-lite/`.
@@ -65,6 +70,7 @@ Rules:
 | QA report | `./sdd-lite/openspec/changes/{change-name}/qa-report.md` | `sddl-qa-review` |
 | macro plan | `./sdd-lite/openspec/changes/{change-name}/macro-plan.md` | `sddl-plan` on approved macro-plan-first flows |
 | review ledger | `./sdd-lite/openspec/changes/{change-name}/review-ledger.md` | orchestrator, running the `sddl-code-review` or `sddl-judgment-day` protocol |
+| archive report | `./sdd-lite/openspec/archive/{YYYY-MM-DD}-{change-name}/archive-report.md` | `sddl-archive` |
 
 ## Standalone review artifacts
 
@@ -81,6 +87,27 @@ Reviews without an active change persist under `./sdd-lite/openspec/reviews/{tar
 - any other target uses a short kebab-case slug of the target description
 
 A standalone review has no `state.yaml`; the Review Digest at the top of its ledger is the only resume anchor and must always be current.
+
+Standalone reviews are not archived. `sddl-archive` operates on `changes/` only.
+
+## Archive artifacts
+
+Archived changes live under `./sdd-lite/openspec/archive/`, owned by `sddl-archive`:
+
+| Destination | Dispositions | Notes |
+|---|---|---|
+| `archive/{YYYY-MM-DD}-{change-name}/` | `closed`, `planned`, `superseded` | the durable record |
+| `archive/_discarded/{YYYY-MM-DD}-{change-name}/` | `abandoned` | staged for manual deletion by the user |
+
+Rules:
+
+- `archive/` is a sibling of `changes/`, never a child. `changes/*/` therefore always lists active changes only, and `archive` is not a reserved `change-name`.
+- `{YYYY-MM-DD}` is the archive date. The active `change-name` never carries a date.
+- Archiving is a move of the whole folder. No artifact is pruned, rewritten, or merged on the way in.
+- The archived `state.yaml` is the historical record: only `lifecycle_status`, `current_stage`, `stages.sddl-archive`, and `next_action` change.
+- Nothing under `archive/` is ever deleted by a skill. `_discarded/` exists so the user can delete it manually with one literal path.
+- Name collisions get a numeric suffix (`-2`, `-3`) recorded in `archive-report.md`; an existing archived folder is never overwritten.
+- Reopening is a plain move back into `changes/{change-name}/` plus the state edit listed in the report.
 
 ## Ownership rules
 
@@ -104,6 +131,7 @@ Use this split consistently:
 - `execution-log.md` for stage-by-stage execution trace
 - `qa-report.md` for stage review findings or final closeout findings
 - `review-ledger.md` for 4R or judgment-day findings, corroboration, and fix-round history
+- `archive-report.md` for the disposition, final verdict, and explicit reopen steps of an archived change
 - `state.yaml` for lifecycle, resume, checkpoints, decisions, escalation route, and next action
 
 `state.yaml` is operational memory, not a chat transcript and not a substitute for the stage artifacts.
@@ -141,6 +169,5 @@ Rules:
 - `macro-plan.md` must not exist unless the route is `macro-plan-first` and the user approved that path.
 - `review-ledger.md` must not exist unless a `sddl-code-review` or `sddl-judgment-day` protocol ran for that change or target.
 - Review workers (lenses, judges, refuter) never write files; only the orchestrator writes the review ledger.
-- `sdd-lite` does not define archive persistence in the MVP.
-- `sddl-qa-review` in `final` mode is the closeout point; there is no archive phase after it.
+- `sddl-qa-review` in `final` mode is the quality closeout point; `sddl-archive` is bookkeeping after it and never a second quality gate.
 - If the safest path is `escalate-to-sdd-v2`, the lite change state should record that route and stop claiming lite completion.

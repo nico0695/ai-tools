@@ -139,7 +139,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
                    (use when the package may move or symlinks are unsupported)
    ```
 
-   **Skills to install** (all 10 canonical skills):
+   **Skills to install** (all 11 canonical skills):
    - `sddl-init`
    - `sddl-proposal`
    - `sddl-spec`
@@ -150,6 +150,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
    - `sddl-judgment-day`
    - `sddl-deep-explorer`
    - `sddl-qa-review`
+   - `sddl-archive`
 
    Some skills ship extra protocol files in a `references/` directory next to their `SKILL.md` (currently `sddl-code-review` and `sddl-judgment-day`). Installation always covers the whole skill directory, not only `SKILL.md`.
 

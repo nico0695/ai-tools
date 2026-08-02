@@ -21,6 +21,11 @@ paths:
   config_path: ./sdd-lite/openspec/config.yaml
   changes_root: ./sdd-lite/openspec/changes
   reviews_root: ./sdd-lite/openspec/reviews
+  archive_root: ./sdd-lite/openspec/archive
+
+archive:
+  suggest_threshold: 15
+  stale_days: 30
 
 quality_commands:
   install:
@@ -91,6 +96,7 @@ ai_setups:
   #     - sddl-judgment-day
   #     - sddl-deep-explorer
   #     - sddl-qa-review
+  #     - sddl-archive
   wrappers_injected: []
   # Example entry:
   # - ai: claude_code

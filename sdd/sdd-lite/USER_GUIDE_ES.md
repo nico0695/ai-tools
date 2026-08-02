@@ -37,6 +37,7 @@ sddl-init (bootstrap, una sola vez)
   -> sddl-executor      (ejecuta UNA etapa aprobada)
   -> sddl-code-review   (ofrecido si el diff no es trivial: review 4R con ledger)
   -> sddl-qa-review     (revision por etapa o final; la final consume el ledger)
+  -> sddl-archive       (ofrecido al cerrar: mueve el cambio al archivo)
 ```
 
 Cada etapa necesita tu aprobacion antes de avanzar. El executor nunca avanza solo a la siguiente etapa.
@@ -95,7 +96,7 @@ Lee `state.yaml` y retoma desde donde quedo.
 
 ---
 
-## Las 10 skills
+## Las 11 skills
 
 | Skill | Que hace |
 |---|---|
@@ -109,6 +110,7 @@ Lee `state.yaml` y retoma desde donde quedo.
 | `sddl-judgment-day` | Review adversarial opt-in: dos jueces ciegos en paralelo; lo que ambos confirman se puede arreglar, las contradicciones escalan a vos |
 | `sddl-deep-explorer` | Analisis read-only para resolver incognitas antes de disenar |
 | `sddl-qa-review` | Revision por etapa (`stage`) o cierre final (`final`) |
+| `sddl-archive` | Mueve cambios terminados, planificados o abandonados al arbol de archivo. Nunca borra ni fusiona |
 
 ### Los 2 loops de review en corto
 
@@ -125,6 +127,50 @@ Lee `state.yaml` y retoma desde donde quedo.
 - **Retomar siempre desde el orquestador.** El resume se reconstruye de `state.yaml`, no del chat.
 - **Escalar si crece.** Si el cambio se vuelve demasiado grande, no forzarlo en sdd-lite.
 - **Los artefactos se persisten en ingles.** El chat puede ser en espanol.
+
+---
+
+## Archivar cambios (`sddl-archive`)
+
+Cuando un cambio deja de estar activo, `sddl-archive` lo saca de `changes/` sin perder el registro. Es contabilidad, no control de calidad: confia en el veredicto de `sddl-qa-review` y nunca lo reemplaza.
+
+Cada cambio archivado conserva todos sus artefactos y suma un `archive-report.md` corto con la disposicion, el veredicto y los pasos exactos para reabrirlo.
+
+| `disposition` | Que significa | Destino |
+|---|---|---|
+| `closed` | cambio terminado, QA final paso | `archive/` |
+| `planned` | objetivo `planner` que quedo en `planned` | `archive/` |
+| `abandoned` | el trabajo se corto y no sigue | `archive/_discarded/` |
+| `superseded` | reemplazado por otro cambio | `archive/` |
+
+Dos modos:
+
+- **`single`** — un cambio. Se ofrece al cerrar con `sddl-qa-review` en modo `final`, o a pedido.
+- **`batch`** — triage interactivo de todos los candidatos:
+
+```
+#  change-name              status        edad   veredicto    propuesta
+1  add-user-auth            completed     12d    pass         archive (closed)
+2  fix-login-redirect       completed     31d    pass_warn    archive (closed)
+3  refactor-api-client      draft         45d    -            discard (abandoned)  <- confirmar
+4  add-payment-flow         implementing   3d    -            mantener activo
+
+Relacionados: [1, 2] prefijo compartido + 60% de archivos en comun
+
+Acciones: all | none | 1,3 | inspect 3 | skip 4 | done
+```
+
+Nada se mueve hasta `done`. `inspect N` muestra el detalle de un cambio sin tocar la seleccion. Solo los candidatos `ready` se preseleccionan; los stale y bloqueados piden confirmacion individual, y `abandoned` pide un motivo de una linea.
+
+Tres reglas duras:
+
+- **Nunca borra.** Los `abandoned` van a `_discarded/` y la skill te imprime el path literal y el comando para que lo borres vos. Te avisa si `sdd-lite/` esta en `.gitignore`, porque ahi el borrado es definitivo.
+- **Nunca fusiona.** Los cambios relacionados quedan referenciados en `related_changes`; combinar su contenido es un cambio nuevo, no una accion de archive.
+- **Nunca automatico.** Cada movimiento necesita una decision tuya registrada.
+
+Reabrir es mover la carpeta de vuelta a `changes/{nombre}/` y aplicar la edicion de estado que el reporte deja escrita.
+
+**Sugerencia por acumulacion.** `sdd-lite` no tiene evento de fin de sesion, asi que el orquestador chequea una vez al inicio: si los cambios archivables llegan a `archive.suggest_threshold` en `config.yaml` (default 15), te ofrece limpiarlos en una linea y sigue con lo tuyo igual. Cuenta los archivables, no el total.
 
 ---
 
@@ -147,4 +193,11 @@ Lee `state.yaml` y retoma desde donde quedo.
       review-ledger.md        # solo si corrio un review 4R o judgment-day
     reviews/{target}/
       review-ledger.md        # reviews independientes sin cambio activo
+    archive/
+      {AAAA-MM-DD}-{nombre}/
+        archive-report.md     # mas todos los artefactos que tenia el cambio
+      _discarded/
+        {AAAA-MM-DD}-{nombre}/  # abandonados, esperando que los borres vos
 ```
+
+`archive/` es hermano de `changes/`, no hijo, asi que `changes/*/` siempre lista solo cambios activos.

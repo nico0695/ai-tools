@@ -23,6 +23,7 @@ This contract defines how `sdd-lite` asks the user for decisions without turning
 | `review_gate` | offering a post-execution code review, approving a review fix round, or adjudicating a judge contradiction | conditional — mandatory before any fix round and for every judge contradiction |
 | `escalation_review` | the request no longer fits safe lite execution | conditional |
 | `final_review` | final QA found warnings, blockers, or a closeout decision is still needed | conditional |
+| `archive_review` | confirming which changes get archived and with which disposition | mandatory before any archive move |
 
 ## Standard checkpoint shape
 
@@ -127,6 +128,29 @@ Recommended options:
 - accept and close
 - return for fixes
 - hold for review
+
+## `archive_review` minimum content
+
+Each `archive_review` checkpoint should include:
+
+- the candidate changes with `change-name`, lifecycle status, age, QA verdict, and proposed disposition
+- the rubric class behind each proposal, so the user can see why it was proposed
+- any detected related-change cluster, labelled as informational only
+- for `batch` mode: the action set (`all`, `none`, indices, `inspect N`, `skip N`, `done`)
+
+Recommended options for `single` mode:
+
+- archive with the proposed disposition
+- change the disposition
+- keep the change active
+
+Rules:
+
+- Nothing moves before the user resolves this checkpoint.
+- Only `ready` candidates may be preselected. `stale-candidate` and `blocked-candidate` rows require an individual confirmation.
+- A change proposed as `abandoned` needs a one-line reason from the user before it executes.
+- `inspect N` answers from persisted digests and returns to the same checkpoint without changing the selection.
+- Unrecognized input restates the action set instead of being interpreted.
 
 ## Decision recording
 

@@ -48,6 +48,7 @@ These ids are the canonical change-stage names used in state and contracts.
 | `sddl-code-review` | on-demand 4R code review of a frozen diff, producing `review-ledger.md` |
 | `sddl-judgment-day` | opt-in adversarial dual review (two blind judges) of a code target or planning artifact |
 | `sddl-qa-review` | stage review or final closeout |
+| `sddl-archive` | move finished, planned, or abandoned changes into the archive tree |
 
 ### Stage status ids
 
@@ -68,6 +69,7 @@ These ids are the canonical change-stage names used in state and contracts.
 | `reviewing` | QA review is in progress or required |
 | `completed` | final QA closeout succeeded |
 | `blocked` | safe progress cannot continue |
+| `archived` | the change was moved out of the active tree by `sddl-archive` |
 
 ## Context ladder
 
@@ -141,6 +143,10 @@ Every lite stage result must be representable with:
 - `sddl-deep-explorer` is read-only and on-demand.
 - `sddl-qa-review` in `stage` mode never marks the change `completed`.
 - `sddl-qa-review` in `final` mode is the only lite path that may set `lifecycle_status: completed`.
+- `sddl-archive` is the only lite path that may set `lifecycle_status: archived`, and it writes that status only inside the archived copy.
+- `sddl-archive` is opt-in and confirmed per change: it never runs automatically and never archives a change without a recorded decision.
+- `sddl-archive` never deletes, never merges changes, and never archives a `fail` QA verdict.
+- `planner` changes are archivable once they reach `planned`; `sddl-archive` records that as `disposition: planned`.
 - `sddl-code-review` and `sddl-judgment-day` are review protocols executed by the orchestrator: their lens/judge workers are read-only, only the orchestrator writes `review-ledger.md`, and neither protocol may close a change or apply fixes directly.
 - `sddl-code-review` and `sddl-judgment-day` are mutually exclusive per target; judgment-day replaces the 4R review for its target.
 - `sddl-judgment-day` is opt-in only and never auto-routed.

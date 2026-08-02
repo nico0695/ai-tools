@@ -98,6 +98,21 @@ properties:
       reviews_root:
         type: string
         const: "./sdd-lite/openspec/reviews"
+      archive_root:
+        type: string
+        const: "./sdd-lite/openspec/archive"
+  archive:
+    type: object
+    additionalProperties: false
+    properties:
+      suggest_threshold:
+        description: "Archivable changes that trigger a cleanup suggestion at session start."
+        type: integer
+        minimum: 1
+      stale_days:
+        description: "Age after which a draft or planning change becomes a stale candidate."
+        type: integer
+        minimum: 1
   quality_commands:
     type: object
     additionalProperties: false

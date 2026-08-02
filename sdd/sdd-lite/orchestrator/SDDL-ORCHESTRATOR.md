@@ -48,6 +48,24 @@ If the user provides feedback instead of a confirmation phrase, incorporate it b
 - The request is a question about sdd-lite state (not a stage request)
 - Bootstrap preflight fails (route to `sddl-init` first)
 
+### Accumulation check
+
+`sdd-lite` has no end-of-session event, so the accumulation check runs once at session start, right after preflight passes.
+
+1. Glob `./sdd-lite/openspec/changes/*/` and count the entries. `archive/` is a sibling, so it never appears here.
+2. If the count is below `archive.suggest_threshold` from `config.yaml` (default 15), say nothing and continue.
+3. If it is at or above, read only `lifecycle_status` and `updated_at` from each `state.yaml` and count the archivable ones (`completed`, `planned`, or `draft`/`planning` older than `archive.stale_days`).
+4. If the archivable count is at or above the threshold, offer cleanup in one line and continue with the user's actual request either way:
+
+> "Tenés {n} changes archivables de {total}. ¿Querés limpiarlos con `sddl-archive` antes de seguir?"
+
+Rules:
+
+- The threshold counts archivable changes, not total changes. Many legitimately active changes are not a problem.
+- Offer once per session. Do not repeat it if the user declines or ignores it.
+- Never block the user's request on this. It is an offer, never a gate.
+- Do not read full artifacts for this check. Two fields per `state.yaml` is the entire budget.
+
 ## Hot-Path Reads
 
 Read only the evidence needed to route safely:
@@ -108,7 +126,7 @@ If bootstrap is stale:
 [key naming, formatting, or structural conventions — 3-5 bullets]
 
 ### Stage References
-[relative paths to each installed skill: sddl-proposal, sddl-spec, sddl-design, sddl-plan, sddl-executor, sddl-code-review, sddl-judgment-day, sddl-qa-review, sddl-deep-explorer]
+[relative paths to each installed skill: sddl-proposal, sddl-spec, sddl-design, sddl-plan, sddl-executor, sddl-code-review, sddl-judgment-day, sddl-qa-review, sddl-archive, sddl-deep-explorer]
 ```
 
 Workers receiving a `## Project Standards (auto-resolved)` block in their handoff must use it directly and skip reading the full `_shared/` contracts. If the block is missing, read `./sdd-lite/skill-catalog.md` and extract only the sections relevant to the current phase.
@@ -129,7 +147,7 @@ Core principle: does this inflate orchestrator context without need? If yes, del
 | Bash for state (git status, file checks) | yes | -- |
 | Bash for execution (test, build, install) | -- | yes |
 
-Default stage delegation: `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, and `sddl-qa-review` run as fresh workers. Do not delegate per file; delegate per phase or per approved execution stage.
+Default stage delegation: `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, and `sddl-archive` run as fresh workers. `sddl-archive` moves folders and writes one report per change, so it never runs inline. Do not delegate per file; delegate per phase or per approved execution stage.
 
 ### Mandatory delegation triggers
 
@@ -326,6 +344,9 @@ When a delegated worker returns a result, the orchestrator processes it in this 
 | a review protocol finished clean or with only `info` findings | continue routing; ledger feeds `sddl-qa-review` | no | review never closes the change |
 | an execution stage finished and needs review | `sddl-qa-review` in `stage` mode | yes | does not close the change |
 | final execution is complete and the user wants closeout | `sddl-qa-review` in `final` mode | yes | only final mode may set `completed` |
+| `sddl-qa-review` in `final` mode set the change `completed` | offer `sddl-archive` in `single` mode | yes | offer only; declining leaves the change in `changes/` |
+| the accumulation check fired, or the user asks to clean up changes | `sddl-archive` in `batch` mode | yes | interactive triage; nothing moves before `done` |
+| the user asks to archive one named change | `sddl-archive` in `single` mode | yes | works for finished, planned, and abandoned changes |
 | route is `escalate-to-sdd-v2` | stop and recommend `sdd-v2` | no | persist the blocker and next action |
 
 ## Resume Rules
@@ -402,6 +423,7 @@ Stop and consult the user when:
 - `macro-plan.md` exists only on approved `macro-plan-first` flows
 - `review-ledger.md` exists only when a `sddl-code-review` or `sddl-judgment-day` protocol ran
 - review workers (lenses, judges, refuter) stay read-only; only the orchestrator writes the review ledger
-- `sdd-lite` MVP does not define archive, git, PR, or issue workflows
+- `sdd-lite` MVP does not define git, PR, or issue workflows
+- archiving is `sddl-archive` only: never automatic, always confirmed per change, and it never deletes or merges anything
 - `sddl-deep-explorer` stays read-only
 - resume and routing must be explainable from persisted state and artifacts

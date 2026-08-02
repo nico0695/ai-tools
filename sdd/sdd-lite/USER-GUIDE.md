@@ -14,7 +14,7 @@ Persisted artifacts stay in English. Chat interaction may be Spanish or English.
 4. [Setup and basic configuration (`sddl-init`)](#4-setup-and-basic-configuration-sddl-init)
 5. [The `config.yaml` file (settings)](#5-the-configyaml-file-settings)
 6. [Runtime file layout](#6-runtime-file-layout)
-7. [The 10 available skills](#7-the-10-available-skills)
+7. [The 11 available skills](#7-the-11-available-skills)
 8. [Standard flow and alternative flows](#8-standard-flow-and-alternative-flows)
 9. [How changes to the code are controlled](#9-how-changes-to-the-code-are-controlled)
 10. [Usage examples](#10-usage-examples)
@@ -106,7 +106,7 @@ In those cases, **escalate to `sdd-v2`**.
    | **Symlink** | Creates a directory symlink from `.claude/skills/<skill>` (or `.agents/skills/<skill>`) to the package skill directory, so `SKILL.md` and `references/` resolve together. | The package stays in this repo. Recommended. |
    | **Copy** | Copies each skill directory (`SKILL.md` plus `references/` when present) to the target and rewrites package-relative paths. | The package may move, or symlinks are unsupported. |
 
-   All 10 canonical skills are installed: `sddl-init`, `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-code-review`, `sddl-judgment-day`, `sddl-deep-explorer`, `sddl-qa-review`.
+   All 11 canonical skills are installed: `sddl-init`, `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-code-review`, `sddl-judgment-day`, `sddl-deep-explorer`, `sddl-qa-review`, `sddl-archive`.
 
 6. **Wrapper injection.** Inserts a demarcated block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` in `CLAUDE.md` and/or `AGENTS.md`. If the block already exists, it is replaced; if the file is missing, it is created with only the wrapper. Confirmation is always required before inserting.
 
@@ -171,7 +171,14 @@ All runtime files live under `./sdd-lite/`:
     reviews/
       {target-slug}/
         review-ledger.md     # standalone reviews without an active change
+    archive/
+      {YYYY-MM-DD}-{change-name}/
+        archive-report.md    # plus every artifact the change had
+      _discarded/
+        {YYYY-MM-DD}-{change-name}/   # abandoned, pending manual deletion
 ```
+
+`archive/` is a sibling of `changes/`, not a child, so `changes/*/` always lists active changes only.
 
 | Artifact | Owner | Purpose |
 |---|---|---|
@@ -186,6 +193,7 @@ All runtime files live under `./sdd-lite/`:
 | `execution-log.md` | `sddl-executor` | Stage-by-stage execution ledger. |
 | `qa-report.md` | `sddl-qa-review` | Review findings and closeout evidence. |
 | `review-ledger.md` | orchestrator (via `sddl-code-review` / `sddl-judgment-day`) | 4R or judgment-day findings, corroboration, and fix rounds. |
+| `archive-report.md` | `sddl-archive` | Disposition, final verdict, and explicit reopen steps. |
 
 ### Artifact budget (guidance)
 
@@ -202,7 +210,7 @@ All runtime files live under `./sdd-lite/`:
 
 ---
 
-## 7. The 10 available skills
+## 7. The 11 available skills
 
 | Skill | Role | Writes |
 |---|---|---|
@@ -216,6 +224,7 @@ All runtime files live under `./sdd-lite/`:
 | `sddl-judgment-day` | Opt-in adversarial dual review: two blind judges over one immutable target; convergence confirms, contradiction escalates. Works on code or planning artifacts. | `review-ledger.md` and `state.yaml` (written by the orchestrator). |
 | `sddl-deep-explorer` | Bounded, **read-only** analysis when a material unknown blocks routing. | Nothing persistent by default. |
 | `sddl-qa-review` | Unified review in `stage` or `final` mode. | `qa-report.md`, `state.yaml`. |
+| `sddl-archive` | Moves finished, planned, or abandoned changes into the archive tree. `single` or `batch` mode. | `archive/{YYYY-MM-DD}-{change-name}/archive-report.md`. |
 
 Key rules:
 
@@ -224,6 +233,7 @@ Key rules:
 - `sddl-qa-review` in `stage` mode never marks the change `completed`. Only `final` mode with a `pass` verdict may close it.
 - `sddl-code-review` and `sddl-judgment-day` are orchestrator-executed protocols: their lens/judge workers are read-only and only the orchestrator writes `review-ledger.md`. They never close a change and never apply fixes directly — fixes always flow through `plan.md` and `stage_approval`.
 - `sddl-judgment-day` is opt-in only and replaces the 4R review for its target (never run both on the same target).
+- `sddl-archive` never deletes, never merges changes, and never moves anything without a recorded decision per change.
 
 ### The two review loops in short
 
@@ -260,6 +270,7 @@ preflight
   -> sddl-qa-review (stage) when useful
   -> sddl-executor / sddl-code-review / sddl-qa-review (stage) as needed
   -> sddl-qa-review (final, consumes review-ledger.md as evidence when it exists)
+  -> sddl-archive offer once the change is completed (opt-in, never automatic)
 ```
 
 ### Standalone review flows
@@ -310,6 +321,48 @@ When work exceeds lite safety:
 -> persist the escalation reason in state.yaml
 -> recommend sdd-v2
 ```
+
+### Archive flow
+
+`sddl-archive` moves changes out of `changes/` once they no longer belong there. It is bookkeeping, not a second quality gate: it trusts the QA verdict and never compensates for a missing or failed review.
+
+Each archived change keeps every artifact it had, plus a short `archive-report.md` recording its disposition, verdict, and exact reopen steps.
+
+| `disposition` | Meaning | Destination |
+|---|---|---|
+| `closed` | finished change, QA final passed | `archive/` |
+| `planned` | `planner` objective that ended at `planned` | `archive/` |
+| `abandoned` | work stopped and will not continue | `archive/_discarded/` |
+| `superseded` | replaced by another change | `archive/` |
+
+Two modes:
+
+- **`single`** — one change. Offered after `sddl-qa-review` in `final` mode, or on direct request.
+- **`batch`** — interactive triage of every candidate:
+
+```text
+#  change-name              status        age    verdict      proposal
+1  add-user-auth            completed     12d    pass         archive (closed)
+2  fix-login-redirect       completed     31d    pass_warn    archive (closed)
+3  refactor-api-client      draft         45d    -            discard (abandoned)  <- confirm
+4  add-payment-flow         implementing   3d    -            keep active
+
+Related: [1, 2] shared prefix + 60% file overlap
+
+Actions: all | none | 1,3 | inspect 3 | skip 4 | done
+```
+
+Nothing moves until `done`. `inspect N` shows a change digest without changing the selection. Only `ready` candidates are ever preselected; stale and blocked ones need individual confirmation, and `abandoned` needs a one-line reason.
+
+Three hard rules:
+
+- **Never deletes.** `abandoned` changes go to `_discarded/`, and the skill prints the literal path plus the deletion command for you to run manually. It warns you when `sdd-lite/` is gitignored, because then deletion is permanent.
+- **Never merges.** Related changes are cross-referenced in `related_changes`; combining their content is a new change, not an archive action.
+- **Never automatic.** Every move needs a recorded decision.
+
+Reopening is a plain move back into `changes/{change-name}/` plus the state edit spelled out in the report.
+
+**Accumulation suggestion.** `sdd-lite` has no end-of-session event, so the orchestrator checks once at session start: when archivable changes reach `archive.suggest_threshold` in `config.yaml` (default 15), it offers cleanup in one line and continues either way. It counts archivable changes, not total ones — many legitimately active changes are not a problem.
 
 ---
 
@@ -399,6 +452,7 @@ Expected flow:
 6. **S1 approval** → `sddl-executor` implements S1 only, records in `execution-log.md`.
 7. **S2 approval** → `sddl-executor` runs the planned tests.
 8. **`sddl-qa-review` in `final` mode** → on a `pass` verdict, marks the change `completed`.
+9. **`sddl-archive` offer** → accept it and the change moves to `./sdd-lite/openspec/archive/{date}-{change-name}/` with an `archive-report.md`; decline it and the change stays in `changes/`.
 
 ### Example 3 — Bug with unclear root cause
 
@@ -454,6 +508,7 @@ The orchestrator:
 | More phases and artifacts. | Fewer phases and artifacts. |
 | Heavier orchestration. | Thin coordinator plus delegated workers. |
 | Separate stage QA and final verify. | One `sddl-qa-review` skill with `stage` and `final` modes. |
+| Archive is a strict gate after verify, and `planner` never archives. | `sddl-archive` records an explicit `disposition`, so finished, planned, and abandoned changes are all archivable without lying about the outcome. |
 | Heavier governance. | Faster flow with explicit escalation when safety drops. |
 
 Recommendation: use `sdd-lite` first for bounded work. Escalate to `sdd-v2` when the lite route is no longer safe (broad migrations, redesigns, repo-wide coordination).
