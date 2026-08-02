@@ -44,6 +44,7 @@ For `abandoned`, state how far the work got and what was left undone.
 | qa-report.md |  |
 | macro-plan.md |  |
 | review-ledger.md |  |
+| delivery-report.md |  |
 
 Recommended values: `yes`, `no`.
 

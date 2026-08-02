@@ -172,7 +172,7 @@ Several changes, interactive triage. Used when accumulation is detected or on di
 
 Related: [1, 2] shared prefix + 60% file overlap
 
-Actions: all | none | 1,3 | inspect 3 | skip 4 | done
+Actions: all | none | 1,3 | 1-4 | inspect 3 | skip 4 | done
 ```
 
 Action semantics:
@@ -182,6 +182,7 @@ Action semantics:
 | `all` | select every `ready` row only, never `stale-candidate` or below |
 | `none` | clear the selection |
 | `1,3` | toggle those rows |
+| `1-4` | toggle that contiguous range |
 | `inspect N` | print the change digest and return to the loop without changing the selection |
 | `skip N` | exclude the row for this run |
 | `done` | confirm and execute the current selection |

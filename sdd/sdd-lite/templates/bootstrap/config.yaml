@@ -22,10 +22,14 @@ paths:
   changes_root: ./sdd-lite/openspec/changes
   reviews_root: ./sdd-lite/openspec/reviews
   archive_root: ./sdd-lite/openspec/archive
+  delivery_root: ./sdd-lite/openspec/delivery
 
 archive:
   suggest_threshold: 15
   stale_days: 30
+
+delivery:
+  pr_suggest_min_commits: 3
 
 quality_commands:
   install:
@@ -96,6 +100,7 @@ ai_setups:
   #     - sddl-judgment-day
   #     - sddl-deep-explorer
   #     - sddl-qa-review
+  #     - sddl-delivery
   #     - sddl-archive
   wrappers_injected: []
   # Example entry:

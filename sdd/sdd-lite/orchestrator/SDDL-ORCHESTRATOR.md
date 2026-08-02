@@ -126,7 +126,7 @@ If bootstrap is stale:
 [key naming, formatting, or structural conventions — 3-5 bullets]
 
 ### Stage References
-[relative paths to each installed skill: sddl-proposal, sddl-spec, sddl-design, sddl-plan, sddl-executor, sddl-code-review, sddl-judgment-day, sddl-qa-review, sddl-archive, sddl-deep-explorer]
+[relative paths to each installed skill: sddl-proposal, sddl-spec, sddl-design, sddl-plan, sddl-executor, sddl-code-review, sddl-judgment-day, sddl-qa-review, sddl-delivery, sddl-archive, sddl-deep-explorer]
 ```
 
 Workers receiving a `## Project Standards (auto-resolved)` block in their handoff must use it directly and skip reading the full `_shared/` contracts. If the block is missing, read `./sdd-lite/skill-catalog.md` and extract only the sections relevant to the current phase.
@@ -147,7 +147,7 @@ Core principle: does this inflate orchestrator context without need? If yes, del
 | Bash for state (git status, file checks) | yes | -- |
 | Bash for execution (test, build, install) | -- | yes |
 
-Default stage delegation: `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, and `sddl-archive` run as fresh workers. `sddl-archive` moves folders and writes one report per change, so it never runs inline. Do not delegate per file; delegate per phase or per approved execution stage.
+Default stage delegation: `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, `sddl-delivery`, and `sddl-archive` run as fresh workers. `sddl-archive` moves folders and writes one report per change, so it never runs inline. `sddl-delivery` reads a frozen diff plus several artifact digests and drafts long text, so it never runs inline either. Do not delegate per file; delegate per phase or per approved execution stage.
 
 ### Mandatory delegation triggers
 
@@ -322,6 +322,26 @@ When a delegated worker returns a result, the orchestrator processes it in this 
    - in `interactive` mode: wait for explicit confirmation before routing to the next stage (recognized phrases: yes, continue, sigue, dale, ok, listo, proceed, go, siguiente, next, adelante); if the user gives feedback, incorporate it first
    - in `auto` mode: route immediately after showing the summary
 
+## Closeout Offer
+
+When `sddl-qa-review` in `final` mode sets a change `completed`, both remaining actions become available at the same moment. Present them once, together, instead of asking twice.
+
+> Change `{change-name}` is completed (QA: `{verdict}`).
+>
+> 1. Draft the delivery (commit / PR / ticket) — `sddl-delivery`
+> 2. Archive it — `sddl-archive`
+> 3. Both, delivery first (recommended)
+> 4. Neither, leave it in `changes/`
+
+Rules:
+
+- One offer, not two. This is a routing offer like the accumulation check, not a checkpoint type of its own.
+- It skips no confirmation. `sddl-delivery` still raises `delivery_gate` and `sddl-archive` still raises `archive_review` before either acts.
+- On `both`, delivery runs first. Its `delivery-report.md` is then written inside `changes/{change-name}/` and archived with the change, keeping the whole record in one folder. Running archive first splits the record, because delivery would then write under `delivery/{target-slug}/` instead.
+- Record the answer as a decision. A resolved offer is not repeated, including when the answer was `neither`.
+- Declining either action never blocks the other, and never blocks the user's next request.
+- Archiving first is still safe: `sddl-delivery` reads from `archive/` too, so a change archived without delivery can always be drafted later.
+
 ## Stage Routing Table
 
 | Situation | Next stage or action | Approval required | Notes |
@@ -344,9 +364,10 @@ When a delegated worker returns a result, the orchestrator processes it in this 
 | a review protocol finished clean or with only `info` findings | continue routing; ledger feeds `sddl-qa-review` | no | review never closes the change |
 | an execution stage finished and needs review | `sddl-qa-review` in `stage` mode | yes | does not close the change |
 | final execution is complete and the user wants closeout | `sddl-qa-review` in `final` mode | yes | only final mode may set `completed` |
-| `sddl-qa-review` in `final` mode set the change `completed` | offer `sddl-archive` in `single` mode | yes | offer only; declining leaves the change in `changes/` |
+| the change is `completed` and the closeout offer is unresolved | present the closeout offer (see Closeout offer) | yes | one offer covering `sddl-delivery` and `sddl-archive`, never two prompts; each skill still raises its own mandatory checkpoint before acting |
 | the accumulation check fired, or the user asks to clean up changes | `sddl-archive` in `batch` mode | yes | interactive triage; nothing moves before `done` |
 | the user asks to archive one named change | `sddl-archive` in `single` mode | yes | works for finished, planned, and abandoned changes |
+| the user asks for a commit message, a PR description, or ticket content | `sddl-delivery` in the matching mode | no | works with an active change, an archived change, or a bare commit range; `commit` mode is on request only and is never offered proactively |
 | route is `escalate-to-sdd-v2` | stop and recommend `sdd-v2` | no | persist the blocker and next action |
 
 ## Resume Rules
@@ -423,7 +444,9 @@ Stop and consult the user when:
 - `macro-plan.md` exists only on approved `macro-plan-first` flows
 - `review-ledger.md` exists only when a `sddl-code-review` or `sddl-judgment-day` protocol ran
 - review workers (lenses, judges, refuter) stay read-only; only the orchestrator writes the review ledger
-- `sdd-lite` MVP does not define git, PR, or issue workflows
+- `sdd-lite` does not execute git, PR, or issue-tracker mutations: no `git commit`, `git push`, `git rebase`, `git reset`, `git stash`, `git checkout`, `git tag`, `gh pr create`, or ticket-API writes. The list is illustrative, not exhaustive: any git command that changes history, the working tree, or a remote is out
+- `git add` is the single exception, and only under all three conditions: the user asked for it in that turn, the paths are named explicitly, and the staging is reported back. Never `git add -A`, `git add .`, `git add -u`, or any pattern that stages files the user did not name. Staging belongs to the orchestrator alone; no stage worker stages files
+- `sddl-delivery` drafts commit, PR, and ticket content for the user to apply manually; it never applies anything, never stages, and never changes `lifecycle_status`
 - archiving is `sddl-archive` only: never automatic, always confirmed per change, and it never deletes or merges anything
 - `sddl-deep-explorer` stays read-only
 - resume and routing must be explainable from persisted state and artifacts

@@ -21,9 +21,13 @@ This contract defines where `sdd-lite` stores durable data, who owns each artifa
         qa-report.md
         macro-plan.md            # only when explicitly approved
         review-ledger.md         # only when a review ran for this change
+        delivery-report.md       # only when sddl-delivery ran for this change
     reviews/
       {target-slug}/
         review-ledger.md         # standalone reviews without an active change
+    delivery/
+      {target-slug}/
+        delivery-report.md       # standalone delivery runs without an active change
     archive/
       {YYYY-MM-DD}-{change-name}/
         archive-report.md        # plus every artifact the change had
@@ -70,6 +74,7 @@ Rules:
 | QA report | `./sdd-lite/openspec/changes/{change-name}/qa-report.md` | `sddl-qa-review` |
 | macro plan | `./sdd-lite/openspec/changes/{change-name}/macro-plan.md` | `sddl-plan` on approved macro-plan-first flows |
 | review ledger | `./sdd-lite/openspec/changes/{change-name}/review-ledger.md` | orchestrator, running the `sddl-code-review` or `sddl-judgment-day` protocol |
+| delivery report | `./sdd-lite/openspec/changes/{change-name}/delivery-report.md` | `sddl-delivery` |
 | archive report | `./sdd-lite/openspec/archive/{YYYY-MM-DD}-{change-name}/archive-report.md` | `sddl-archive` |
 
 ## Standalone review artifacts
@@ -89,6 +94,22 @@ Reviews without an active change persist under `./sdd-lite/openspec/reviews/{tar
 A standalone review has no `state.yaml`; the Review Digest at the top of its ledger is the only resume anchor and must always be current.
 
 Standalone reviews are not archived. `sddl-archive` operates on `changes/` only.
+
+## Standalone delivery artifacts
+
+Delivery runs without an active change persist under `./sdd-lite/openspec/delivery/{target-slug}/`:
+
+| Artifact | Canonical path | Owner |
+|---|---|---|
+| delivery report | `./sdd-lite/openspec/delivery/{target-slug}/delivery-report.md` | `sddl-delivery` |
+
+`target-slug` follows the same charset and rules as a standalone review, with two additions: a bare commit range uses `commits-{first-short-sha}-{last-short-sha}`, and a delivery run sourced from an archived change uses that change's `change-name`.
+
+A delivery run whose source is an archived change also writes here. `sddl-delivery` reads the archived folder but never writes into `archive/`, because an archived folder is fixed at archive time.
+
+A standalone delivery run has no `state.yaml`. The digest at the top of its report is the only resume anchor and must always be current.
+
+Standalone delivery runs are not archived. `sddl-archive` operates on `changes/` only.
 
 ## Archive artifacts
 
@@ -131,6 +152,7 @@ Use this split consistently:
 - `execution-log.md` for stage-by-stage execution trace
 - `qa-report.md` for stage review findings or final closeout findings
 - `review-ledger.md` for 4R or judgment-day findings, corroboration, and fix-round history
+- `delivery-report.md` for the frozen delivery target, the commit correlation evidence, the recorded commit SHAs, and which outputs were drafted
 - `archive-report.md` for the disposition, final verdict, and explicit reopen steps of an archived change
 - `state.yaml` for lifecycle, resume, checkpoints, decisions, escalation route, and next action
 
@@ -168,6 +190,9 @@ Rules:
 
 - `macro-plan.md` must not exist unless the route is `macro-plan-first` and the user approved that path.
 - `review-ledger.md` must not exist unless a `sddl-code-review` or `sddl-judgment-day` protocol ran for that change or target.
+- `delivery-report.md` must not exist unless `sddl-delivery` ran for that change or target.
+- `delivery-report.md` is an audit and resume record, not a delivery surface: the drafted commit, PR, and ticket texts are always shown in chat as copyable blocks regardless of what was persisted.
+- `sddl-delivery` may read from an archived change but never writes into `archive/`. The archived folder is fixed at archive time.
 - Review workers (lenses, judges, refuter) never write files; only the orchestrator writes the review ledger.
 - `sddl-qa-review` in `final` mode is the quality closeout point; `sddl-archive` is bookkeeping after it and never a second quality gate.
 - If the safest path is `escalate-to-sdd-v2`, the lite change state should record that route and stop claiming lite completion.

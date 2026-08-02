@@ -49,6 +49,7 @@ When AI setup configuration is confirmed by the user:
 
 Do not write change-scoped artifacts.
 Do not write outside `./sdd-lite/` except for AI setup files explicitly confirmed by the user.
+Do not create or overwrite `./sdd-lite/templates/`. Those files are user-owned overrides created on request by the owning skill, never by bootstrap, and a rerun must leave them untouched.
 
 ## User Interaction
 
@@ -139,7 +140,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
                    (use when the package may move or symlinks are unsupported)
    ```
 
-   **Skills to install** (all 11 canonical skills):
+   **Skills to install** (all 12 canonical skills):
    - `sddl-init`
    - `sddl-proposal`
    - `sddl-spec`
@@ -150,6 +151,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
    - `sddl-judgment-day`
    - `sddl-deep-explorer`
    - `sddl-qa-review`
+   - `sddl-delivery`
    - `sddl-archive`
 
    Some skills ship extra protocol files in a `references/` directory next to their `SKILL.md` (currently `sddl-code-review` and `sddl-judgment-day`). Installation always covers the whole skill directory, not only `SKILL.md`.
@@ -170,6 +172,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
      - `orchestrator/` → `<package-root>/orchestrator/`
      - `templates/artifacts/` → `<package-root>/templates/artifacts/`
      - `templates/bootstrap/` → `<package-root>/templates/bootstrap/`
+     - `templates/delivery/` → `<package-root>/templates/delivery/`
    - Do not rewrite `./sdd-lite/` paths — they are already project-relative.
    - Do not rewrite `references/` paths — they are skill-relative and the directory is copied alongside `SKILL.md`.
    - On re-run: if copied files already exist, replace them (they are generated output, not user content).

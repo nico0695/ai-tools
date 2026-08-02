@@ -37,7 +37,8 @@ sddl-init (bootstrap, una sola vez)
   -> sddl-executor      (ejecuta UNA etapa aprobada)
   -> sddl-code-review   (ofrecido si el diff no es trivial: review 4R con ledger)
   -> sddl-qa-review     (revision por etapa o final; la final consume el ledger)
-  -> sddl-archive       (ofrecido al cerrar: mueve el cambio al archivo)
+  -> cierre             (una sola oferta al completar el cambio:
+                         delivery / archive / ambos / ninguno)
 ```
 
 Cada etapa necesita tu aprobacion antes de avanzar. El executor nunca avanza solo a la siguiente etapa.
@@ -96,7 +97,7 @@ Lee `state.yaml` y retoma desde donde quedo.
 
 ---
 
-## Las 11 skills
+## Las 12 skills
 
 | Skill | Que hace |
 |---|---|
@@ -110,6 +111,7 @@ Lee `state.yaml` y retoma desde donde quedo.
 | `sddl-judgment-day` | Review adversarial opt-in: dos jueces ciegos en paralelo; lo que ambos confirman se puede arreglar, las contradicciones escalan a vos |
 | `sddl-deep-explorer` | Analisis read-only para resolver incognitas antes de disenar |
 | `sddl-qa-review` | Revision por etapa (`stage`) o cierre final (`final`) |
+| `sddl-delivery` | Redacta el mensaje de commit, la descripcion del PR y el contenido del ticket. Nunca ejecuta git ni llama a un tracker |
 | `sddl-archive` | Mueve cambios terminados, planificados o abandonados al arbol de archivo. Nunca borra ni fusiona |
 
 ### Los 2 loops de review en corto
@@ -127,6 +129,28 @@ Lee `state.yaml` y retoma desde donde quedo.
 - **Retomar siempre desde el orquestador.** El resume se reconstruye de `state.yaml`, no del chat.
 - **Escalar si crece.** Si el cambio se vuelve demasiado grande, no forzarlo en sdd-lite.
 - **Los artefactos se persisten en ingles.** El chat puede ser en espanol.
+- **Nada corre git por vos.** La unica excepcion es `git add` solo si lo pedis en el momento.
+
+---
+
+## Cerrar la entrega (`sddl-delivery`)
+
+Redacta los textos para entregar el trabajo. **Solo redacta**: nunca corre git, nunca llama a un tracker, nunca toca el `lifecycle_status`.
+
+| Modo | Devuelve | Nota |
+|---|---|---|
+| `commit` | un mensaje de commit | solo a pedido; guarda el SHA si le confirmas que lo aplicaste |
+| `pr` | la descripcion del PR | agrupada por tema, sin tabla de archivos |
+| `ticket` | descripcion corregida, evidencia, como testear, estado | cuatro bloques que pegas por separado; sirve para cualquier tracker |
+
+Cuando usarlo:
+
+- **recien cerraste un cambio** — la oferta de cierre te lo propone y los artefactos responden casi todo
+- **el cambio ya esta archivado** — archivar no bloquea la redaccion
+- **no hay flujo SDD** — elegis de una lista numerada de commits previos (`all | none | 1,3 | 1-4 | inspect 3 | done`). Solo se preseleccionan los que tienen SHA registrado; el resto es una recomendacion que confirmas vos
+
+El idioma se elige en el gate, o lo fijas una vez con `delivery.output_language` en `config.yaml`.
+Para personalizar un formato pedile la plantilla: se copia una sola vez a `./sdd-lite/templates/delivery/` y despues nada la sobrescribe.
 
 ---
 
@@ -157,7 +181,7 @@ Dos modos:
 
 Relacionados: [1, 2] prefijo compartido + 60% de archivos en comun
 
-Acciones: all | none | 1,3 | inspect 3 | skip 4 | done
+Acciones: all | none | 1,3 | 1-4 | inspect 3 | skip 4 | done
 ```
 
 Nada se mueve hasta `done`. `inspect N` muestra el detalle de un cambio sin tocar la seleccion. Solo los candidatos `ready` se preseleccionan; los stale y bloqueados piden confirmacion individual, y `abandoned` pide un motivo de una linea.
@@ -191,8 +215,11 @@ Reabrir es mover la carpeta de vuelta a `changes/{nombre}/` y aplicar la edicion
       execution-log.md        # registro de ejecucion
       qa-report.md            # hallazgos y cierre
       review-ledger.md        # solo si corrio un review 4R o judgment-day
+      delivery-report.md      # solo si corrio sddl-delivery para este cambio
     reviews/{target}/
       review-ledger.md        # reviews independientes sin cambio activo
+    delivery/{target}/
+      delivery-report.md      # delivery independiente sin cambio activo
     archive/
       {AAAA-MM-DD}-{nombre}/
         archive-report.md     # mas todos los artefactos que tenia el cambio

@@ -48,6 +48,7 @@ These ids are the canonical change-stage names used in state and contracts.
 | `sddl-code-review` | on-demand 4R code review of a frozen diff, producing `review-ledger.md` |
 | `sddl-judgment-day` | opt-in adversarial dual review (two blind judges) of a code target or planning artifact |
 | `sddl-qa-review` | stage review or final closeout |
+| `sddl-delivery` | draft the commit message, pull request description, and ticket content for work already done |
 | `sddl-archive` | move finished, planned, or abandoned changes into the archive tree |
 
 ### Stage status ids
@@ -143,6 +144,10 @@ Every lite stage result must be representable with:
 - `sddl-deep-explorer` is read-only and on-demand.
 - `sddl-qa-review` in `stage` mode never marks the change `completed`.
 - `sddl-qa-review` in `final` mode is the only lite path that may set `lifecycle_status: completed`.
+- `sddl-delivery` drafts delivery text and never changes `lifecycle_status`, never closes a change, and never archives one.
+- `sddl-delivery` never executes a git write command and never calls an issue tracker: it produces text the user applies manually.
+- `sddl-delivery` may read its source from `changes/{change-name}/` or from an archived copy, so archiving a change never blocks drafting its delivery text.
+- `delivery-report.md` is not a resume anchor. Its absence never blocks resume, because delivery runs after closeout.
 - `sddl-archive` is the only lite path that may set `lifecycle_status: archived`, and it writes that status only inside the archived copy.
 - `sddl-archive` is opt-in and confirmed per change: it never runs automatically and never archives a change without a recorded decision.
 - `sddl-archive` never deletes, never merges changes, and never archives a `fail` QA verdict.

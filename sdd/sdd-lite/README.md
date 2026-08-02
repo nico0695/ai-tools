@@ -38,7 +38,7 @@ Default runtime heuristics:
 
 - inline only local routing decisions that require at most 3 repo files
 - delegate bounded analysis when routing or planning needs 4 or more files
-- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, and `sddl-archive` as fresh workers by default
+- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, `sddl-delivery`, and `sddl-archive` as fresh workers by default
 - run `sddl-code-review` and `sddl-judgment-day` as orchestrator-executed protocols: read-only lens/judge workers, ledger written by the orchestrator
 - do not run multi-file edits inline in the orchestrator
 - do not run builds, installs, or broad test suites inline in the orchestrator
@@ -53,12 +53,14 @@ Default runtime heuristics:
 - Chat interaction may be `es` or `en`.
 - Every later stage requires explicit approval before it starts.
 - `sddl-executor` must not perform hidden git side effects.
+- No git, PR, or tracker mutation is executed. The one exception is `git add`, by the orchestrator only, on explicit request and with named paths — never `-A`, `.`, or `-u`.
 - `sddl-deep-explorer` is read-only.
 - Review workers (4R lenses, judges, refuter) are read-only; only the orchestrator writes `review-ledger.md`.
 - `sddl-judgment-day` is opt-in only and replaces the 4R review for its target.
 - Review fixes always flow through `plan.md` and `stage_approval`; reviews never edit code directly.
 - `sddl-qa-review` in `stage` mode never closes the change.
 - Only `sddl-qa-review` in `final` mode may mark the change `completed`.
+- `sddl-delivery` drafts commit, PR, and ticket text; it never runs git, never calls a tracker, and never changes the lifecycle.
 - Only `sddl-archive` may set `lifecycle_status: archived`; it never deletes, never merges, and always confirms per change.
 - Resume must be explainable from persisted state and artifacts, not from prior chat memory.
 
@@ -100,6 +102,8 @@ sdd/sdd-lite/
       SKILL.md
     sddl-qa-review/
       SKILL.md
+    sddl-delivery/
+      SKILL.md
     sddl-archive/
       SKILL.md
   templates/
@@ -107,6 +111,10 @@ sdd/sdd-lite/
       config.yaml
       project-context.md
       skill-catalog.md
+    delivery/
+      commit.md
+      pr.md
+      ticket.md
     artifacts/
       proposal.md
       spec.md
@@ -116,6 +124,7 @@ sdd/sdd-lite/
       qa-report.md
       macro-plan.md
       review-ledger.md
+      delivery-report.md
       archive-report.md
   schemas/
     config.schema.yaml
@@ -143,9 +152,13 @@ All runtime files live under `./sdd-lite/`:
         qa-report.md
         macro-plan.md      # only when explicitly needed and approved
         review-ledger.md   # only when a 4R or judgment-day review ran
+        delivery-report.md # only when sddl-delivery ran for this change
     reviews/
       {target-slug}/
         review-ledger.md   # standalone reviews without an active change
+    delivery/
+      {target-slug}/
+        delivery-report.md # standalone delivery runs without an active change
     archive/
       {YYYY-MM-DD}-{change-name}/
         archive-report.md  # plus every artifact the change had
@@ -169,6 +182,7 @@ All runtime files live under `./sdd-lite/`:
 | `sddl-judgment-day` | opt-in adversarial dual review with two blind judges (code or planning artifacts) | `review-ledger.md`, `state.yaml` (orchestrator-written) |
 | `sddl-deep-explorer` | bounded read-only analysis | no persistent artifact by default |
 | `sddl-qa-review` | stage review and final closeout | `qa-report.md`, `state.yaml` |
+| `sddl-delivery` | draft the commit message, PR description, and ticket content for work already done | `delivery-report.md`, `state.yaml` |
 | `sddl-archive` | move finished, planned, or abandoned changes into the archive tree | `archive/{YYYY-MM-DD}-{change-name}/archive-report.md` |
 
 ## Runtime Standards Registry
@@ -240,7 +254,8 @@ preflight
   -> sddl-qa-review (stage) when useful
   -> sddl-executor / sddl-code-review / sddl-qa-review (stage) as needed
   -> sddl-qa-review (final, consumes review-ledger.md as evidence when it exists)
-  -> sddl-archive offer once the change is completed (opt-in, never automatic)
+  -> closeout offer once the change is completed:
+       sddl-delivery / sddl-archive / both (delivery first) / neither
 ```
 
 Key points:
@@ -279,6 +294,30 @@ Opt-in adversarial review (explicit request only: "judgment day", "dual review",
 
 Both protocols run without an active change, persisting only `./sdd-lite/openspec/reviews/{target-slug}/review-ledger.md`. Confirmed severe findings suggest opening a change (mini or full) seeded from the ledger.
 
+## Delivery
+
+`sddl-delivery` turns finished work into the three texts needed to hand it off: a commit message, a pull request description, and ticket content. It drafts only — it never runs a git write command, never calls a tracker, and never touches `lifecycle_status`.
+
+Three modes:
+
+- `commit` — one reviewed execution stage whose files are still uncommitted; drafts one message and, if the user confirms they applied it, records the SHA. On request only, never offered proactively
+- `pr` — a branch's worth of work; drafts the pull request description
+- `ticket` — the same target expressed for a work item: corrected description, development evidence, how to test, and status
+
+It works in three situations: inside an active change, over an already archived change, or standalone over a bare commit range with no SDD flow at all.
+
+Standalone runs list the candidate commits in a numbered table with the same action set as archive's batch mode, and correlate each one against known changes with a fixed rubric. Because `sdd-lite` only records a commit SHA when `commit` mode does it, every other correlation is inferential — the rubric proposes, the user decides, and nothing is drafted until `done`.
+
+Hard rules:
+
+- **never executes** — no `git commit`, no `git push`, no `gh pr create`, no ticket API; every output is text to copy
+- **never closes** — `sddl-qa-review` in `final` mode remains the only closer
+- **never invents** — a ticket reference, a risk, or a test step that is not in an artifact, in the diff, or from the user does not appear in the output
+
+Output language is chosen at the `delivery_gate`: all English, `chat_language`, all Spanish, or commit in English with PR and ticket in Spanish. Set `delivery.output_language` in `config.yaml` to skip the question.
+
+To customize an output, ask for the template: the package default is copied once to `./sdd-lite/templates/delivery/` and is yours from then on. Headings are the structure; everything under them is free text. Nothing overwrites that copy, including a rerun of `sddl-init`.
+
 ## Archive
 
 `sddl-archive` moves changes out of `changes/` once they no longer belong in the active tree. It is bookkeeping, not a second quality gate: it trusts the QA verdict and never compensates for a missing or failed review.
@@ -294,8 +333,8 @@ Each archived change gets a short `archive-report.md` with its disposition, verd
 
 Two modes:
 
-- `single` — one change; offered after `sddl-qa-review` in `final` mode, or on request
-- `batch` — interactive triage of every candidate, with an explicit action set (`all`, `none`, indices, `inspect N`, `skip N`, `done`)
+- `single` — one change; reached through the closeout offer after `sddl-qa-review` in `final` mode, or on request
+- `batch` — interactive triage of every candidate, with an explicit action set (`all`, `none`, indices, ranges, `inspect N`, `skip N`, `done`)
 
 Classification uses a fixed rubric over `lifecycle_status`, QA verdict, and age. Only `ready` candidates are ever preselected; stale and blocked ones need individual confirmation.
 
@@ -356,6 +395,7 @@ If the work behaves like a migration, large redesign, or broad coordination prob
 | `execution-log.md` | `sddl-executor` | stage-by-stage execution ledger |
 | `review-ledger.md` | orchestrator (via review protocols) | 4R / judgment-day findings and fix rounds |
 | `qa-report.md` | `sddl-qa-review` | review findings and closeout evidence |
+| `delivery-report.md` | `sddl-delivery` | frozen delivery target, commit correlation, recorded SHAs |
 | `archive-report.md` | `sddl-archive` | disposition, final verdict, and explicit reopen steps |
 
 ## Artifact Budget Guidance
@@ -383,8 +423,9 @@ Each artifact should begin with a short digest that downstream stages can reuse 
 4. Use `sddl-proposal`, `sddl-spec`, `sddl-design`, and `sddl-plan` before implementation.
 5. Approve execution stage by stage.
 6. Use `sddl-qa-review` in `stage` mode when review is useful and in `final` mode at closeout.
-7. Use `sddl-archive` to move closed, planned, or abandoned changes out of `changes/` when they pile up.
-8. Resume from `state.yaml` and owned artifacts, not from prior chat memory.
+7. Use `sddl-delivery` to draft the commit, PR, and ticket text once the work is done.
+8. Use `sddl-archive` to move closed, planned, or abandoned changes out of `changes/` when they pile up.
+9. Resume from `state.yaml` and owned artifacts, not from prior chat memory.
 
 ## How It Should Not Be Used
 
