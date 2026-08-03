@@ -84,6 +84,12 @@ Copy only the relevant bullets from this section into delegated prompts.
 - Review workers are read-only; only the orchestrator writes `review-ledger.md`. Fixes always flow through `plan.md` and `stage_approval`.
 - `sddl-judgment-day` is opt-in, replaces 4R for its target, and confirms only what both blind judges agree on.
 
+### project_conventions
+
+Filled by `sddl-init` step 3 from `project-context.md`. Max 6 bullets, one line each. Omit the section entirely when nothing was established.
+
+- 
+
 ### risk_zones
 
 - Multi-area changes may require `macro-plan-first` or escalation.

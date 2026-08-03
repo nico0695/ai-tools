@@ -273,14 +273,14 @@ properties:
           type: string
           enum:
             - claude_code
-            - codex
+            - agents
       configured:
         type: array
         items:
           type: string
           enum:
             - claude_code
-            - codex
+            - agents
       skills_installed:
         type: array
         items:
@@ -322,7 +322,7 @@ properties:
               type: string
               enum:
                 - claude_code
-                - codex
+                - agents
             target_file:
               type: string
               minLength: 1

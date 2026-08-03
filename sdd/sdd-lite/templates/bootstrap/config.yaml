@@ -81,7 +81,7 @@ conventions:
 
 ai_setups:
   detected: []
-  # Possible values: claude_code, codex
+  # Possible values: claude_code, agents
   configured: []
   # Skills installed per AI target
   skills_installed: []

@@ -89,17 +89,20 @@ In those cases, **escalate to `sdd-v2`**.
 
 1. **Preflight.** Determines whether bootstrap is missing, stale, incomplete, or already usable.
 2. **Shallow scan.** Inspects manifests, lockfiles, docs, build/test/lint configs, source and test roots.
-3. **AI setup detection.** Scans the project root for:
+3. **Convention scan.** Bounded pass (max 6 extra files) over contributor docs, executable style config, and 2-3 representative source/test files, to record how the project already writes code: naming and file placement, layering, testing style, error handling. Anything not settled within the budget is recorded as `not established`. The result lands in the `Conventions` table of `project-context.md` and, distilled to at most 6 bullets, in `### project_conventions` of `skill-catalog.md` — which is what gets injected into delegated stage prompts.
+4. **AI setup detection.** Scans the project root for:
 
-   | Signal found | AI detected |
+   | Signal found | AI id detected |
    |---|---|
-   | `CLAUDE.md` exists | Claude Code |
-   | `.claude/` directory exists | Claude Code |
-   | `AGENTS.md` exists | Codex |
-   | `.codex/` directory exists | Codex |
+   | `CLAUDE.md` exists | `claude_code` |
+   | `.claude/` directory exists | `claude_code` |
+   | `AGENTS.md` exists | `agents` |
+   | `.agents/` directory exists | `agents` |
 
-4. **Selection checkpoint.** Asks the user which AI(s) to configure: Claude Code, Codex, both, or skip.
-5. **Skill installation.** The user chooses between two methods:
+   `agents` is the vendor-neutral id for any agent driven by the `AGENTS.md` / `.agents/` convention, Codex included.
+
+5. **Selection checkpoint.** Asks the user which AI(s) to configure: `claude_code`, `agents`, both, or skip.
+6. **Skill installation.** The user chooses between two methods:
 
    | Method | Description | Use when |
    |---|---|---|
@@ -108,9 +111,9 @@ In those cases, **escalate to `sdd-v2`**.
 
    All 12 canonical skills are installed: `sddl-init`, `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-code-review`, `sddl-judgment-day`, `sddl-deep-explorer`, `sddl-qa-review`, `sddl-delivery`, `sddl-archive`.
 
-6. **Wrapper injection.** Inserts a demarcated block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` in `CLAUDE.md` and/or `AGENTS.md`. If the block already exists, it is replaced; if the file is missing, it is created with only the wrapper. Confirmation is always required before inserting.
+7. **Wrapper injection.** Inserts a demarcated block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` in `CLAUDE.md` and/or `AGENTS.md`. If the block already exists, it is replaced; if the file is missing, it is created with only the wrapper. Confirmation is always required before inserting.
 
-7. **Generates the bootstrap artifacts**:
+8. **Generates the bootstrap artifacts**:
    - `./sdd-lite/project-context.md`
    - `./sdd-lite/skill-catalog.md`
    - `./sdd-lite/openspec/config.yaml`

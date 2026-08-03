@@ -28,6 +28,7 @@ Read the minimum project evidence needed from:
 - build, test, lint, and typecheck configuration
 - maintained docs and contributor guidance
 - obvious source, app, package, test, and config roots
+- executable style config and a small sample of representative source and test files (step 3 budget)
 - existing `./sdd-lite/project-context.md`
 - existing `./sdd-lite/skill-catalog.md`
 - existing `./sdd-lite/openspec/config.yaml`
@@ -43,9 +44,9 @@ Write or refresh only:
 When AI setup configuration is confirmed by the user:
 
 - `.claude/skills/<skill-name>/` (skill directory symlink or copy per user choice, including `references/` when present) for Claude Code
-- `.agents/skills/<skill-name>/` (skill directory symlink or copy per user choice, including `references/` when present) for Codex
+- `.agents/skills/<skill-name>/` (skill directory symlink or copy per user choice, including `references/` when present) for AGENTS.md agents
 - `CLAUDE.md` (wrapper block injection, demarcated) for Claude Code
-- `AGENTS.md` (wrapper block injection, demarcated) for Codex
+- `AGENTS.md` (wrapper block injection, demarcated) for AGENTS.md agents
 
 Do not write change-scoped artifacts.
 Do not write outside `./sdd-lite/` except for AI setup files explicitly confirmed by the user.
@@ -69,9 +70,9 @@ Valid reasons to ask include:
 - missing or contradictory quality commands
 - ambiguous source roots in a multi-app or multi-package repository
 - unclear preferred chat language between `es` and `en`
-- which AI setups to configure (step 4)
-- whether to install skills as symlinks or copies (step 5)
-- whether to inject the wrapper into a detected AI file (step 6)
+- which AI setups to configure (step 5)
+- whether to install skills as symlinks or copies (step 6)
+- whether to inject the wrapper into a detected AI file (step 7)
 
 Do not ask for confirmation of obvious local choices already implied by the approved runtime.
 
@@ -90,19 +91,38 @@ Chat interaction may follow the detected or confirmed `chat_language`.
    - source roots, test roots, and config roots
    - candidate quality commands
 
-3. AI setup detection
+3. Convention scan (bounded)
+   Capture how this project already writes code, so delegated stages follow it instead of rediscovering it.
+
+   Budget: at most 6 files beyond step 2. This is not exploration — if the answer is not cheap, it is `not established`.
+
+   Read only, stopping as soon as you have enough:
+   - contributor docs already found in step 2 (`CONTRIBUTING.md`, architecture notes, ADRs)
+   - executable style config (`eslint`, `prettier`, `tsconfig`, `ruff`, `.editorconfig`, equivalents)
+   - at most 2 representative source files from the main source root, plus 1 test file
+
+   Record a convention only when it is repeated across the files you read or fixed by executable config.
+   Cover: naming and file placement, layering or architectural pattern, testing style, and error handling if a pattern is obvious.
+
+   Cut rules:
+   - Never read extra files to confirm a hunch. If it is unclear after the budget, write `not established`.
+   - Do not restate rules that already live in `skill-catalog.md`; this step captures project facts only.
+
+4. AI setup detection
    Scan the project root for known AI setup signals. Do not modify any files in this step.
 
-   | Signal found | AI detected |
+   | Signal found | AI id detected |
    |---|---|
-   | `CLAUDE.md` exists | Claude Code |
-   | `.claude/` directory exists | Claude Code |
-   | `AGENTS.md` exists | Codex |
-   | `.codex/` directory exists | Codex |
+   | `CLAUDE.md` exists | `claude_code` |
+   | `.claude/` directory exists | `claude_code` |
+   | `AGENTS.md` exists | `agents` |
+   | `.agents/` directory exists | `agents` |
 
-   If both are found, list both. Record the detection results for step 4.
+   `agents` is the vendor-neutral id for any agent driven by the `AGENTS.md` / `.agents/` convention (Codex and others). Vendor-specific directories such as `.codex/` are not detection signals on their own.
 
-4. AI configuration selection (checkpoint)
+   If both are found, list both. Record the detection results for step 5.
+
+5. AI configuration selection (checkpoint)
    Present the detection results and ask the user which AI setups to configure.
 
    - If exactly one AI detected:
@@ -114,7 +134,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
      ```
      Detected AI setups:
        [1] Claude Code (CLAUDE.md / .claude/ found)
-       [2] Codex (AGENTS.md found)
+       [2] AGENTS.md agents (AGENTS.md / .agents/ found)
      Configure sdd-lite for: all / 1 / 2 / none
      ```
    - If no AI detected:
@@ -122,15 +142,15 @@ Chat interaction may follow the detected or confirmed `chat_language`.
      No AI setup found in this project.
      Which AI would you like to configure sdd-lite for?
        [1] Claude Code (will create CLAUDE.md if missing)
-       [2] Codex (will create AGENTS.md if missing)
+       [2] AGENTS.md agents (will create AGENTS.md if missing)
        [3] Both
        [4] Skip AI setup
      ```
 
-   If the user selects `none` or `skip`, omit steps 5 and 6 and proceed to step 7.
+   If the user selects `none` or `skip`, omit steps 6 and 7 and proceed to step 8.
 
-5. Skill installation
-   For each AI selected in step 4, ask the installation method:
+6. Skill installation
+   For each AI selected in step 5, ask the installation method:
 
    ```
    Install sdd-lite skills as:
@@ -157,8 +177,8 @@ Chat interaction may follow the detected or confirmed `chat_language`.
    Some skills ship extra protocol files in a `references/` directory next to their `SKILL.md` (currently `sddl-code-review` and `sddl-judgment-day`). Installation always covers the whole skill directory, not only `SKILL.md`.
 
    **If symlink:**
-   - Target parent directory for Claude Code: `.claude/skills/`
-   - Target parent directory for Codex: `.agents/skills/`
+   - Target parent directory for `claude_code`: `.claude/skills/`
+   - Target parent directory for `agents`: `.agents/skills/`
    - Create the parent directory if it does not exist.
    - Create a directory symlink: `<parent-dir>/<skill-name>` → relative path back to `<package-root>/skills/<skill-name>` (the whole skill directory, so `SKILL.md` and `references/` resolve together).
    - On re-run: if the symlink already exists and points to the correct source, skip. If it points elsewhere, warn and ask the user. If a legacy file-level symlink (`<skill-name>/SKILL.md`) exists from an older install, replace it with the directory symlink.
@@ -177,12 +197,12 @@ Chat interaction may follow the detected or confirmed `chat_language`.
    - Do not rewrite `references/` paths — they are skill-relative and the directory is copied alongside `SKILL.md`.
    - On re-run: if copied files already exist, replace them (they are generated output, not user content).
 
-6. Wrapper injection
-   For each AI configured in step 4:
+7. Wrapper injection
+   For each AI configured in step 5:
 
    a. Read the corresponding wrapper template:
-      - Claude Code: `<package-root>/templates/wrappers/claude-orchestrator.md`
-      - Codex: `<package-root>/templates/wrappers/codex-orchestrator.md`
+      - `claude_code`: `<package-root>/templates/wrappers/claude-orchestrator.md`
+      - `agents`: `<package-root>/templates/wrappers/agents-orchestrator.md`
    b. Resolve placeholders in the template:
       - `<package-root>` → the value of `project.package_root` being written to `config.yaml`
       - `<generated_at>` → current ISO timestamp
@@ -197,28 +217,31 @@ Chat interaction may follow the detected or confirmed `chat_language`.
       - If the target file does not exist: create it containing only the resolved block.
    f. If the user declines: show the resolved block as plain text with instructions on where to paste it manually.
 
-7. Infer project bootstrap facts
+8. Infer project bootstrap facts
    Infer project identity, canonical runtime paths, and bootstrap metadata from the evidence collected in step 2.
 
-8. Build project context
-   Generate `./sdd-lite/project-context.md` from the bootstrap template using compact, reusable facts.
+9. Build project context
+   Source template: `<package-root>/templates/bootstrap/project-context.md`
+   Generate `./sdd-lite/project-context.md` using compact, reusable facts from steps 2, 3, and 8.
 
-9. Build skill catalog
-   Generate `./sdd-lite/skill-catalog.md` through an internal helper flow as the runtime standards registry.
-   It should include compact rules, trigger mappings, delegation heuristics, and support-agent references.
-   This is not a separate skill.
+10. Build skill catalog
+    Source template: `<package-root>/templates/bootstrap/skill-catalog.md`
+    Generate `./sdd-lite/skill-catalog.md` as the runtime standards registry: fill the template sections with compact rules, trigger mappings, delegation heuristics, support-agent references, and the `### project_conventions` bullets distilled in step 3.
+    This is not a separate skill.
 
-10. Build config
+11. Build config
+    Source template: `<package-root>/templates/bootstrap/config.yaml`
+    Must validate against: `<package-root>/schemas/config.schema.yaml`
     Generate `./sdd-lite/openspec/config.yaml` with the approved local runtime:
     - runtime root: `./sdd-lite/`
     - artifact root: `./sdd-lite/openspec/`
-    - `ai_setups` section recording the results of steps 3–6:
-      - `detected`: list of AI ids found in step 3
-      - `configured`: list of AI ids the user selected in step 4
-      - `skills_installed`: one entry per AI with `target`, `method`, `installed_at`, and `skills` list
+    - `ai_setups` section recording the results of steps 4–7:
+      - `detected`: list of AI ids found in step 4
+      - `configured`: list of AI ids the user selected in step 5
+      - `skills_installed`: one entry per install target with `target`, `method`, `installed_at`, and `skills` list
       - `wrappers_injected`: one entry per AI where wrapper injection was confirmed, with `ai`, `target_file`, and `injected_at`
 
-11. Final summary
+12. Final summary
     Return a short bootstrap summary that distinguishes reads, writes, inferences, and any questions asked.
     Include a dedicated AI setup section in the summary covering:
     - AI setups detected
@@ -233,10 +256,13 @@ Before finishing, verify:
 - bootstrap writes only target `./sdd-lite/` (except AI setup files explicitly confirmed by the user)
 - detected paths match the approved local runtime layout
 - `project-context.md` captures stack, directories, docs, commands, conventions, and risks
+- every `Conventions` row in `project-context.md` is either backed by evidence or marked `not established`
 - `skill-catalog.md` acts as the runtime standards registry and includes compact rules usable in delegated prompts
+- `### project_conventions` in `skill-catalog.md` holds project facts, not sdd-lite rules, and stays within 6 bullets
 - `config.yaml` includes project identity, stack, quality commands, bootstrap metadata, canonical paths, chat language support, and `ai_setups`
 - persisted artifacts remain English even when `chat_language` is `es`
 - skill files exist at the expected target paths for each configured AI, including `references/` files for skills that ship them
+- in copy mode, every rewritten package-relative path resolves to an existing file
 - wrapper blocks in `CLAUDE.md` / `AGENTS.md` use demarcated markers and contain the correct resolved `package_root`
 - no wrapper block was inserted without explicit user confirmation
 

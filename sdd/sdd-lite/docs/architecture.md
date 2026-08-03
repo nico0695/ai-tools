@@ -73,7 +73,7 @@ sdd/sdd-lite/
     bootstrap/                 # config.yaml, project-context.md, skill-catalog.md seeds
     artifacts/                 # one baseline shape per persisted artifact
     delivery/                  # commit.md, pr.md, ticket.md defaults
-    wrappers/                  # claude-orchestrator.md, codex-orchestrator.md, generic-orchestrator.md
+    wrappers/                  # claude-orchestrator.md, agents-orchestrator.md
   schemas/
     config.schema.yaml
     state.schema.yaml
@@ -115,12 +115,11 @@ Full artifact ownership table: see [config-and-state.md](./config-and-state.md).
 
 The orchestration logic itself — routing, delegation rules, approval gates, result processing — lives entirely in `SDDL-ORCHESTRATOR.md` and is platform-agnostic. What changes per platform is only *how a worker gets launched*. That difference is captured in `templates/wrappers/`, injected by `sddl-init` into the host AI's own instruction file between `<!-- sdd-lite:start -->` / `<!-- sdd-lite:end -->` markers.
 
-| Wrapper | Target file | Worker launch mechanism |
-|---|---|---|
-| `claude-orchestrator.md` | `CLAUDE.md` | native Agent tool; lens/judge fan-out runs in parallel, waited |
-| `codex-orchestrator.md` | `AGENTS.md` | native sub-agents when available (`native-workers` mode), asked once per session; falls back to `inline-sequential` |
-| `generic-orchestrator.md` | any host file, applied manually | no native sub-agent support assumed; every stage runs inline, sequentially, with explicit context compression between stages |
+| Wrapper | AI id | Target file | Worker launch mechanism |
+|---|---|---|---|
+| `claude-orchestrator.md` | `claude_code` | `CLAUDE.md` | native Agent tool; lens/judge fan-out runs in parallel, waited |
+| `agents-orchestrator.md` | `agents` | `AGENTS.md` | native sub-agents when available (`native-workers` mode), asked once per session; falls back to `inline-sequential`, which compresses context between stages |
 
-`sddl-init`'s AI-setup detection (step 3) only recognizes `CLAUDE.md`/`.claude/` and `AGENTS.md`/`.codex/` signals — it drives automatic configuration for Claude Code and Codex only. The generic wrapper has no matching auto-detection signal; it is meant for manual installation into an AI assistant `sddl-init` does not recognize, by copying its resolved block into that assistant's instruction file by hand.
+`agents` is the vendor-neutral id for any assistant driven by the `AGENTS.md` / `.agents/` convention, Codex included. `sddl-init`'s AI-setup detection (step 4) recognizes `CLAUDE.md`/`.claude/` for `claude_code` and `AGENTS.md`/`.agents/` for `agents`; vendor-specific directories such as `.codex/` are not detection signals on their own. An assistant that follows neither convention is served by installing the `agents` wrapper block into its instruction file by hand.
 
 Whichever wrapper is active, all invariants from [orchestrator.md](./orchestrator.md) and [review-protocols.md](./review-protocols.md) still apply — `interactive`/`auto` execution mode and worker mode only control pacing and isolation, never approval gates.

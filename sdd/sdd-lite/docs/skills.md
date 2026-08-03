@@ -35,9 +35,11 @@ flowchart LR
 
 ## `sddl-init`
 
-**Purpose.** Prepare durable bootstrap context under `./sdd-lite/` and install the package into the host AI setup (Claude Code, Codex, or none). Shallow and high-signal — it bootstraps, it does not deeply explore.
+**Purpose.** Prepare durable bootstrap context under `./sdd-lite/` and install the package into the host AI setup (`claude_code`, `agents`, or none). Shallow and high-signal — it bootstraps, it does not deeply explore.
 
-**Inputs.** Top-level manifests, lockfiles, build/test/lint/typecheck config, maintained docs, existing bootstrap files if present.
+**Inputs.** Top-level manifests, lockfiles, build/test/lint/typecheck config, maintained docs, existing bootstrap files if present, plus a bounded convention sample (step 3).
+
+**Convention scan (step 3).** A bounded pass — at most 6 files beyond the shallow scan — over contributor docs, executable style config, and 2-3 representative source/test files. It records naming and file placement, layering, testing style, and error handling, but only when a pattern repeats or is fixed by executable config; anything unsettled within the budget is written as `not established`. Results land in the `Conventions` table of `project-context.md` and, distilled to at most 6 bullets, in `### project_conventions` of `skill-catalog.md` — the section the orchestrator injects into delegated stage prompts.
 
 **Outputs.** `project-context.md`, `skill-catalog.md` (the runtime standards registry — see [config-and-state.md](./config-and-state.md)), `openspec/config.yaml`; optionally skill installation (`.claude/skills/` or `.agents/skills/`, symlink or copy) and wrapper injection into `CLAUDE.md`/`AGENTS.md` between `<!-- sdd-lite:start -->`/`<!-- sdd-lite:end -->` markers.
 
