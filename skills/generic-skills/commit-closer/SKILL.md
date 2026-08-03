@@ -54,6 +54,8 @@ For deep analysis: identify what each changed function/section does, how it's ca
 
 #### Commit format reference
 
+Important: just one line, not include author or date in the message.
+
 ```
 <type>(<scope>): <summary>
 
