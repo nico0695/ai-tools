@@ -121,7 +121,8 @@ On `both`, delivery runs first so `delivery-report.md` lands inside `changes/{ch
 | route unclear, needs bounded evidence | `sddl-deep-explorer` | yes | read-only, returns to the blocked point |
 | no active change artifact | `sddl-proposal` | yes | normal entry stage |
 | `proposal.md` missing/stale/contradicted | `sddl-proposal` | yes | |
-| proposal usable, `spec.md` missing/outdated | `sddl-spec` | yes | |
+| proposal usable with `proposal_status: ready`, `spec.md` missing/outdated | `sddl-spec` | yes | |
+| `proposal.md` exists, `proposal_status` is `needs-input`/`blocked` | `sddl-proposal` | yes | resolve the open readiness gate first |
 | spec usable, `design.md` missing/outdated | `sddl-design` | yes | |
 | design usable, `plan.md` missing/outdated | `sddl-plan` | yes | |
 | objective `planner`, plan complete | stop, `lifecycle_status: planned` | no | never auto-routes to execution/QA |

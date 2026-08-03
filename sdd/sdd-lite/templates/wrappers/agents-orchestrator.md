@@ -35,9 +35,9 @@ Rules:
 - Recover context from persisted artifacts before asking the user for missing facts.
 - Persisted artifacts must remain in English. Chat interaction may be `es` or `en`.
 
-## Platform: Codex
+## Platform: AGENTS.md
 
-Codex supports native sub-agent delegation when `multi_agent` is available. When sdd-lite is active, prefer **native-workers mode** so delegated stages run in fresh contexts as required by `SDDL-ORCHESTRATOR.md`.
+This wrapper serves any agent driven by `AGENTS.md` / `.agents/`. Some of these agents support native sub-agent delegation, others do not. When sdd-lite is active and native sub-agents are available, prefer **native-workers mode** so delegated stages run in fresh contexts as required by `SDDL-ORCHESTRATOR.md`. When they are not available, use **inline-sequential mode**.
 
 ### Ask once for worker mode
 
@@ -45,10 +45,10 @@ On the first sdd-lite stage request in a session, ask for worker mode together w
 
 Worker modes:
 
-- `native-workers` (recommended): use Codex sub-agents for canonical stage delegation and mandatory delegation triggers.
-- `inline-sequential`: execute within the parent conversation. Use only when the user explicitly selects it or native sub-agents are unavailable.
+- `native-workers` (recommended when supported): use native sub-agents for canonical stage delegation and mandatory delegation triggers.
+- `inline-sequential`: execute within the parent conversation. Use when the user explicitly selects it or native sub-agents are unavailable.
 
-`interactive` / `auto` controls pauses between stages. It does not grant or revoke permission to delegate, edit code, or bypass approval gates. Background processes and Codex cloud tasks are not the default delegation mechanism for sdd-lite.
+`interactive` / `auto` controls pauses between stages. It does not grant or revoke permission to delegate, edit code, or bypass approval gates. Background processes and cloud tasks are not the default delegation mechanism for sdd-lite.
 
 ### Native-workers mode
 
@@ -69,6 +69,7 @@ Worker modes:
 When native sub-agents are unavailable or the user selects `inline-sequential`:
 
 - State visibly that stages will run without fresh-context isolation.
+- Before starting each stage, compress context: keep `state.yaml` content, key decisions, and the next stage handoff envelope. Drop full artifact bodies from active context.
 - Persist `state.yaml` immediately after each stage completes before continuing.
 - Prefer persisted digests, targeted reads, and compact handoffs. Do not claim that active conversation context can be manually dropped.
 - Apply all canonical result-processing, routing, and approval rules. When a mandatory delegation trigger fires, explain the degradation before continuing inline.

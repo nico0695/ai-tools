@@ -102,17 +102,9 @@ Persisted artifacts stay in English even if chat is Spanish.
 
 ## Phase validation
 
-Before returning, apply smart phase validation:
+Before returning, apply the `phase_validation` checkpoint as defined in `skills/_shared/sddl-user-interaction-contract.md`. It is conditional: skip it when the user already indicated advancement, and always present it when the technical approach is ambiguous, when viable alternatives carry different risk profiles, or when open technical questions would affect the execution plan.
 
-- If the user already indicated advancement (e.g., "continue with plan", "go ahead"), skip the checkpoint and record it as implicitly approved.
-- If there is ambiguity in technical approach or multiple viable alternatives with different risk profiles, present the checkpoint.
-- If the artifact contains open technical questions that affect the execution plan, present the checkpoint.
-
-When presenting the checkpoint, include:
-
-- a concise summary of the technical approach and affected areas
-- the next phase (`sddl-plan`)
-- recommended options: approve and continue, revise this phase, stop
+Record the checkpoint in `state.yaml` with `type: phase_validation`, the artifact written, and the decision.
 
 ## Workflow
 
@@ -139,6 +131,9 @@ When syncing `state.yaml` from this stage:
 
 - set `current_stage: sddl-design` while active
 - update `stages.sddl-design`
+- update `artifacts.design` with the artifact path
+- refresh `open_risks` with the risks still active after this stage
+- refresh `updated_at`
 - keep approved checkpoints and decisions intact
 - keep the lifecycle at `planning`
 - set `next_action` toward `sddl-plan`, a user checkpoint, or a blocked stop
@@ -165,15 +160,22 @@ Before finishing, verify:
 
 ## Expected Output
 
-On success, provide:
+Return the common result structure from `skills/_shared/sddl-flow-contract.md`.
 
-- `status: success`
-- `design.md` in `artifacts`
-- a short summary of the technical approach
-- the next safe step, usually `sddl-plan`
+Required fields:
+
+- `status`: `success`, `partial`, or `blocked`
+- `executive_summary`: the technical approach and affected areas in a few lines
+- `artifacts`: `design.md` and `state.yaml`
+- `next_action`: the next safe step, usually `sddl-plan`
+- `open_risks`: risks still active after this stage, with `low`, `medium`, or `high` severity. Return an empty list when there are none — never omit the field. The orchestrator surfaces `medium` and above to the user before routing.
+
+Optional fields to include when they apply:
+
+- `decision_required` and `decision_options` when a technical decision needs the user
 - `context_resolution`
 - `standards_source`
-- `artifact_digests_used` when applicable
+- `artifact_digests_used`
 - `recommended_next_stage`
 
 Use `partial` when the design is usable but a material decision still gates safe planning.

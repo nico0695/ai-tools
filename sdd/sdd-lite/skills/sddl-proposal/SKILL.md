@@ -69,7 +69,7 @@ This is not a substitute for `sddl-deep-explorer`. Deep explorer resolves one bo
 
 This stage is the entry point every later stage inherits. Before writing the artifact, check whether the framing is actually safe to hand forward.
 
-Run the three gates below. Record each verdict in the `Readiness Check` table of the artifact as `clear`, `raised`, or `resolved`.
+Run the three gates below. Record each verdict in the `Readiness Check` table of the artifact as `clear`, `raised`, or `resolved`. A `raised` or `resolved` verdict also gets a severity of `low`, `medium`, or `high`; downstream stages read it, so assign it deliberately rather than defaulting.
 
 **Precision gate.** Raise a gate only when it is a real problem you would defend with concrete evidence from the request, `state.yaml`, or the repo. When in doubt, stay silent and continue. Speculative gates turn every proposal into an interrogation, which is worse than the ambiguity they claim to prevent.
 
@@ -113,6 +113,8 @@ Required behavior: state both readings and what each would change about the scop
 
 When a gate needs the user, ask before writing the artifact. Use checkpoint type `missing_context` per `skills/_shared/sddl-user-interaction-contract.md`.
 
+The artifact is written afterwards on every path — answered, skipped, stopped, or blocked. Asking first shapes what goes into it; it never replaces writing it.
+
 Keep this format exactly:
 
 ```
@@ -132,8 +134,15 @@ Rules:
 - Every question states why it matters. A question whose answer would not change the proposal does not belong in the block.
 - Unrecognized input reprints the block. Never infer an answer the user did not give.
 - Questions the user skips become rows in `Open Questions For Spec`, not silent assumptions.
-- If a gap survives the answers, return `blocked` with `decision_required: true` and `decision_options`.
-- If the gap is structural — it would change `objective` or the selected route — return `blocked` without asking. That decision belongs to the orchestrator.
+
+Outcomes of the block, all of which still write `proposal.md`:
+
+| Outcome | `proposal_status` | Result `status` |
+|---|---|---|
+| Every gap closed by the answers | `ready` | `success` |
+| A gap survives the answers, or the user skipped a question | `needs-input` | `partial` with `decision_required: true` and `decision_options` |
+| The user replies `stop` | `needs-input` | `partial`, recording what was asked and what remains |
+| The gap is structural — it would change `objective` or the route, or it contradicts an approved decision | `blocked` | `blocked`, without asking; that decision belongs to the orchestrator |
 
 ## Reads
 
@@ -177,7 +186,19 @@ The artifact must preserve these sections in a compact form:
 - `needs-input` — a readiness gate is waiting on the user
 - `blocked` — framing needs a decision beyond this stage
 
-`Readiness Check` holds one row per gate and nothing more. Severity, when a gate carries one, uses `low`, `medium`, or `high`, matching the scale `open_risks` expects in `state.yaml`.
+`Readiness Check` holds one row per gate and nothing more. A `raised` or `resolved` verdict carries a severity of `low`, `medium`, or `high`, matching the scale `open_risks` expects in `state.yaml`. A `clear` verdict leaves severity empty — a gate that did not fire has none to declare.
+
+### When the proposal is not `ready`
+
+The artifact is still written. An interrupted proposal is not an empty one: it is the record of how far framing got, and it is what makes the change resumable without replaying the conversation.
+
+A `needs-input` or `blocked` artifact must carry:
+
+- the three gate verdicts in `Readiness Check`, with evidence for whichever fired
+- every unanswered or skipped question as a row in `Open Questions For Spec`
+- the problem framing, scope sketch, and feasibility signal as far as available evidence took them
+
+Never invent content to fill a section. A section that could not be determined is marked as pending, not padded — the gaps are precisely what the next run needs to see.
 
 ## User Interaction
 
@@ -223,11 +244,11 @@ Record the checkpoint in `state.yaml` with `type: phase_validation`, the artifac
 8. Assess feasibility signal
    Based on available evidence, note any signals about feasibility, complexity, or risk.
 9. Write `proposal.md`
-   Keep it lightweight, auditable, and directly usable by `sddl-spec`. Record the gate verdicts and set `proposal_status`.
+   Runs on every path, including when a gate stayed open. Keep it lightweight, auditable, and directly usable by `sddl-spec`. Record the gate verdicts with their severity, and set `proposal_status` to the real state.
 10. Phase validation checkpoint
     Apply smart validation: skip if user already approved advancement, present if ambiguity exists.
 11. Sync `state.yaml`
-    Record stage status, lifecycle status, checkpoints, decisions, open risks, and the next safe action.
+    Runs on every path. Record stage status, lifecycle status, checkpoints, decisions, open risks, and the next safe action. A change that stopped at a gate still needs its state persisted to be resumable.
 
 ## State Sync Rules
 
@@ -251,8 +272,15 @@ This stage creates `state.yaml`. Every field marked `required` in `state.schema.
 ### Always
 
 - set `current_stage: sddl-proposal` while active
-- move the lifecycle toward `planning` unless the change is blocked
-- set the next recommended action toward `sddl-spec`, a user checkpoint, or a blocked stop
+- mirror `proposal_status` into the state:
+
+| `proposal_status` | `stages.sddl-proposal` | `lifecycle_status` | `next_action` |
+|---|---|---|---|
+| `ready` | `completed` | move toward `planning` | `sddl-spec` |
+| `needs-input` | `in_progress` | leave as is | the pending question |
+| `blocked` | `blocked` | leave as is | the decision that is missing |
+
+The lifecycle advances only on `ready`. Never point `next_action` at `sddl-spec` while a gate is open.
 
 Do not pretend the change is execution-ready from this stage alone.
 
@@ -272,9 +300,11 @@ Before finishing, verify:
 - the scope sketch distinguishes likely in-scope from likely out-of-scope
 - the feasibility signal is honest about confidence
 - open questions for spec are visible
-- the result is enough for `sddl-spec` to proceed without guessing
-- all three readiness gates have a recorded verdict, and `proposal_status` matches them
+- the result is enough for `sddl-spec` to proceed without guessing, or `proposal_status` says why it is not
+- `proposal.md` exists on disk whatever the outcome was
+- all three readiness gates have a recorded verdict, a severity where the verdict is `raised` or `resolved`, and `proposal_status` matches them
 - every question the user skipped appears in `Open Questions For Spec`, not as a silent assumption
+- a non-`ready` artifact records what was asked and what remains, so the next run does not repeat resolved questions
 - `state.yaml` carries every field `state.schema.yaml` marks required, including artifact paths for files not written yet
 - all persisted content is English
 
@@ -298,5 +328,7 @@ Optional fields to include when they apply:
 - `artifact_digests_used`
 - `recommended_next_stage`
 
-Use `partial` when the artifact is usable but a material checkpoint still gates safe spec.
+Use `partial` when the artifact is usable but a material checkpoint still gates safe spec — this is the `needs-input` case.
 Use `blocked` when the change cannot be framed safely without a material user decision.
+
+`proposal.md` is written in all three cases. A `partial` or `blocked` result reports an artifact in `artifacts`, never an absent one.

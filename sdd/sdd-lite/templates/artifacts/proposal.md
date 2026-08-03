@@ -19,13 +19,13 @@
 
 ## Readiness Check
 
-One row per gate. Verdict: `clear` | `raised` | `resolved`. Severity, when a gate carries one: `low` | `medium` | `high`.
+One row per gate. Verdict: `clear` | `raised` | `resolved`. Severity: `low` | `medium` | `high` on a `raised` or `resolved` verdict, empty on `clear`.
 
-| Gate | Verdict | Evidence |
-|---|---|---|
-| contradiction |  |  |
-| insufficient_context |  |  |
-| ambiguous_framing |  |  |
+| Gate | Verdict | Severity | Evidence |
+|---|---|---|---|
+| contradiction |  |  |  |
+| insufficient_context |  |  |  |
+| ambiguous_framing |  |  |  |
 
 ## Problem And Desired Outcome
 

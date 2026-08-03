@@ -351,7 +351,8 @@ Rules:
 | route cannot be chosen safely without bounded evidence | `sddl-deep-explorer` | yes | read-only; returns to the blocked decision point |
 | no active change artifact exists for the selected lite route | `sddl-proposal` | yes | normal entry stage |
 | `proposal.md` is missing, stale, or contradicted by approved direction | `sddl-proposal` | yes | proposal consolidates the idea |
-| `proposal.md` is usable but `spec.md` is missing or outdated | `sddl-spec` | yes | proposal is ready for formalization |
+| `proposal.md` is usable with `proposal_status: ready`, but `spec.md` is missing or outdated | `sddl-spec` | yes | proposal is ready for formalization |
+| `proposal.md` exists but `proposal_status` is `needs-input` or `blocked` | `sddl-proposal` | yes | resolve the open readiness gate before formalizing |
 | `spec.md` is usable but `design.md` is missing or outdated | `sddl-design` | yes | spec provides the scope contract |
 | `design.md` is usable but `plan.md` is missing or outdated | `sddl-plan` | yes | design provides the technical approach |
 | objective is `planner` and `plan.md` is complete | stop with `lifecycle_status: planned` | no | do not auto-route to execution or QA |

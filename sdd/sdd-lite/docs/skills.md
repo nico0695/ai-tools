@@ -51,7 +51,15 @@ flowchart LR
 
 **Optional lightweight exploration.** Up to 10 high-signal files when the request is vague or needs current-architecture context to even frame the problem. The budget belongs to this worker and is unrelated to the orchestrator's own 4-file delegation rule. It recommends `sddl-deep-explorer` only when a specific unknown blocks framing — not when the file count grows.
 
-**Readiness gates.** Before writing the artifact it runs three gates — `Contradiction`, `Insufficient context`, `Ambiguous framing` — each recorded in the `Readiness Check` table with verdict `clear`/`raised`/`resolved`. A precision gate keeps speculative findings out. When a gate needs the user, it asks inline as a single block of at most 5 questions (checkpoint type `missing_context`), rather than guessing or bouncing through `sddl-deep-explorer`. Gaps that survive the answers return `blocked` with `decision_required`; gaps that would change `objective` or the route return `blocked` without asking.
+**Readiness gates.** Before writing the artifact it runs three gates — `Contradiction`, `Insufficient context`, `Ambiguous framing` — each recorded in the `Readiness Check` table with a verdict of `clear`/`raised`/`resolved` and, when it fired, a severity of `low`/`medium`/`high`. A precision gate keeps speculative findings out. When a gate needs the user, it asks inline as a single block of at most 5 questions (checkpoint type `missing_context`), rather than guessing or bouncing through `sddl-deep-explorer`.
+
+**The artifact is written on every path.** Asking shapes what goes into `proposal.md`; it never replaces writing it. This is what makes a change interrupted at a gate resumable from disk instead of from chat memory — a non-`ready` artifact records which gate fired, what was asked, and what remains, and marks undetermined sections as pending rather than padding them.
+
+| `proposal_status` | Result `status` | What the orchestrator does |
+|---|---|---|
+| `ready` | `success` | routes to `sddl-spec` |
+| `needs-input` | `partial` | surfaces `decision_required`, waits, re-routes to `sddl-proposal` |
+| `blocked` | `blocked` | surfaces the blocking reason immediately |
 
 **Inputs.** `config.yaml`, `project-context.md`, `skill-catalog.md`, prior `proposal.md`/`state.yaml` on rerun.
 
@@ -61,9 +69,13 @@ flowchart LR
 
 ## `sddl-spec`
 
-**Purpose.** Turns `proposal.md` into a formal contract: firm scope boundary (in/out/non-goals), expected behavior, acceptance criteria, risks. Proportional — trivial changes get a minimal spec, not full boilerplate.
+**Purpose.** Turns `proposal.md` into a formal contract: firm scope boundary (in/out/non-goals), expected behavior, acceptance criteria, risks.
 
-**Inputs.** `proposal.md` as primary source of truth, `config.yaml`, `project-context.md`.
+**Inbound contract.** Three fields of `proposal.md` are preconditions. It formalizes only when `proposal_status` is `ready`, and returns `blocked` on `needs-input`/`blocked` or on a `Readiness Check` gate left `raised` at `high`. Every row of `Open Questions For Spec` is migrated into `Open Questions And Decisions` — resolved where evidence allows, otherwise given a `Needed Before` of `design` or `execution`. A question the user skipped is never treated as an implicit answer.
+
+**Proportional spec.** The minimal shape (scope boundary and acceptance criteria only) is allowed when all three readiness gates are `clear` *and* the scope sketch touches a single surface. Anything else gets the full artifact, so two runs over the same proposal reach the same shape.
+
+**Inputs.** `proposal.md` as primary source of truth including its status, readiness table, and open questions; `config.yaml`, `project-context.md`.
 
 **Outputs.** `spec.md` (300-500 words target), `state.yaml`.
 
