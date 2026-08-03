@@ -55,12 +55,85 @@ This skill includes an optional lightweight codebase scan to frame the problem w
 
 ### Exploration protocol
 
-- Read at most 5 high-signal files: package manifests, entry points, module indexes, README, relevant config.
+- Read at most 10 high-signal files: package manifests, entry points, module indexes, README, relevant config.
 - Purpose: enough to frame the problem, not to design the solution.
-- If the scan needs more than 5 files to answer the framing question, stop and recommend `sddl-deep-explorer` to the orchestrator.
+- When the gap is in the user's intent rather than in the codebase, ask instead of reading more files. See `Readiness gates`.
+- Recommend `sddl-deep-explorer` to the orchestrator only when a specific unknown blocks framing and more reading will not resolve it — not because the file count grew.
 - Record `exploration_performed: true` in the artifact when exploration ran.
 
-This is not a substitute for `sddl-deep-explorer`. Deep explorer handles blocking unknowns that require targeted investigation.
+This budget belongs to this worker. It is unrelated to the orchestrator's own delegation rule, which governs how many files the routing loop may read inline before delegating.
+
+This is not a substitute for `sddl-deep-explorer`. Deep explorer resolves one bounded, blocking unknown.
+
+## Readiness gates
+
+This stage is the entry point every later stage inherits. Before writing the artifact, check whether the framing is actually safe to hand forward.
+
+Run the three gates below. Record each verdict in the `Readiness Check` table of the artifact as `clear`, `raised`, or `resolved`.
+
+**Precision gate.** Raise a gate only when it is a real problem you would defend with concrete evidence from the request, `state.yaml`, or the repo. When in doubt, stay silent and continue. Speculative gates turn every proposal into an interrogation, which is worse than the ambiguity they claim to prevent.
+
+### Contradiction
+
+Use this gate when the request disagrees with itself or with something already approved.
+
+Examples:
+
+- the request asks for two outcomes that cannot both hold
+- the request contradicts an approved decision recorded in `state.yaml`
+- the request assumes a stack, module, or convention that `project-context.md` contradicts
+
+Required behavior: do not resolve the contradiction by picking a side. Name both sides with their evidence, and ask. If the contradiction is with an approved decision, return `blocked` — reopening an approved decision is the orchestrator's call, not this stage's.
+
+### Insufficient context
+
+Use this gate when a fact required to frame the problem is missing and cannot be recovered.
+
+Examples:
+
+- the desired outcome is stated only as a symptom, with no observable target state
+- the request names a system, integration, or constraint that does not appear in the repo or the bootstrap artifacts
+- success cannot be described without inventing a requirement
+
+Required behavior: exhaust recoverable evidence first — repo, `project-context.md`, prior artifacts. Ask only for what genuinely lives in the user's head.
+
+### Ambiguous framing
+
+Use this gate when two materially different readings of the request are both plausible.
+
+Examples:
+
+- the request could mean a narrow fix or a broad rework, and the two lead to different scopes
+- the affected surface could be one module or several, depending on interpretation
+- the objective could reasonably be `bug-fix` or `new-feature`
+
+Required behavior: state both readings and what each would change about the scope sketch, then ask. Keep this to the framing of the problem. Technical alternatives belong to `sddl-design`, not here.
+
+### Clarification block
+
+When a gate needs the user, ask before writing the artifact. Use checkpoint type `missing_context` per `skills/_shared/sddl-user-interaction-contract.md`.
+
+Keep this format exactly:
+
+```
+The proposal needs input before it can be framed safely.
+
+1. <question>
+   Why it matters: <what changes in the proposal depending on the answer>
+2. <question>
+   Why it matters: <...>
+
+Answer by number, or reply `skip N` to leave one unresolved, or `stop`.
+```
+
+Rules:
+
+- Maximum 5 questions, asked once as a single block. Never drip-feed follow-ups.
+- Every question states why it matters. A question whose answer would not change the proposal does not belong in the block.
+- Unrecognized input reprints the block. Never infer an answer the user did not give.
+- Questions the user skips become rows in `Open Questions For Spec`, not silent assumptions.
+- If a gap survives the answers, return `blocked` with `decision_required: true` and `decision_options`.
+- If the gap is structural — it would change `objective` or the selected route — return `blocked` without asking. That decision belongs to the orchestrator.
 
 ## Reads
 
@@ -90,12 +163,21 @@ Use `templates/artifacts/proposal.md` as the baseline shape.
 The artifact must preserve these sections in a compact form:
 
 - routing digest
-- summary (including `exploration_performed`)
+- summary (including `proposal_status` and `exploration_performed`)
+- readiness check
 - problem and desired outcome
 - initial scope sketch
 - feasibility signal
 - open questions for spec
 - approval notes
+
+`proposal_status` takes one of:
+
+- `ready` — framed and safe for `sddl-spec`
+- `needs-input` — a readiness gate is waiting on the user
+- `blocked` — framing needs a decision beyond this stage
+
+`Readiness Check` holds one row per gate and nothing more. Severity, when a gate carries one, uses `low`, `medium`, or `high`, matching the scale `open_risks` expects in `state.yaml`.
 
 ## User Interaction
 
@@ -118,17 +200,9 @@ Persisted artifacts stay in English even if chat is Spanish.
 
 ## Phase validation
 
-Before returning, apply smart phase validation:
+Before returning, apply the `phase_validation` checkpoint as defined in `skills/_shared/sddl-user-interaction-contract.md`. It is conditional: skip it when the user already indicated advancement, and always present it when scope, risk, or interpretation is ambiguous, or when the artifact carries open questions or risks above medium severity.
 
-- If the user already indicated advancement (e.g., "continue with spec", "go ahead"), skip the checkpoint and record it as implicitly approved.
-- If there is ambiguity in scope, risk, or multiple plausible interpretations, present the checkpoint.
-- If the artifact contains open questions or risks above medium severity, present the checkpoint.
-
-When presenting the checkpoint, include:
-
-- a concise summary of the proposal
-- the next phase (`sddl-spec`)
-- recommended options: approve and continue, revise this phase, stop
+Record the checkpoint in `state.yaml` with `type: phase_validation`, the artifact written, and the decision.
 
 ## Workflow
 
@@ -139,29 +213,44 @@ When presenting the checkpoint, include:
 3. Evaluate exploration need
    Apply the exploration decision criteria to determine whether a lightweight codebase scan is needed.
 4. Perform lightweight scan if needed
-   Read at most 5 high-signal repo files. If more are needed, recommend `sddl-deep-explorer`.
-5. Frame the problem and desired outcome
+   Read at most 10 high-signal repo files. If a specific unknown still blocks framing, recommend `sddl-deep-explorer`.
+5. Run the readiness gates
+   Check `Contradiction`, `Insufficient context`, and `Ambiguous framing`. If a gate needs the user, ask once using the clarification block before continuing.
+6. Frame the problem and desired outcome
    State what the change should improve, fix, or enable.
-6. Sketch the initial scope
+7. Sketch the initial scope
    Identify what is likely in scope and likely out of scope. These are preliminary — `sddl-spec` will firm them up.
-7. Assess feasibility signal
+8. Assess feasibility signal
    Based on available evidence, note any signals about feasibility, complexity, or risk.
-8. Write `proposal.md`
-   Keep it lightweight, auditable, and directly usable by `sddl-spec`.
-9. Phase validation checkpoint
-   Apply smart validation: skip if user already approved advancement, present if ambiguity exists.
-10. Sync `state.yaml`
+9. Write `proposal.md`
+   Keep it lightweight, auditable, and directly usable by `sddl-spec`. Record the gate verdicts and set `proposal_status`.
+10. Phase validation checkpoint
+    Apply smart validation: skip if user already approved advancement, present if ambiguity exists.
+11. Sync `state.yaml`
     Record stage status, lifecycle status, checkpoints, decisions, open risks, and the next safe action.
 
 ## State Sync Rules
 
-When this stage initializes or refreshes `state.yaml`:
+### On initialization
+
+This stage creates `state.yaml`. Every field marked `required` in `state.schema.yaml` must be present, including fields for work that has not happened yet:
+
+- `version`, `change_name`, `objective`, `mode: lite`, `complexity_assessment`, `created_at`, `updated_at`
+- all seven canonical entries under `stages` (`sddl-deep-explorer`, `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`), the ones that have not run yet as `pending`
+- all seven required paths under `artifacts` (`state`, `proposal`, `spec`, `design`, `plan`, `execution_log`, `qa_report`). These are path declarations, not existence claims — declare the canonical path even when the file does not exist yet
+- `checkpoints`, `decisions`, `open_risks`, and `next_action`
+
+### On refresh
 
 - keep `mode: lite`
 - keep the orchestrator-selected `complexity_assessment`
-- set `current_stage: sddl-proposal` while active
 - keep canonical stage entries under `stages`
 - keep canonical artifact paths under `artifacts`
+- refresh `updated_at`
+
+### Always
+
+- set `current_stage: sddl-proposal` while active
 - move the lifecycle toward `planning` unless the change is blocked
 - set the next recommended action toward `sddl-spec`, a user checkpoint, or a blocked stop
 
@@ -184,19 +273,29 @@ Before finishing, verify:
 - the feasibility signal is honest about confidence
 - open questions for spec are visible
 - the result is enough for `sddl-spec` to proceed without guessing
+- all three readiness gates have a recorded verdict, and `proposal_status` matches them
+- every question the user skipped appears in `Open Questions For Spec`, not as a silent assumption
+- `state.yaml` carries every field `state.schema.yaml` marks required, including artifact paths for files not written yet
 - all persisted content is English
 
 ## Expected Output
 
-On success, provide:
+Return the common result structure from `skills/_shared/sddl-flow-contract.md`.
 
-- `status: success`
-- `proposal.md` in `artifacts`
-- a short summary of the consolidated idea
-- the next safe step, usually `sddl-spec`
+Required fields:
+
+- `status`: `success`, `partial`, or `blocked`
+- `executive_summary`: the consolidated idea in a few lines
+- `artifacts`: `proposal.md` and `state.yaml`
+- `next_action`: the next safe step, usually `sddl-spec`
+- `open_risks`: risks still active after this stage, with `low`, `medium`, or `high` severity. Return an empty list when there are none — never omit the field. The orchestrator surfaces `medium` and above to the user before routing.
+
+Optional fields to include when they apply:
+
+- `decision_required` and `decision_options` when a readiness gate stayed unresolved
 - `context_resolution`
 - `standards_source`
-- `artifact_digests_used` when applicable
+- `artifact_digests_used`
 - `recommended_next_stage`
 
 Use `partial` when the artifact is usable but a material checkpoint still gates safe spec.

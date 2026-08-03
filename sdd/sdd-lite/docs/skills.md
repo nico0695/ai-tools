@@ -49,11 +49,13 @@ flowchart LR
 
 **Purpose.** First canonical change stage — consolidates the user's idea into problem framing, an initial scope sketch, and a feasibility signal, before investing in formal specification. Initializes `state.yaml`.
 
-**Optional lightweight exploration.** Up to 5 high-signal files when the request is vague or needs current-architecture context to even frame the problem; beyond 5 files, it stops and recommends `sddl-deep-explorer` instead of expanding scope itself.
+**Optional lightweight exploration.** Up to 10 high-signal files when the request is vague or needs current-architecture context to even frame the problem. The budget belongs to this worker and is unrelated to the orchestrator's own 4-file delegation rule. It recommends `sddl-deep-explorer` only when a specific unknown blocks framing — not when the file count grows.
+
+**Readiness gates.** Before writing the artifact it runs three gates — `Contradiction`, `Insufficient context`, `Ambiguous framing` — each recorded in the `Readiness Check` table with verdict `clear`/`raised`/`resolved`. A precision gate keeps speculative findings out. When a gate needs the user, it asks inline as a single block of at most 5 questions (checkpoint type `missing_context`), rather than guessing or bouncing through `sddl-deep-explorer`. Gaps that survive the answers return `blocked` with `decision_required`; gaps that would change `objective` or the route return `blocked` without asking.
 
 **Inputs.** `config.yaml`, `project-context.md`, `skill-catalog.md`, prior `proposal.md`/`state.yaml` on rerun.
 
-**Outputs.** `proposal.md` (200-400 words target), `state.yaml`.
+**Outputs.** `proposal.md` (200-400 words target, `proposal_status` one of `ready`/`needs-input`/`blocked`), `state.yaml`.
 
 **Stop rule.** Never produces definitive scope boundaries or acceptance criteria — that is `sddl-spec`'s job.
 
