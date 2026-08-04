@@ -5,6 +5,7 @@ Read-only agentic harness for the **discovery phase** of a product: formalize re
 Sibling of `sdd-lite`, deliberately smaller: thin orchestrator, single source per rule, hard budgets (worker launch stack ~1.000–1.200 tokens), workers that never write, and one writer per artifact.
 
 - Design reference: `blueprint-spec.md` (v1, frozen). At runtime the engine files are normative.
+- How it works: `docs/` — engine mechanics, the three flows with diagrams, skills/templates and customization.
 - Planning history: `planning/` (analysis, macro plan, tracker).
 
 ## Package layout
@@ -16,6 +17,7 @@ skills/bp-*/SKILL.md              # 7 skills (init, context-mapper, analyzer, di
 skills/_shared/                   # 4 contracts + sdd-lite mapping
 schemas/                          # bp-config, bp-state (JSON Schema in YAML)
 templates/                        # artifacts, wrappers, bootstrap seed
+docs/                             # how it works: mechanics, flows, customization
 VERSION
 ```
 

@@ -1,6 +1,6 @@
 # blueprint-harness — User Guide
 
-A practical guide to installing and using `blueprint-harness` day to day. For the design rationale see `blueprint-spec.md`; for a quick overview see `README.md`.
+A practical guide to installing and using `blueprint-harness` day to day. For the design rationale see `blueprint-spec.md`; for a quick overview see `README.md`; for the internal mechanics with flow diagrams see `docs/`.
 
 ---
 
