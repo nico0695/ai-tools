@@ -1,0 +1,130 @@
+# bp-state.schema.yaml — schema for bp-workspace/objectives/{slug}/state.yaml
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "bp-harness/schemas/bp-state/1.0.0"
+$comment: >-
+  Schema version 1.0.0 (semver). One state file per objective.
+  Valid lifecycle transitions: open -> in_progress <-> awaiting_user;
+  in_progress -> approved -> handed_off -> closed; in_progress -> closed;
+  any -> blocked -> in_progress. closed is terminal.
+title: bp-state
+type: object
+additionalProperties: false
+required:
+  [version, objective_slug, objective_type, lifecycle_status, current_phase,
+   checkpoints, decisions, key_files, artifacts, open_risks, next_action,
+   created_at, updated_at]
+properties:
+  version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+  objective_slug:
+    type: string
+    pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+  objective_type:
+    type: string
+    enum: [bug-triage, requirements-refinement, code-consultation]
+  lifecycle_status:
+    type: string
+    enum: [open, in_progress, awaiting_user, approved, handed_off, closed, blocked]
+  current_phase:
+    type: string
+    enum: [interview, context_mapping, analysis, history, strategy, export, handoff, inline_answer, none]
+  checkpoints:
+    type: array
+    items: { $ref: "#/$defs/checkpoint" }
+  decisions:
+    type: array
+    items: { $ref: "#/$defs/decision" }
+  key_files:
+    type: array
+    description: Repo paths identified as relevant to this objective.
+    items:
+      type: object
+      additionalProperties: false
+      required: [path]
+      properties:
+        path: { type: string }
+        note: { type: string, maxLength: 200 }
+  artifacts:
+    type: object
+    description: Logical key -> persisted artifact pointer with digest snapshot.
+    additionalProperties:
+      type: object
+      additionalProperties: false
+      required: [path, digest]
+      properties:
+        path: { type: string }
+        digest: { type: string, maxLength: 300, description: One-line copy of the artifact digest summary. }
+        status:
+          type: string
+          enum: [working, draft, approved, handed-off, superseded]
+  open_risks:
+    type: array
+    items: { $ref: "#/$defs/risk" }
+  next_action:
+    type: object
+    additionalProperties: false
+    required: [kind]
+    properties:
+      kind:
+        type: string
+        enum: [run_skill, ask_user, wait_for_approval, export_artifact, handoff, answer_inline, close]
+      skill:
+        type: string
+        enum: [bp-context-mapper, bp-analyzer, bp-diff-parser, bp-strategist, bp-doc-exporter, bp-handoff]
+      detail: { type: string, maxLength: 300 }
+  created_at: { type: string, format: date-time }
+  updated_at: { type: string, format: date-time }
+$defs:
+  checkpoint:
+    type: object
+    additionalProperties: false
+    required: [id, type, phase, question, created_at]
+    properties:
+      id: { type: string }
+      type:
+        type: string
+        enum: [missing_context, scope_change, phase_validation, artifact_approval,
+               handoff_gate, audit_persist_offer, deep_interview_suggestion]
+      phase: { type: string }
+      summary: { type: string, maxLength: 300 }
+      question: { type: string }
+      options:
+        type: array
+        items: { $ref: "#/$defs/decisionOption" }
+      free_input_allowed: { type: boolean, default: true }
+      created_at: { type: string, format: date-time }
+      resolved_at: { type: string, format: date-time }
+      response:
+        type: object
+        additionalProperties: false
+        properties:
+          selected_option_id: { type: string }
+          free_text: { type: string }
+          implicit: { type: boolean, description: True when resolved by smart skip. }
+  decision:
+    type: object
+    additionalProperties: false
+    required: [id, summary, recorded_at]
+    properties:
+      id: { type: string }
+      checkpoint_id: { type: string }
+      summary: { type: string, maxLength: 300, description: Max ~2 lines. }
+      rationale: { type: string, maxLength: 300 }
+      recorded_at: { type: string, format: date-time }
+  decisionOption:
+    type: object
+    additionalProperties: false
+    required: [id, label]
+    properties:
+      id: { type: string }
+      label: { type: string }
+      description: { type: string }
+      recommended: { type: boolean }
+  risk:
+    type: object
+    additionalProperties: false
+    required: [summary, severity]
+    properties:
+      summary: { type: string, maxLength: 300 }
+      severity: { type: string, enum: [info, low, medium, high, critical] }

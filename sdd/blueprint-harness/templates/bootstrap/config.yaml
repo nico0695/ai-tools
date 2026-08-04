@@ -1,0 +1,23 @@
+# bp-workspace/config.yaml — seeded by bp-init, validated against schemas/bp-config.schema.yaml
+version: "1.0.0"
+product:
+  name: "<project-name>"
+  domain: "<one-paragraph business domain summary>"
+  glossary: {}
+rigor_level: standard
+conventions:
+  persisted_language: en
+  chat_language: es
+  chat_language_source: defaulted
+capabilities:
+  rg: { available: false }
+  gh: { available: false }
+  ast: { available: false }
+sdd_lite_integration:
+  present: false
+engine:
+  version: "0.1.0"
+  installed_at: "1970-01-01T00:00:00Z"
+metadata:
+  created_at: "1970-01-01T00:00:00Z"
+  updated_at: "1970-01-01T00:00:00Z"

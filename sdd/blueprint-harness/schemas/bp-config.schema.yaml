@@ -1,0 +1,116 @@
+# bp-config.schema.yaml — schema for bp-workspace/config.yaml
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "bp-harness/schemas/bp-config/1.0.0"
+$comment: "Schema version 1.0.0 (semver). Bump on any shape change."
+title: bp-config
+type: object
+additionalProperties: false
+required: [version, product, rigor_level, conventions, capabilities, engine, metadata]
+properties:
+  version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+    description: Config format version (matches schema major.minor).
+  product:
+    type: object
+    additionalProperties: false
+    required: [name, domain]
+    properties:
+      name: { type: string, minLength: 1 }
+      domain:
+        type: string
+        description: One-paragraph business domain summary.
+      description: { type: string }
+      glossary:
+        type: object
+        description: Domain terms the harness must use consistently.
+        additionalProperties: { type: string }
+  rigor_level:
+    type: string
+    enum: [light, standard, deep]
+    default: standard
+    description: >-
+      Operational semantics (analyzer budget, strategist alternatives,
+      root-cause evidence bar, deep-interview suggestion) are defined once in
+      skills/_shared/bp-flow-contract.md ("Rigor levels").
+  conventions:
+    type: object
+    additionalProperties: false
+    required: [persisted_language, chat_language]
+    properties:
+      persisted_language: { const: en }
+      chat_language: { type: string, enum: [es, en] }
+      chat_language_source:
+        type: string
+        enum: [inferred, user_confirmed, defaulted]
+  capabilities:
+    type: object
+    additionalProperties: false
+    required: [rg, gh, ast]
+    properties:
+      rg: { $ref: "#/$defs/capability" }
+      gh: { $ref: "#/$defs/capability" }
+      ast: { $ref: "#/$defs/capability" }
+    description: >-
+      Detected by bp-init. Every capability has a documented fallback to
+      standard LLM reading; gh is never assumed.
+  sdd_lite_integration:
+    type: object
+    additionalProperties: false
+    required: [present]
+    properties:
+      present: { type: boolean }
+      runtime_root: { type: string }
+      inbox_path: { type: string }
+  engine:
+    type: object
+    additionalProperties: false
+    required: [version, installed_at]
+    properties:
+      version:
+        type: string
+        description: Engine copy version (from .bp-harness/VERSION).
+      installed_at: { type: string, format: date-time }
+      updated_at: { type: string, format: date-time }
+  ai_setups:
+    type: object
+    additionalProperties: false
+    description: Written by bp-init; consumed by re-init.
+    properties:
+      detected: { type: array, items: { type: string, enum: [claude_code, agents] } }
+      configured: { type: array, items: { type: string, enum: [claude_code, agents] } }
+      skills_installed:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [target, method, installed_at]
+          properties:
+            target: { type: string, enum: [claude_code, agents] }
+            method: { type: string, enum: [copy] }
+            installed_at: { type: string, format: date-time }
+      wrappers_injected:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [ai, target_file, injected_at]
+          properties:
+            ai: { type: string, enum: [claude_code, agents] }
+            target_file: { type: string }
+            injected_at: { type: string, format: date-time }
+  metadata:
+    type: object
+    additionalProperties: false
+    required: [created_at, updated_at]
+    properties:
+      created_at: { type: string, format: date-time }
+      updated_at: { type: string, format: date-time }
+$defs:
+  capability:
+    type: object
+    additionalProperties: false
+    required: [available]
+    properties:
+      available: { type: boolean }
+      checked_at: { type: string, format: date-time }
