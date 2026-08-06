@@ -2,6 +2,15 @@
 
 Project-agnostic skills. Each triggers on its own phrases, or can be called by name.
 
+## [4r-review](./4r-review/SKILL.md)
+
+Risk-tiered 4R review (Risk, Readability, Reliability, Resilience) of a frozen diff, branch, or PR. Triage decides how much review the target deserves - from none (docs-only) to all four lenses plus a refuter pass that corroborates severe inferential findings. Reports in chat; optionally saves a review ledger. Distinct from code-review: triggered explicitly by name, sized by risk instead of a user-chosen depth.
+
+Use when:
+- You want a review proportional to the real risk of the change
+- The change touches auth, security, payments, data, or migrations
+- You want severe findings corroborated before acting on them
+
 ## [code-review](./code-review/SKILL.md)
 
 Reviews local commits or branch changes and returns evidence-based findings, each with a suggested fix. Light mode flags critical issues only; deep mode adds cross-module impact, convention checks, and a second pass for side effects that only appear when changes combine.
@@ -19,6 +28,15 @@ Use when:
 - Wrapping up work and you need a commit message
 - Writing a PR description
 - A PR accumulated several commits you want summarized together
+
+## [judgment-day](./judgment-day/SKILL.md)
+
+Adversarial dual review: two blind, independent judges review the same frozen target and convergence decides what counts - both agree = confirmed, one reports = suspect, incompatible claims = contradiction escalated to you. Works on code or on a single document. Ends in exactly APPROVED or ESCALATED. The expensive, opt-in path; never run on a target 4r-review already covered.
+
+Use when:
+- A high-stakes change or document deserves a second independent opinion
+- You want findings you can trust without taking one reviewer's word
+- You need an explicit approved/escalated verdict to move forward
 
 ## [prototype](./prototype/SKILL.md)
 
