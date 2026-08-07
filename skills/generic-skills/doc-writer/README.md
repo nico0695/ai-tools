@@ -1,4 +1,4 @@
-# documentation
+# doc-writer
 
 Turns whatever context is available — the session, code, a diff, a spec, files you point at — into a
 Markdown document that is grounded in the sources instead of filled in from what usually goes in that
@@ -24,7 +24,7 @@ Anything that asks for something to be written up: "documentá esto", "document 
 "write it up", "dejalo registrado" — and any named shape: architecture doc, ADR, runbook, API
 reference, feature doc, investigation, project report.
 
-You can also call it by name: `documentation`, `documentation auto`, `documentation interactive`.
+You can also call it by name: `doc-writer`, `doc-writer auto`, `doc-writer interactive`.
 
 ## Modes
 
@@ -153,7 +153,7 @@ investigation).
 ## Files
 
 ```
-documentation/
+doc-writer/
 ├── SKILL.md                      the flow: mode, harvest, classify, choose, plan, compose,
 │                                 validate, deliver
 ├── references/                   loaded only when the document needs them
@@ -183,7 +183,8 @@ sources.
 ## What it does not do
 
 - It does not review or update existing documentation against current code — that is a different
-  problem (read a doc, read the code, report the drift) and would be its own skill.
+  problem (read a doc, read the code, report the drift) and belongs to a sibling skill, not here.
+  The name leaves room for it: `doc-writer` writes, a future `doc-reviewer` checks drift.
 - It does not draw diagrams as a standalone request. Diagram selection lives inside this skill; if you
   just want a picture, ask for it directly.
 - It does not maintain what it writes. A document goes stale the moment the code moves.

@@ -1,5 +1,5 @@
 ---
-name: documentation
+name: doc-writer
 description: |
   Turn whatever context is available - the current session, code, a diff, a spec, sources the user
   points at - into a structured Markdown document that is grounded in evidence instead of filled in
@@ -41,7 +41,7 @@ Two modes, and the difference is only where the gates are — not how much think
 - **Interactive** — analyze, propose a plan, and get it approved before writing.
 - **Auto** — same analysis and same plan, self-reviewed instead of approved, then written straight through.
 
-If the user already said which one ("documentá esto automáticamente", `documentation auto`,
+If the user already said which one ("documentá esto automáticamente", `doc-writer auto`,
 "armemos la documentación juntos"), take it and do not ask again. If they did not:
 
 > ¿Cómo querés generar la documentación?

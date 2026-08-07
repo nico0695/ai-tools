@@ -29,7 +29,7 @@ Use when:
 - Writing a PR description
 - A PR accumulated several commits you want summarized together
 
-## [documentation](./documentation/SKILL.md)
+## [doc-writer](./doc-writer/SKILL.md)
 
 Turns the available context - the session, code, a diff, a spec, sources you point at - into a structured Markdown document that is grounded in evidence instead of filled in from plausibility. Picks the document type the situation calls for, uses an editable template from `assets/templates/`, agrees on a plan before writing, adds tables and diagrams only where they carry something prose does not, and validates the result back against the sources. Interactive or auto.
 
