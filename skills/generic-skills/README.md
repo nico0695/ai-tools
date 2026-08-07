@@ -29,6 +29,15 @@ Use when:
 - Writing a PR description
 - A PR accumulated several commits you want summarized together
 
+## [documentation](./documentation/SKILL.md)
+
+Turns the available context - the session, code, a diff, a spec, sources you point at - into a structured Markdown document that is grounded in evidence instead of filled in from plausibility. Picks the document type the situation calls for, uses an editable template from `assets/templates/`, agrees on a plan before writing, adds tables and diagrams only where they carry something prose does not, and validates the result back against the sources. Interactive or auto.
+
+Use when:
+- Something needs to be documented before the context is lost
+- You want an architecture doc, ADR, runbook, API reference, feature doc, investigation or project report
+- Existing notes and a session have to become one document somebody else can read
+
 ## [judgment-day](./judgment-day/SKILL.md)
 
 Adversarial dual review: two blind, independent judges review the same frozen target and convergence decides what counts - both agree = confirmed, one reports = suspect, incompatible claims = contradiction escalated to you. Works on code or on a single document. Ends in exactly APPROVED or ESCALATED. The expensive, opt-in path; never run on a target 4r-review already covered.
