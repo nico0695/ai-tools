@@ -90,7 +90,7 @@ Known limitations · Summary
 One capability: the problem, the behavior, the edges, the impact on the rest of the system.
 
 ```
-Overview · Problem · Goals · Non-goals · Behavior · User / system flow · Architecture impact ·
+Overview · Problem · Goals · Non-goals · Behavior · Flow · Architecture impact ·
 Data · Interfaces · Edge cases · Errors · Configuration · Testing · Limitations · Summary
 ```
 
@@ -99,8 +99,8 @@ A contract someone calls. Every endpoint needs a real example; a schema without 
 right and the semantics wrong.
 
 ```
-Overview · Base information · Authentication · Endpoints · Request / response · Errors ·
-Pagination · Rate limits · Examples · Summary
+Overview · Base information · Authentication · Endpoints (request / response / errors per
+endpoint) · Errors · Pagination · Rate limits · Versioning · Summary
 ```
 
 ### `adr`
@@ -108,8 +108,8 @@ One decision, its alternatives, and what accepting it costs. Short by design —
 table of contents is describing more than one decision.
 
 ```
-Status · Context · Decision · Alternatives considered · Rationale · Consequences · Risks ·
-Follow-ups
+Status (header) · Context · Decision · Alternatives considered · Rationale · Consequences ·
+Risks · Follow-ups
 ```
 
 The section that carries the value is **Consequences**, and it is the one most often written as a
@@ -121,7 +121,7 @@ rollback that exists before it is needed.
 
 ```
 Purpose · Prerequisites · Quick reference · Procedure · Verification · Rollback ·
-Troubleshooting · Escalation · Summary
+Troubleshooting · Escalation
 ```
 
 Never write a runbook step from inference. An unverified command in a runbook gets run at 3am.

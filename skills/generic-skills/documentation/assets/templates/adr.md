@@ -8,7 +8,7 @@ template:
     - a choice was made that someone will later ask "why" about
     - two viable options were weighed and one won
     - a decision constrains future work
-  required: [status, context, decision, alternatives, consequences]
+  required: [context, decision, alternatives-considered, consequences]
   optional: [rationale, risks, follow-ups]
   visuals: [rarely - only if the decision is structural]
   toc: disabled

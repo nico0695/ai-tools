@@ -9,7 +9,7 @@ template:
     - someone outside the owning team has to call it
     - a contract changed and consumers need the new shape
   required: [overview, base-information, authentication, endpoints, errors, summary]
-  optional: [pagination, rate-limits, examples, versioning, sequence-flow]
+  optional: [pagination, rate-limits, versioning]
   visuals: [sequence]
   toc: required
 ---

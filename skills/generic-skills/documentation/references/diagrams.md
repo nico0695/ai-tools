@@ -152,7 +152,7 @@ under roughly a dozen nodes; past that, split by boundary and draw two.
 
 ## Rendering rules
 
-- Fence Mermaid as ` ```mermaid `.
+- Put every diagram in a fenced block tagged `mermaid`.
 - Keep node labels short; put the explanation in the prose under the diagram.
 - Every diagram gets a line of prose saying what to look at. A diagram that has to be interpreted
   unaided is a puzzle.

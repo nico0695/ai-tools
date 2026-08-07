@@ -9,7 +9,7 @@ template:
     - an incident response needs to be repeatable
     - a manual operation is handed to people who did not build it
   required: [purpose, prerequisites, procedure, verification, rollback]
-  optional: [quick-reference, troubleshooting, escalation, summary]
+  optional: [quick-reference, troubleshooting, escalation]
   visuals: [flow - only when the procedure branches]
   toc: required
 ---

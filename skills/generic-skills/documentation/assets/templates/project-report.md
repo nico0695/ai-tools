@@ -9,7 +9,7 @@ template:
     - handing work over to another person or team
     - a long session produced changes and decisions worth capturing before context is lost
   required: [executive-summary, scope, major-changes, current-state, summary]
-  optional: [timeline, architecture-changes, features, technical-decisions, problems, testing, technical-debt, open-work]
+  optional: [timeline, architecture-changes, features, technical-decisions, problems-encountered, testing-and-validation, technical-debt, open-work]
   visuals: [timeline, flow]
   toc: required
 ---

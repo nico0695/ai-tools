@@ -8,7 +8,7 @@ template:
     - the material does not match a specialized document type
     - the user asked for "a document" without naming a shape
     - a proposed type would leave most of its sections unfillable
-  required: [overview, content, summary]
+  required: [overview, content-section, summary]
   optional: [context, open-questions, references]
   visuals: [any, as the material demands]
   toc: optional

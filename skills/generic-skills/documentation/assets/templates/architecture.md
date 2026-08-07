@@ -8,8 +8,8 @@ template:
     - explaining how an existing system is put together
     - a change touches a boundary between components
     - documenting a design before or after it is built
-  required: [overview, system-context, architecture, components, main-flows, summary]
-  optional: [data-model, integrations, deployment, cross-cutting, constraints, limitations]
+  required: [overview, system-context, architecture, components-and-responsibilities, main-flows, summary]
+  optional: [data-model, external-integrations, deployment, cross-cutting-concerns, constraints, known-limitations]
   visuals: [component, flow, sequence, er]
   toc: required
 ---
