@@ -24,9 +24,10 @@ It is not the right fit for migrations, broad redesigns, or repo-wide coordinati
 `sdd-lite` follows a thin-orchestrator model:
 
 - the orchestrator reads only the minimum persisted evidence needed to route safely
+- `orchestrator/SDDL-RUNTIME.md` stays in the main SDD session; event-specific modules load only when needed
 - real stage work runs in fresh workers
 - the orchestrator passes artifact paths, short digests, and compact standards
-- stage workers execute; they do not orchestrate other stages by default
+- stage workers execute only their named skill and do not load the orchestration runtime
 
 This is the core rule:
 
@@ -70,7 +71,11 @@ Default runtime heuristics:
 sdd/sdd-lite/
   README.md
   orchestrator/
-    SDDL-ORCHESTRATOR.md
+    SDDL-RUNTIME.md
+    modules/
+      review-runtime.md
+      closeout-runtime.md
+      exceptional-recovery.md
   skills/
     _shared/
       sddl-flow-contract.md
@@ -201,7 +206,7 @@ The orchestrator should resolve this file once and inject only the relevant comp
 
 ## Orchestrator Responsibilities
 
-The orchestrator is the entry point.
+The main-session runtime is the entry point. Its routing table, handoff, approvals, and general result processing stay hot; review, combined closeout, and exceptional recovery mechanics are lazy-loaded from `orchestrator/modules/`.
 
 It is responsible for:
 
@@ -221,6 +226,12 @@ It is not responsible for:
 - broad test/build/install work
 - writing stage-owned artifacts
 - trusting chat memory over persisted evidence
+
+Workers receive `sddl_role`, `stage`, `orchestration_allowed: false`, and `runtime_loading_allowed: false`. Host wrappers evaluate these fields before normal activation so a delegated worker cannot become a nested orchestrator.
+
+### Migrating pre-0.2 wrappers
+
+Runtime contract `0.2` is a strict migration. Existing consuming projects must rerun `sddl-init` and approve replacement of the complete marked block in `CLAUDE.md` and/or `AGENTS.md`. There is no compatibility alias for the earlier monolithic runtime path; do not use sdd-lite in that project until its wrapper has been regenerated.
 
 ## Objectives And Routes
 

@@ -79,11 +79,15 @@ In those cases, **escalate to `sdd-v2`**.
 | **Checkpoint / approval** | Explicit confirmation point before each later stage starts (mandatory for code-touching stages). |
 | **Digest** | Short summary at the top of each artifact, reusable by downstream stages without rereading the full body. |
 
+The main SDD session keeps `orchestrator/SDDL-RUNTIME.md` loaded. Review, combined closeout, and exceptional recovery rules are separate modules loaded only when their event occurs. Delegated workers carry explicit controls that prevent them from loading the runtime or becoming nested orchestrators.
+
 ---
 
 ## 4. Setup and basic configuration (`sddl-init`)
 
 `sddl-init` is the bootstrap skill. Run it the first time, or when the bootstrap becomes stale.
+
+When upgrading a project from a wrapper older than contract `0.2`, rerun `sddl-init` and approve complete replacement of the marked `CLAUDE.md` and/or `AGENTS.md` block before resuming SDD work.
 
 ### What it does
 

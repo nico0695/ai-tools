@@ -2,7 +2,7 @@
 
 Other docs: [architecture.md](./architecture.md) · [orchestrator.md](./orchestrator.md) · [flow.md](./flow.md) · [skills.md](./skills.md) · [config-and-state.md](./config-and-state.md)
 
-Deep dive on `sddl-code-review` (4R) and `sddl-judgment-day`. Both are **orchestrator-executed protocols**, not linear stages: the orchestrator freezes the target, launches read-only lens/judge workers, and writes `review-ledger.md` itself — workers never write files. See [orchestrator.md](./orchestrator.md) for the shared "Review Operations" mechanics and the Worker Handoff Envelope they extend.
+Deep dive on `sddl-code-review` (4R) and `sddl-judgment-day`. Both are **orchestrator-executed protocols**, not linear stages: the orchestrator freezes the target, launches read-only lens/judge workers, and writes `review-ledger.md` itself — workers never write files. The normative shared mechanics are lazy-loaded from `../orchestrator/modules/review-runtime.md`; see [orchestrator.md](./orchestrator.md) for the runtime loading model.
 
 They are mutually exclusive per target: `sddl-code-review` is the default, auto-offered path; `sddl-judgment-day` is opt-in only, never auto-routed, and replaces 4R for that specific target.
 

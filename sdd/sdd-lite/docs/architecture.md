@@ -17,7 +17,9 @@ Core operating principle: **the orchestrator stays thin**. It routes; it does no
 ```mermaid
 flowchart TB
     subgraph L1["Layer 1 — Orchestrator"]
-        Orc["SDDL-ORCHESTRATOR.md<br/>routes, gates approvals, assembles handoffs,<br/>owns review-ledger.md writes"]
+        Orc["SDDL-RUNTIME.md<br/>hot routing, gates, handoffs, results"]
+        Mods["modules/<br/>review, closeout, exceptional recovery"]
+        Orc -.loads on trigger.-> Mods
     end
     subgraph L2["Layer 2 — Skills (workers)"]
         Init[sddl-init] --- Prop[sddl-proposal] --- Spec[sddl-spec] --- Design[sddl-design]
@@ -39,13 +41,13 @@ flowchart TB
     Orc -.reads for shared vocabulary.-> L3
 ```
 
-**Layer 1 — Orchestrator.** A single document, `orchestrator/SDDL-ORCHESTRATOR.md`, executed by whichever AI runs the session. It is an event loop: read minimal persisted evidence, decide the next stage, build a compact handoff, dispatch, process the result, repeat. See [orchestrator.md](./orchestrator.md).
+**Layer 1 — Orchestrator.** `orchestrator/SDDL-RUNTIME.md` is the main-session event loop: read minimal persisted evidence, decide the next stage, build a compact handoff, dispatch, process the result, repeat. It loads one normative module only when review, combined closeout, or exceptional recovery is active. See [orchestrator.md](./orchestrator.md).
 
 **Layer 2 — Skills.** Twelve `SKILL.md` files under `skills/sddl-*/`. Each is a phase executor: it receives a handoff envelope, does one bounded unit of work, writes its own owned artifact(s), and returns a structured result. Skills never become nested orchestrators and never launch sub-agents themselves. Two skills (`sddl-code-review`, `sddl-judgment-day`) are protocols the orchestrator executes directly rather than linear stages — their lens/judge workers are read-only and the orchestrator itself writes `review-ledger.md`. See [skills.md](./skills.md) and [review-protocols.md](./review-protocols.md).
 
 **Layer 3 — Shared contracts.** Five documents under `skills/_shared/` that fix vocabulary so the twelve skills do not drift independently:
 
-- `sddl-flow-contract.md` — canonical objective/route/stage ids, lifecycle states, the common result-contract shape
+- `sddl-flow-contract.md` — canonical objective/route/stage ids, lifecycle states, worker handoff controls, and the common result-contract shape
 - `sddl-persistence-contract.md` — canonical file paths, artifact ownership, naming rules
 - `sddl-project-standards-contract.md` — how project conventions and quality commands are represented and injected
 - `sddl-review-ledger-contract.md` — the findings row shape, severity model, and id/status rules shared by both review protocols
@@ -61,7 +63,9 @@ sdd/sdd-lite/
   USER-GUIDE.md / USER_GUIDE_ES.md
   docs/                        # this technical documentation
   orchestrator/
-    SDDL-ORCHESTRATOR.md
+    SDDL-RUNTIME.md
+    modules/
+      review-runtime.md closeout-runtime.md exceptional-recovery.md
   skills/
     _shared/                   # the 5 contracts
     sddl-init/ sddl-proposal/ sddl-spec/ sddl-design/ sddl-plan/
@@ -113,7 +117,7 @@ Full artifact ownership table: see [config-and-state.md](./config-and-state.md).
 
 ## Multi-AI integration
 
-The orchestration logic itself — routing, delegation rules, approval gates, result processing — lives entirely in `SDDL-ORCHESTRATOR.md` and is platform-agnostic. What changes per platform is only *how a worker gets launched*. That difference is captured in `templates/wrappers/`, injected by `sddl-init` into the host AI's own instruction file between `<!-- sdd-lite:start -->` / `<!-- sdd-lite:end -->` markers.
+The hot orchestration logic — routing, delegation, approval gates, handoff, and general result processing — lives in `SDDL-RUNTIME.md` and is platform-agnostic. Cold event mechanics live in its three modules and are explicitly loaded by the same main agent. There are no nested orchestrators. What changes per platform is only *how a worker gets launched*, captured in `templates/wrappers/` and injected by `sddl-init` between the host file's markers.
 
 | Wrapper | AI id | Target file | Worker launch mechanism |
 |---|---|---|---|
@@ -123,3 +127,5 @@ The orchestration logic itself — routing, delegation rules, approval gates, re
 `agents` is the vendor-neutral id for any assistant driven by the `AGENTS.md` / `.agents/` convention, Codex included. `sddl-init`'s AI-setup detection (step 4) recognizes `CLAUDE.md`/`.claude/` for `claude_code` and `AGENTS.md`/`.agents/` for `agents`; vendor-specific directories such as `.codex/` are not detection signals on their own. An assistant that follows neither convention is served by installing the `agents` wrapper block into its instruction file by hand.
 
 Whichever wrapper is active, all invariants from [orchestrator.md](./orchestrator.md) and [review-protocols.md](./review-protocols.md) still apply — `interactive`/`auto` execution mode and worker mode only control pacing and isolation, never approval gates.
+
+Both wrapper variants evaluate the handoff controls before activation. A `phase-worker` or `review-worker` therefore loads only its named skill and input evidence, not `SDDL-RUNTIME.md` or any orchestration module.

@@ -104,6 +104,19 @@ The orchestrator is an event loop, not a worker.
 - Prefer artifact paths and short digests over copied artifact bodies.
 - Treat `./sdd-lite/skill-catalog.md` as the source for `Project Standards (auto-resolved)`.
 
+## Worker handoff controls
+
+Every delegated worker handoff must carry these controls before any stage-specific content:
+
+```yaml
+sddl_role: phase-worker # review-worker for lenses, judges, and refuters
+stage: sddl-*
+orchestration_allowed: false
+runtime_loading_allowed: false
+```
+
+Host wrappers evaluate these fields before sdd-lite activation. A matching worker executes only the named skill, does not read `orchestrator/SDDL-RUNTIME.md` or its modules, does not ask for session mode, does not route later stages, and does not launch descendants. Missing controls are a malformed delegated handoff; the main orchestrator must correct it before retrying.
+
 ## Common result structure
 
 Every lite stage result must be representable with:

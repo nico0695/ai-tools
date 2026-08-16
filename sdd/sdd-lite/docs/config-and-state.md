@@ -73,7 +73,7 @@ Each fixes one facet of shared vocabulary so the 12 skills do not diverge indepe
 
 | Contract | Covers |
 |---|---|
-| `sddl-flow-contract.md` | canonical objective/route/stage/lifecycle ids, the context recovery ladder, the common result-contract field shape (`status`, `executive_summary`, `artifacts`, `next_action`, `open_risks`, plus optional fields), and the flow rules that bind stage order and terminal behavior |
+| `sddl-flow-contract.md` | canonical objective/route/stage/lifecycle ids, worker handoff controls, the context recovery ladder, the common result-contract field shape (`status`, `executive_summary`, `artifacts`, `next_action`, `open_risks`, plus optional fields), and the flow rules that bind stage order and terminal behavior |
 | `sddl-persistence-contract.md` | the canonical runtime file layout, `change-name` kebab-case rule, per-artifact ownership tables (project-scope, change-scope, standalone review/delivery, archive), and artifact budget guidance (word-count targets per artifact) |
 | `sddl-project-standards-contract.md` | the persisted-English / chat-flexible language rule, how project standards categories (stack, structure, commands, conventions) are represented, the `skill-catalog.md` compact-injection protocol, and source-of-truth precedence when standards conflict |
 | `sddl-review-ledger-contract.md` | the findings row shape (`location`, `severity`, `claim`, `evidence_class`, `causal_disposition`, `proof_refs`), the severity model, id/status transition rules, convergence buckets, digest rules, and the hard review budgets — shared by both `sddl-code-review` and `sddl-judgment-day`; see [review-protocols.md](./review-protocols.md) for how these rules play out in practice |
