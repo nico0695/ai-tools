@@ -58,7 +58,7 @@ This skill includes an optional lightweight codebase scan to frame the problem w
 - Read at most 10 high-signal files: package manifests, entry points, module indexes, README, relevant config.
 - Purpose: enough to frame the problem, not to design the solution.
 - When the gap is in the user's intent rather than in the codebase, ask instead of reading more files. See `Readiness gates`.
-- Recommend `sddl-deep-explorer` to the orchestrator only when a specific unknown blocks framing and more reading will not resolve it — not because the file count grew.
+- Recommend `sddl-deep-explorer` to the orchestrator only when a specific unknown blocks framing and this scan could not resolve it — not because the file count grew.
 - Record `exploration_performed: true` in the artifact when exploration ran.
 
 This budget belongs to this worker. It is unrelated to the orchestrator's own delegation rule, which governs how many files the routing loop may read inline before delegating.
@@ -67,53 +67,25 @@ This is not a substitute for `sddl-deep-explorer`. Deep explorer resolves one bo
 
 ## Readiness gates
 
-This stage is the entry point every later stage inherits. Before writing the artifact, check whether the framing is actually safe to hand forward.
+This stage is the entry point every later stage inherits. Before writing the artifact, run the three gates below and record each verdict in the `Readiness Check` table as `clear`, `raised`, or `resolved`, with a severity of `low`, `medium`, or `high` when it fired.
 
-Run the three gates below. Record each verdict in the `Readiness Check` table of the artifact as `clear`, `raised`, or `resolved`. A `raised` or `resolved` verdict also gets a severity of `low`, `medium`, or `high`; downstream stages read it, so assign it deliberately rather than defaulting.
+**Precision gate.** Raise a gate only when concrete evidence from the request, `state.yaml`, or the repo shows it can change framing, scope, objective, or route. Otherwise record it as `clear` and continue — speculative gates cost more than the ambiguity they claim to prevent.
 
-**Precision gate.** Raise a gate only when it is a real problem you would defend with concrete evidence from the request, `state.yaml`, or the repo. When in doubt, stay silent and continue. Speculative gates turn every proposal into an interrogation, which is worse than the ambiguity they claim to prevent.
+| Gate | Fires when | Typical evidence |
+|---|---|---|
+| `contradiction` | the request disagrees with itself or with something already approved | two outcomes that cannot both hold; a conflict with an approved decision in `state.yaml`; a stack or convention that `project-context.md` contradicts |
+| `insufficient_context` | a fact required to frame the problem is missing and cannot be recovered | the outcome is stated only as a symptom with no observable target state; a named system, integration, or constraint absent from the repo and bootstrap artifacts; success cannot be described without inventing a requirement |
+| `ambiguous_framing` | two materially different readings of the request are both plausible | narrow fix vs broad rework leading to different scopes; one module vs several; `bug-fix` vs `new-feature` |
 
-### Contradiction
+Required behavior per gate:
 
-Use this gate when the request disagrees with itself or with something already approved.
-
-Examples:
-
-- the request asks for two outcomes that cannot both hold
-- the request contradicts an approved decision recorded in `state.yaml`
-- the request assumes a stack, module, or convention that `project-context.md` contradicts
-
-Required behavior: do not resolve the contradiction by picking a side. Name both sides with their evidence, and ask. If the contradiction is with an approved decision, return `blocked` — reopening an approved decision is the orchestrator's call, not this stage's.
-
-### Insufficient context
-
-Use this gate when a fact required to frame the problem is missing and cannot be recovered.
-
-Examples:
-
-- the desired outcome is stated only as a symptom, with no observable target state
-- the request names a system, integration, or constraint that does not appear in the repo or the bootstrap artifacts
-- success cannot be described without inventing a requirement
-
-Required behavior: exhaust recoverable evidence first — repo, `project-context.md`, prior artifacts. Ask only for what genuinely lives in the user's head.
-
-### Ambiguous framing
-
-Use this gate when two materially different readings of the request are both plausible.
-
-Examples:
-
-- the request could mean a narrow fix or a broad rework, and the two lead to different scopes
-- the affected surface could be one module or several, depending on interpretation
-- the objective could reasonably be `bug-fix` or `new-feature`
-
-Required behavior: state both readings and what each would change about the scope sketch, then ask. Keep this to the framing of the problem. Technical alternatives belong to `sddl-design`, not here.
+- **`contradiction`** — if it is with an approved decision in `state.yaml`, return `blocked` without asking; reopening an approved decision is the orchestrator's call, not this stage's, and this overrides the rest of this bullet. Otherwise name both sides with their evidence and ask, rather than picking a side.
+- **`insufficient_context`** — exhaust recoverable evidence first: repo, `project-context.md`, prior artifacts. Ask only for what genuinely lives in the user's head.
+- **`ambiguous_framing`** — state both readings and what each would change about the scope sketch, then ask. Keep this to the framing of the problem; technical alternatives belong to `sddl-design`.
 
 ### Clarification block
 
-When a gate needs the user, ask before writing the artifact. Use checkpoint type `missing_context` per `skills/_shared/sddl-user-interaction-contract.md`.
-
-The artifact is written afterwards on every path — answered, skipped, stopped, or blocked. Asking first shapes what goes into it; it never replaces writing it.
+When a gate needs the user, ask before writing the artifact. Use checkpoint type `missing_context` per `skills/_shared/sddl-user-interaction-contract.md`. Asking shapes what goes into the artifact; it never replaces writing it.
 
 Keep this format exactly:
 
@@ -135,7 +107,9 @@ Rules:
 - Unrecognized input reprints the block. Never infer an answer the user did not give.
 - Questions the user skips become rows in `Open Questions For Spec`, not silent assumptions.
 
-Outcomes of the block, all of which still write `proposal.md`:
+**Write invariant.** Every path through this stage — answered, skipped, stopped, or blocked — writes `proposal.md` and syncs `state.yaml`. This is what makes a change interrupted at a gate resumable from disk instead of from chat memory.
+
+Outcomes of the block:
 
 | Outcome | `proposal_status` | Result `status` |
 |---|---|---|
@@ -153,7 +127,7 @@ Read the minimum evidence needed:
 - `./sdd-lite/skill-catalog.md` as the runtime standards registry
 - `./sdd-lite/openspec/changes/{change-name}/state.yaml` when it already exists
 - existing `./sdd-lite/openspec/changes/{change-name}/proposal.md` when rerunning
-- 1 to 5 repo files only when lightweight exploration is triggered
+- up to 10 repo files only when lightweight exploration is triggered, per `Lightweight exploration`
 
 ## Writes
 
@@ -188,11 +162,21 @@ The artifact must preserve these sections in a compact form:
 
 `Readiness Check` holds one row per gate and nothing more. A `raised` or `resolved` verdict carries a severity of `low`, `medium`, or `high`, matching the scale `open_risks` expects in `state.yaml`. A `clear` verdict leaves severity empty — a gate that did not fire has none to declare.
 
+A `raised` gate does not by itself force a non-`ready` status. Severity decides:
+
+| Gate state | Compatible with `proposal_status: ready` |
+|---|---|
+| `clear`, or `resolved` at any severity | yes |
+| `raised` at `low` or `medium` | yes — carry it into `Open Questions For Spec` and `open_risks` |
+| `raised` at `high` | no — use `needs-input` or `blocked` |
+
+Severity governs what a recorded verdict permits, not what an unanswered question permits. A question still waiting on the user forces `needs-input` whatever the gate severity is. So `ready` requires both: no question waiting on the user, and no gate left `raised` at `high`.
+
+This matches what `sddl-spec` enforces on the way in: it formalizes only on `ready` and returns `blocked` when a gate is left `raised` at `high`. Assign severity deliberately, because it is what decides whether the change moves forward.
+
 ### When the proposal is not `ready`
 
-The artifact is still written. An interrupted proposal is not an empty one: it is the record of how far framing got, and it is what makes the change resumable without replaying the conversation.
-
-A `needs-input` or `blocked` artifact must carry:
+An interrupted proposal is not an empty one: it is the record of how far framing got. A `needs-input` or `blocked` artifact must carry:
 
 - the three gate verdicts in `Readiness Check`, with evidence for whichever fired
 - every unanswered or skipped question as a row in `Open Questions For Spec`
@@ -215,7 +199,6 @@ Valid reasons to ask include:
 
 - two materially different problem framings are both plausible
 - the desired outcome is ambiguous and affects what spec would formalize
-- the request contradicts an approved prior decision in a material way
 
 Persisted artifacts stay in English even if chat is Spanish.
 
@@ -244,11 +227,11 @@ Record the checkpoint in `state.yaml` with `type: phase_validation`, the artifac
 8. Assess feasibility signal
    Based on available evidence, note any signals about feasibility, complexity, or risk.
 9. Write `proposal.md`
-   Runs on every path, including when a gate stayed open. Keep it lightweight, auditable, and directly usable by `sddl-spec`. Record the gate verdicts with their severity, and set `proposal_status` to the real state.
+   Per the write invariant. Keep it lightweight, auditable, and directly usable by `sddl-spec`. Record the gate verdicts with their severity, and set `proposal_status` to the real state.
 10. Phase validation checkpoint
     Apply smart validation: skip if user already approved advancement, present if ambiguity exists.
 11. Sync `state.yaml`
-    Runs on every path. Record stage status, lifecycle status, checkpoints, decisions, open risks, and the next safe action. A change that stopped at a gate still needs its state persisted to be resumable.
+    Per the write invariant. Record stage status, lifecycle status, checkpoints, decisions, open risks, and the next safe action.
 
 ## State Sync Rules
 
@@ -280,7 +263,7 @@ This stage creates `state.yaml`. Every field marked `required` in `state.schema.
 | `needs-input` | `in_progress` | leave as is | the pending question |
 | `blocked` | `blocked` | leave as is | the decision that is missing |
 
-The lifecycle advances only on `ready`. Never point `next_action` at `sddl-spec` while a gate is open.
+The lifecycle advances only on `ready`. Never point `next_action` at `sddl-spec` while a question is waiting on the user or a gate is left `raised` at `high`.
 
 Do not pretend the change is execution-ready from this stage alone.
 
@@ -331,4 +314,4 @@ Optional fields to include when they apply:
 Use `partial` when the artifact is usable but a material checkpoint still gates safe spec — this is the `needs-input` case.
 Use `blocked` when the change cannot be framed safely without a material user decision.
 
-`proposal.md` is written in all three cases. A `partial` or `blocked` result reports an artifact in `artifacts`, never an absent one.
+Per the write invariant, a `partial` or `blocked` result reports `proposal.md` in `artifacts`, never an absent one.

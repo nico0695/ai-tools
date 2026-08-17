@@ -141,9 +141,9 @@ Record the checkpoint in `state.yaml` with `type: phase_validation`, the artifac
 1. Read `proposal.md`
    Reuse its problem framing, feasibility signal, and scope sketch instead of redefining them.
 2. Check the inbound proposal contract
-   Verify `proposal_status: ready` and that no `Readiness Check` gate is `raised` at `high`. Return `blocked` if either fails. Then stop if the proposal is missing, contradicted, or not specific enough for safe specification.
+   Apply `Inbound proposal contract`. Also stop if the proposal is missing, contradicted, or not specific enough for safe specification.
 3. Migrate `Open Questions For Spec`
-   Carry every row into `Open Questions And Decisions`. Resolve what current evidence settles; give the rest a `Needed Before`.
+   Per `Inbound proposal contract`.
 4. Define the firm scope boundary
    Make in-scope work, out-of-scope work, and non-goals definitive.
 5. Define expected behavior scenarios

@@ -148,7 +148,7 @@ Use this split consistently:
 - `proposal.md` for problem framing, desired outcome, initial scope sketch, and feasibility signal
 - `spec.md` for firm scope boundary, acceptance criteria, expected behavior, and non-goals
 - `design.md` for technical approach, architecture, patterns, interfaces, and affected areas
-- `plan.md` for staged execution plan, dependencies, validation strategy, and planning status
+- `plan.md` for staged execution plan, dependencies, and validation strategy
 - `execution-log.md` for stage-by-stage execution trace
 - `qa-report.md` for stage review findings or final closeout findings
 - `review-ledger.md` for 4R or judgment-day findings, corroboration, and fix-round history

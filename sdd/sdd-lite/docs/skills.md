@@ -85,7 +85,11 @@ flowchart LR
 
 **Purpose.** Turns `spec.md` into a practical technical approach: affected modules/interfaces/data, architecture decisions, alternatives. Proportional to complexity.
 
-**Inputs.** `spec.md` as primary source of truth, `proposal.md` as reference.
+**Inbound contract.** Every row of the spec's `Open Questions And Decisions` must land somewhere. Rows with `Needed Before: design` are owned here — resolved with current evidence, or returned as `partial`/`blocked` rather than designed around. Rows with `Needed Before: execution` are carried into `Open Technical Questions` with that value intact, so `sddl-plan` can surface them for the stage they affect. A row never disappears without a resolution or a carry-forward.
+
+**Proportional design.** The minimal shape (approach and affected areas only) requires all three: no unresolved `Needed Before: design` row, a single-surface in-scope boundary, and no active `open_risks` at `medium` severity or above. A single surface can still carry high technical impact, which is why the risk condition is separate.
+
+**Inputs.** `spec.md` as primary source of truth including its `Open Questions And Decisions`, `proposal.md` as reference.
 
 **Outputs.** `design.md` (400-600 words target), `state.yaml`.
 
@@ -95,7 +99,9 @@ flowchart LR
 
 **Purpose.** Turns `design.md` into a directly executable, ordered stage plan with dependencies, validation notes, and approval boundaries. Terminal stage for `objective: planner`.
 
-**Inputs.** `design.md` as primary source of truth; on a fix-stage request, also `review-ledger.md` for the confirmed finding ids.
+**Inbound contract.** Each `Needed Before: execution` row from the design's `Open Technical Questions` is recorded in `Approval Notes`, naming the stage it affects, so it sits in the plan's own approval context. This stage surfaces them; it does not resolve them and does not block on them. A `Needed Before: design` row arriving still open means the design is incomplete — return `blocked` rather than planning around a decision that was never made.
+
+**Inputs.** `design.md` as primary source of truth including its `Open Technical Questions`; on a fix-stage request, also `review-ledger.md` for the confirmed finding ids.
 
 **Outputs.** `plan.md` (300-500 words target), `state.yaml`; `macro-plan.md` only on an approved `macro-plan-first` route.
 
