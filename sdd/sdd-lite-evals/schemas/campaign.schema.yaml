@@ -1,0 +1,20 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+additionalProperties: false
+required: [version, id, project, cases, providers, repetitions, model_policy, report_language, level2_profile]
+properties:
+  version: {const: "0.1"}
+  id: {type: string, pattern: "^[a-z0-9][a-z0-9-]*$"}
+  project: {type: string, minLength: 1}
+  cases: {type: array, minItems: 1, items: {type: string}}
+  providers:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items: {enum: [codex, claude, opencode]}
+  baseline_run: {type: [string, "null"]}
+  repetitions: {type: integer, minimum: 1}
+  model_policy: {const: cli-default}
+  report_language: {enum: [auto, es, en]}
+  level2_profile: {enum: [smoke, full]}
+

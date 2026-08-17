@@ -1,0 +1,15 @@
+version: "0.1"
+id: default
+project: example-project
+cases:
+  - main-flow-example
+providers:
+  - codex
+  - claude
+  - opencode
+baseline_run: null
+repetitions: 1
+model_policy: cli-default
+report_language: auto
+level2_profile: smoke
+

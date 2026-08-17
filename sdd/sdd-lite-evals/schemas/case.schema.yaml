@@ -1,0 +1,57 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+additionalProperties: false
+required: [version, id, title, task_prompt, expected, probes]
+properties:
+  version: {const: "0.1"}
+  id: {type: string, pattern: "^[a-z0-9][a-z0-9-]*$"}
+  title: {type: string, minLength: 1}
+  description: {type: string}
+  task_prompt: {type: string, minLength: 1}
+  requires_no_active_changes: {type: boolean}
+  expected:
+    type: object
+    additionalProperties: false
+    properties:
+      planning_artifacts: {type: array, items: {type: string}}
+      final_artifacts: {type: array, items: {type: string}}
+      planning_lifecycle: {type: array, items: {type: string}}
+      final_lifecycle: {type: array, items: {type: string}}
+      forbidden_optional_artifacts: {type: array, items: {type: string}}
+  probes:
+    type: object
+    required: [smoke]
+    additionalProperties: false
+    properties:
+      smoke: {$ref: "#/$defs/probes"}
+      full: {$ref: "#/$defs/probes"}
+  quality_commands: {type: array, items: {type: string, minLength: 1}}
+$defs:
+  probes:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [id, prompt, assertions]
+      properties:
+        id: {type: string, pattern: "^[a-z0-9][a-z0-9-]*$"}
+        prompt: {type: string, minLength: 1}
+        fixture_overlay: {type: string}
+        fixture_setup:
+          type: object
+          additionalProperties: false
+          properties:
+            overlay_dir: {type: string}
+            remove_paths: {type: array, items: {type: string}}
+        assertions:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+            required: [type]
+            properties:
+              type:
+                enum: [exit_code, output_contains_any, output_not_contains_any, event_contains_any, event_not_contains_any, path_exists, path_absent, source_unchanged]
+              values: {type: array, items: {type: string}}
+              value: {}
+              path: {type: string}
