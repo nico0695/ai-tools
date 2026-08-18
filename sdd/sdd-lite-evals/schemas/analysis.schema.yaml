@@ -1,0 +1,24 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+additionalProperties: false
+required: [version, run_id, summary, findings]
+properties:
+  version: {const: "0.1"}
+  run_id: {type: string, minLength: 1}
+  summary: {type: string, minLength: 1}
+  limitations: {type: array, items: {type: string}}
+  findings:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [id, severity, title, evidence, recommendation]
+      properties:
+        id: {type: string, pattern: "^[a-z0-9][a-z0-9-]*$"}
+        severity: {enum: [critical, high, medium, low, info]}
+        title: {type: string, minLength: 1}
+        evidence: {type: string, minLength: 1}
+        recommendation: {type: string}
+        path: {type: [string, "null"]}
+        assertion_id: {type: [string, "null"]}
+

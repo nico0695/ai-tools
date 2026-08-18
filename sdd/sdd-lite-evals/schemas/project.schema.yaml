@@ -1,0 +1,32 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+additionalProperties: false
+required: [version, id, project_root, sdd_root, source_mode, report_language, providers]
+properties:
+  version: {const: "0.1"}
+  id: {type: string, pattern: "^[a-z0-9][a-z0-9-]*$"}
+  project_root: {type: string, minLength: 1}
+  sdd_root: {type: string, minLength: 1}
+  source_mode: {const: working-copy}
+  declared_sdd_version: {type: [string, "null"]}
+  report_language: {enum: [auto, es, en]}
+  providers:
+    type: object
+    minProperties: 1
+    additionalProperties: false
+    properties:
+      codex: {$ref: "#/$defs/provider"}
+      claude: {$ref: "#/$defs/provider"}
+      opencode: {$ref: "#/$defs/provider"}
+  quality_commands:
+    type: array
+    items: {type: string, minLength: 1}
+$defs:
+  provider:
+    type: object
+    additionalProperties: false
+    required: [skill_dir]
+    properties:
+      skill_dir: {type: string, minLength: 1}
+      sdd_skill_dirs: {type: array, items: {type: string, minLength: 1}}
+      executable: {type: string, minLength: 1}

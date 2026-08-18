@@ -203,6 +203,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
    a. Read the corresponding wrapper template:
       - `claude_code`: `<package-root>/templates/wrappers/claude-orchestrator.md`
       - `agents`: `<package-root>/templates/wrappers/agents-orchestrator.md`
+      Both templates are wrapper contract version `0.2` and point directly to `<package-root>/orchestrator/SDDL-RUNTIME.md`.
    b. Resolve placeholders in the template:
       - `<package-root>` → the value of `project.package_root` being written to `config.yaml`
       - `<generated_at>` → current ISO timestamp
@@ -215,6 +216,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
       - If the target file exists and contains `<!-- sdd-lite:start -->`: replace the entire block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` with the resolved template.
       - If the target file exists but has no `<!-- sdd-lite:start -->` marker: append the resolved block at the end of the file.
       - If the target file does not exist: create it containing only the resolved block.
+      - Treat any existing wrapper with a missing version or a version lower than `0.2` as incompatible. Replace the full marked block; never preserve or merge legacy orchestration text into the new wrapper.
    f. If the user declines: show the resolved block as plain text with instructions on where to paste it manually.
 
 8. Infer project bootstrap facts
@@ -264,6 +266,8 @@ Before finishing, verify:
 - skill files exist at the expected target paths for each configured AI, including `references/` files for skills that ship them
 - in copy mode, every rewritten package-relative path resolves to an existing file
 - wrapper blocks in `CLAUDE.md` / `AGENTS.md` use demarcated markers and contain the correct resolved `package_root`
+- wrapper blocks use contract version `0.2`, point to `orchestrator/SDDL-RUNTIME.md`, and contain the worker-bypass controls
+- no installed wrapper still references a pre-0.2 runtime path
 - no wrapper block was inserted without explicit user confirmation
 
 ## Expected Output

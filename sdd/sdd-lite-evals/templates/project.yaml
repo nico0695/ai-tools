@@ -1,0 +1,18 @@
+version: "0.1"
+id: example-project
+project_root: /absolute/path/to/project
+sdd_root: sdd-lite
+source_mode: working-copy
+declared_sdd_version: null
+report_language: auto
+providers:
+  codex:
+    skill_dir: .agents/skills
+    sdd_skill_dirs: [.agents/skills]
+  claude:
+    skill_dir: .claude/skills
+    sdd_skill_dirs: [.claude/skills]
+  opencode:
+    skill_dir: .opencode/skills
+    sdd_skill_dirs: [.opencode/skills, .agents/skills]
+quality_commands: []

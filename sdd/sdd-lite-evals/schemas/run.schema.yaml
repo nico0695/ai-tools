@@ -1,0 +1,44 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+additionalProperties: true
+required: [version, run_id, level, campaign_id, project_id, provider, status, verdict, started_at, inputs, environment, assertions, findings]
+properties:
+  version: {const: "0.1"}
+  run_id: {type: string, minLength: 1}
+  level: {type: integer, minimum: 1, maximum: 3}
+  campaign_id: {type: string, minLength: 1}
+  project_id: {type: string, minLength: 1}
+  case_id: {type: [string, "null"]}
+  provider: {enum: [none, codex, claude, opencode]}
+  status: {enum: [complete, awaiting_approval, blocked, error]}
+  verdict: {enum: [PASS, WARN, FAIL, BLOCKED, PENDING]}
+  started_at: {type: string, format: date-time}
+  completed_at: {type: [string, "null"], format: date-time}
+  inputs: {type: object}
+  environment: {type: object}
+  usage: {type: object}
+  assertions: {type: array, items: {$ref: "#/$defs/assertion"}}
+  findings: {type: array, items: {$ref: "#/$defs/finding"}}
+$defs:
+  assertion:
+    type: object
+    additionalProperties: true
+    required: [id, status, evidence]
+    properties:
+      id: {type: string}
+      status: {enum: [passed, failed, warning, not_observable]}
+      evidence: {type: string}
+  finding:
+    type: object
+    additionalProperties: false
+    required: [id, fingerprint, severity, title, evidence, recommendation]
+    properties:
+      id: {type: string, minLength: 1}
+      fingerprint: {type: string, minLength: 1}
+      severity: {enum: [critical, high, medium, low, info]}
+      title: {type: string, minLength: 1}
+      evidence: {type: string, minLength: 1}
+      recommendation: {type: string}
+      path: {type: [string, "null"]}
+      assertion_id: {type: [string, "null"]}
+      source: {enum: [deterministic, cli-analysis]}

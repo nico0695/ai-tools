@@ -51,6 +51,8 @@ Cada etapa necesita tu aprobacion antes de avanzar. El executor nunca avanza sol
 
 El orquestador es un coordinador liviano. No implementa, no ejecuta tests, no modifica codigo. Solo lee el estado minimo necesario, decide la ruta y delega el trabajo a la skill correcta.
 
+Durante una sesion SDD mantiene cargado `orchestrator/SDDL-RUNTIME.md`. Las reglas pesadas de review, cierre combinado y recuperacion excepcional se leen solo cuando ocurre ese evento. Los workers reciben una marca explicita que les impide volver a cargar el runtime o convertirse en otro orquestador.
+
 **Que hace:**
 - Verifica que el bootstrap este listo antes de arrancar
 - Evalua complejidad y elige la ruta (flujo normal, macro-plan, o escalar)
@@ -70,6 +72,8 @@ El orquestador es un coordinador liviano. No implementa, no ejecuta tests, no mo
 - No hace commits, stash ni ninguna operacion git
 - No avanza sin tu aprobacion en etapas que tocan codigo
 - No depende de lo que dijiste antes en el chat — siempre lee de `state.yaml` y los artefactos
+
+Si el proyecto tenia un wrapper anterior a la version `0.2`, ejecuta `sddl-init` y aprueba el reemplazo completo del bloque marcado en `CLAUDE.md` o `AGENTS.md` antes de retomar el flujo.
 
 ---
 

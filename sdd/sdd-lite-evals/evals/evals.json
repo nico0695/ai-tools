@@ -1,0 +1,24 @@
+{
+  "skill_name": "sddl-eval",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Actualicé el wrapper y el runtime de sdd-lite. Quiero una validación rápida sin gastar tokens antes de probar con modelos.",
+      "expected_output": "Routes to sddl-eval-level-1 and explains that it makes zero model calls.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Creo que Codex no está respetando worker bypass después del último cambio. Probemos el trigger en una sesión limpia.",
+      "expected_output": "Routes to sddl-eval-level-2, selects Codex, previews probes, and requires confirmation before --execute.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Ya pasaron los checks estáticos. Ejecutemos el cambio completo hasta QA pero no hagamos delivery, archive ni Judgment Day.",
+      "expected_output": "Routes to sddl-eval-level-3 and preserves planning and per-stage human approvals.",
+      "files": []
+    }
+  ]
+}
+

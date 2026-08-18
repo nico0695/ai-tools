@@ -1,0 +1,6 @@
+version: "0.1"
+run_id: replace-with-run-id
+summary: Concise provider-specific conclusion grounded in run evidence.
+limitations: []
+findings: []
+

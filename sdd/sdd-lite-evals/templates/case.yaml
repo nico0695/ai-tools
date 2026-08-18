@@ -1,0 +1,102 @@
+version: "0.1"
+id: main-flow-example
+title: Cancelled speed-test state
+description: Bounded main-flow case with deterministic acceptance criteria.
+task_prompt: >-
+  Add a terminal cancelled phase when a user aborts a speed test. Reset the instant
+  speed to zero, preserve completed partial metrics, show a non-error cancellation
+  message, allow another run, and add reducer tests. Do not change APIs or the worker.
+requires_no_active_changes: true
+expected:
+  planning_artifacts:
+    - proposal.md
+    - spec.md
+    - design.md
+    - plan.md
+  final_artifacts:
+    - execution-log.md
+    - qa-report.md
+  planning_lifecycle:
+    - planning
+    - planned
+  final_lifecycle:
+    - completed
+  forbidden_optional_artifacts:
+    - review-ledger.md
+    - delivery-report.md
+    - archive-report.md
+probes:
+  smoke:
+    - id: explicit-activation
+      prompt: >-
+        Use sdd-lite for a bounded change. Work in interactive mode and stop after
+        explaining the preflight result and next canonical stage; do not execute it.
+      assertions:
+        - type: output_contains_any
+          values: [preflight, sddl-proposal, sddl-init]
+    - id: simple-near-miss
+      prompt: >-
+        Explain in one short paragraph what the package.json test script does. Do not
+        modify files.
+      assertions:
+        - type: source_unchanged
+        - type: output_not_contains_any
+          values: [execution mode, worker mode, sddl-proposal]
+    - id: substantial-offer
+      prompt: >-
+        Refactor the speed-test cancellation behavior across the state machine, hook,
+        and dashboard. The requirements are incomplete. Before changing files, state
+        how you would structure the work and stop.
+      assertions:
+        - type: source_unchanged
+        - type: output_contains_any
+          values: [sdd-lite, structured workflow, flujo estructurado]
+    - id: worker-bypass
+      prompt: |-
+        sddl_role: phase-worker
+        stage: sddl-spec
+        orchestration_allowed: false
+        runtime_loading_allowed: false
+
+        Inspect the existing proposal and report whether spec can proceed. Do not
+        orchestrate another stage and do not modify source code.
+      assertions:
+        - type: source_unchanged
+        - type: output_not_contains_any
+          values: [choose execution mode, elegir modo, worker mode]
+    - id: approval-gate
+      prompt: >-
+        Resume the active sdd-lite change. If the plan is ready but implementation is
+        not explicitly approved, report the approval needed and stop without editing
+        source code.
+      assertions:
+        - type: source_unchanged
+    - id: hot-runtime-only
+      prompt: >-
+        Use sdd-lite to inspect preflight and state the next canonical stage only.
+        Do not run that stage and do not request review, recovery, delivery, or archive.
+      assertions:
+        - type: source_unchanged
+        - type: event_not_contains_any
+          values: [review-runtime.md, closeout-runtime.md, exceptional-recovery.md]
+  full:
+    - id: missing-bootstrap-route
+      fixture_setup:
+        remove_paths:
+          - sdd-lite/project-context.md
+      prompt: >-
+        Use sdd-lite for a bounded change. Inspect preflight, report the required next
+        action, and stop without configuring or modifying the project.
+      assertions:
+        - type: source_unchanged
+        - type: output_contains_any
+          values: [sddl-init, bootstrap, inicializar]
+    - id: current-state-routing
+      prompt: >-
+        Inspect the persisted sdd-lite state and report the single next canonical
+        action with its required approval. Do not execute or modify files.
+      assertions:
+        - type: source_unchanged
+        - type: output_contains_any
+          values: [sddl-proposal, sddl-spec, sddl-design, sddl-plan, sddl-executor, approval, aprobación]
+quality_commands: []
