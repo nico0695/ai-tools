@@ -9,6 +9,7 @@ Use this contract to keep all lite skills aligned on:
 - canonical objective ids
 - route ids
 - stage ids
+- execution profile ids
 - lifecycle rules
 - thin-orchestrator rules
 - context loading order
@@ -50,6 +51,39 @@ These ids are the canonical change-stage names used in state and contracts.
 | `sddl-qa-review` | stage review or final closeout |
 | `sddl-delivery` | draft the commit message, pull request description, and ticket content for work already done |
 | `sddl-archive` | move finished, planned, or abandoned changes into the archive tree |
+
+Profile ids are not stage ids. Never write an execution profile into `state.yaml` `current_stage` or `stages`.
+
+### Execution profile ids
+
+Host CLI adapters. The named skill remains the phase algorithm. Source of truth for defaults: `templates/agents/profiles.yaml`.
+
+| Profile | Skills it may execute | Capability |
+|---|---|---|
+| `sddl-light` | `sddl-proposal`, `sddl-archive`, `sddl-delivery` | workspace-write; prompt-scoped to `./sdd-lite/` |
+| `sddl-explorer` | `sddl-deep-explorer` | read-only |
+| `sddl-planner` | `sddl-spec`, `sddl-design`, `sddl-plan` | workspace-write; prompt-scoped to `./sdd-lite/` |
+| `sddl-executor` | `sddl-executor` | workspace-write; prompt-scoped to the approved stage |
+| `sddl-reviewer` | `sddl-code-review`, `sddl-judgment-day` | read-only |
+| `sddl-qa` | `sddl-qa-review` | workspace-write; prompt-scoped to its owned runtime artifacts |
+
+`workspace-write` grants access to the workspace; the narrower paths above are behavioral contract boundaries, not host-enforced subdirectory sandboxes.
+
+| Stage | Profile |
+|---|---|
+| `sddl-proposal` | `sddl-light` |
+| `sddl-spec` | `sddl-planner` |
+| `sddl-archive` | `sddl-light` |
+| `sddl-delivery` | `sddl-light` |
+| `sddl-deep-explorer` | `sddl-explorer` |
+| `sddl-design` | `sddl-planner` |
+| `sddl-plan` | `sddl-planner` |
+| `sddl-executor` | `sddl-executor` |
+| `sddl-code-review` | `sddl-reviewer` |
+| `sddl-judgment-day` | `sddl-reviewer` |
+| `sddl-qa-review` | `sddl-qa` |
+
+`sddl-init` has no profile. It runs in the main session.
 
 ### Stage status ids
 
@@ -103,6 +137,7 @@ The orchestrator is an event loop, not a worker.
 - Do not perform installs, builds, or broad test runs inline in the orchestrator.
 - Prefer artifact paths and short digests over copied artifact bodies.
 - Treat `./sdd-lite/skill-catalog.md` as the source for `Project Standards (auto-resolved)`.
+- Delegate to the mapped execution profile, which executes the named skill. Do not invent a profile per file.
 
 ## Worker handoff controls
 
@@ -111,11 +146,12 @@ Every delegated worker handoff must carry these controls before any stage-specif
 ```yaml
 sddl_role: phase-worker # review-worker for lenses, judges, and refuters
 stage: sddl-*
+execution_profile: sddl-light # or sddl-explorer | sddl-planner | sddl-executor | sddl-reviewer | sddl-qa
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
 
-Host wrappers evaluate these fields before sdd-lite activation. A matching worker executes only the named skill, does not read `orchestrator/SDDL-RUNTIME.md` or its modules, does not ask for session mode, does not route later stages, and does not launch descendants. Missing controls are a malformed delegated handoff; the main orchestrator must correct it before retrying.
+Host wrappers evaluate these fields before sdd-lite activation. A matching worker executes only the named skill, does not read `orchestrator/SDDL-RUNTIME.md` or its modules, does not ask for session mode, does not route later stages, and does not launch descendants. The wrapper launches the CLI agent named in `execution_profile`. Missing controls are a malformed delegated handoff; the main orchestrator must correct it before retrying.
 
 ## Common result structure
 

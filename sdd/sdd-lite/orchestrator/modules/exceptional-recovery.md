@@ -23,7 +23,7 @@ Resolve package paths relative to the package root supplied by the active wrappe
    - `incident`: an unexpected mutation or boundary violation occurred
 5. For `recoverable`, route back to the owning stage with the contradiction and evidence in its handoff. Do not repair the artifact inline.
 6. For `decision-required`, present the competing interpretations and their evidence, then wait.
-7. For `incident`, report what changed, distrust affected outputs, and use a fresh worker for any required audit or review.
+7. For `incident`, report what changed, distrust affected outputs, and use a fresh worker on the mapped profile (`sddl-reviewer` or `sddl-explorer`) for any required audit or review.
 8. Persist only a decision/checkpoint that existing contracts already allow. Do not invent schema fields or a new artifact type.
 9. Return to normal runtime routing only after active change, route, scope, and next action are explainable from persisted evidence.
 

@@ -34,6 +34,7 @@ Every native worker receives these fields before stage-specific instructions:
 ```yaml
 sddl_role: phase-worker # review-worker for lenses, judges, and refuters
 stage: sddl-*
+execution_profile: sddl-light # explorer | planner | executor | reviewer | qa
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
@@ -50,9 +51,9 @@ Modules are loaded once per session. After compaction, reload a module only if i
 
 ## Wrapper migration
 
-Wrapper contract `0.2` is intentionally strict. A consuming project with a pre-0.2 marked block must rerun `sddl-init`, preview the replacement, and approve replacing the entire block in `CLAUDE.md` and/or `AGENTS.md`. Do not merge old and new orchestration prose.
+Wrapper contract `0.3` is intentionally strict. A consuming project with a pre-0.3 marked block must rerun `sddl-init`, preview the replacement, and approve replacing the entire block in `CLAUDE.md` and/or `AGENTS.md`. Do not merge old and new orchestration prose.
 
-The persisted config and state schemas remain at their existing versions because runtime modularization changes neither format.
+`execution_profiles` is an optional config addition. Existing `config.yaml` files without that section stay valid; adapter files then keep template defaults.
 
 ## Manual validation checklist
 
@@ -62,7 +63,8 @@ The persisted config and state schemas remain at their existing versions because
 - Final QA completed: closeout module loaded and exactly one combined offer shown.
 - Consistent resume: main runtime only.
 - Contradictory resume or material incident: exceptional recovery module loaded before any write.
-- Claude native workers and AGENTS native workers: compact handoff contains all four controls.
-- Inline fallback: same approvals, routing, module triggers, and guardrails without claiming fresh-context isolation.
+- Claude native workers and AGENTS native workers: compact handoff contains worker-bypass controls plus `execution_profile`.
+- Named profile launch: Claude Agent type and Codex named role match the stage map; review children are `sddl-reviewer`.
+- Inline fallback: same approvals, routing, module triggers, and guardrails without claiming fresh-context isolation or that a named agent ran.
 - Interactive and auto: pacing differs; mandatory approvals do not.
-- Regenerated wrapper: marker version is `0.2` and points directly to `SDDL-RUNTIME.md`.
+- Regenerated wrapper: marker version is `0.3` and points directly to `SDDL-RUNTIME.md`.

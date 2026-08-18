@@ -329,6 +329,48 @@ properties:
             injected_at:
               type: string
               minLength: 1
+      agents_installed:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required:
+            - target
+            - method
+            - installed_at
+            - profiles
+          properties:
+            target:
+              type: string
+              minLength: 1
+            method:
+              type: string
+              enum:
+                - copy
+            installed_at:
+              type: string
+              minLength: 1
+            profiles:
+              type: array
+              items:
+                $ref: "#/$defs/executionProfileId"
+  execution_profiles:
+    description: "Optional per-profile model/effort overrides. Absence uses templates/agents defaults. Init regenerates adapter files from this section."
+    type: object
+    additionalProperties: false
+    properties:
+      sddl-light:
+        $ref: "#/$defs/executionProfileOverride"
+      sddl-explorer:
+        $ref: "#/$defs/executionProfileOverride"
+      sddl-planner:
+        $ref: "#/$defs/executionProfileOverride"
+      sddl-executor:
+        $ref: "#/$defs/executionProfileOverride"
+      sddl-reviewer:
+        $ref: "#/$defs/executionProfileOverride"
+      sddl-qa:
+        $ref: "#/$defs/executionProfileOverride"
   metadata:
     type: object
     additionalProperties: false
@@ -351,6 +393,35 @@ properties:
         type: string
         const: sddl-qa-review
 $defs:
+  executionProfileId:
+    type: string
+    enum:
+      - sddl-light
+      - sddl-explorer
+      - sddl-planner
+      - sddl-executor
+      - sddl-reviewer
+      - sddl-qa
+  hostModelOverride:
+    type: object
+    additionalProperties: false
+    properties:
+      model:
+        description: "Host model override. For Codex, 'inherit' tells sddl-init to omit the generated TOML model key so Codex uses its normal model precedence."
+        type: string
+        minLength: 1
+      effort:
+        description: "Host reasoning-effort override, resolved independently from model."
+        type: string
+        minLength: 1
+  executionProfileOverride:
+    type: object
+    additionalProperties: false
+    properties:
+      claude:
+        $ref: "#/$defs/hostModelOverride"
+      codex:
+        $ref: "#/$defs/hostModelOverride"
   commandList:
     type: array
     items:

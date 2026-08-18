@@ -107,6 +107,33 @@ ai_setups:
   # - ai: claude_code
   #   target_file: CLAUDE.md
   #   injected_at: "2026-04-15T00:00:00Z"
+  agents_installed: []
+  # Example entry:
+  # - target: .claude/agents
+  #   method: copy
+  #   installed_at: "2026-04-15T00:00:00Z"
+  #   profiles:
+  #     - sddl-light
+  #     - sddl-explorer
+  #     - sddl-planner
+  #     - sddl-executor
+  #     - sddl-reviewer
+  #     - sddl-qa
+
+# Optional. Omit to keep template defaults from templates/agents/profiles.yaml.
+# Init regenerates adapter files when these values change.
+# execution_profiles:
+#   sddl-light:
+#     claude:
+#       model: haiku
+#       effort: low
+#     codex:
+#       model: gpt-5.6-luna
+#       effort: low
+#   sddl-executor:
+#     codex:
+#       model: inherit       # omit the generated TOML model key
+#       effort: high         # effort remains independently configurable
 
 metadata:
   bootstrap_version: stage-1

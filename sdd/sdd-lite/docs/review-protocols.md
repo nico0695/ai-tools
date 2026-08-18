@@ -11,12 +11,12 @@ They are mutually exclusive per target: `sddl-code-review` is the default, auto-
 ```mermaid
 sequenceDiagram
     participant O as Orchestrator
-    participant W as Worker(s) (lens / judge)
+    participant W as sddl-reviewer (lens / judge)
     participant L as review-ledger.md
 
     O->>O: Freeze target (commit SHA / diff hash / artifact digest)
     O->>O: Triage (4R only) or confirm mode+target (judgment-day)
-    O->>W: Launch read-only worker(s), Review Worker Envelope
+    O->>W: Launch read-only sddl-reviewer worker(s), Review Worker Envelope
     Note over W: 4R: 0/1/4 lenses by tier, one prompt per lens<br/>Judgment-day: 2 blind judges, byte-identical envelopes
     W-->>O: findings rows (never write files)
     O->>O: Merge by location + claim (dedup / convergence)
