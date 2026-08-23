@@ -73,7 +73,7 @@ Durante una sesion SDD mantiene cargado `orchestrator/SDDL-RUNTIME.md`. Las regl
 - No avanza sin tu aprobacion en etapas que tocan codigo
 - No depende de lo que dijiste antes en el chat — siempre lee de `state.yaml` y los artefactos
 
-Si el proyecto tenia un wrapper anterior a la version `0.3`, ejecuta `sddl-init` y aprueba el reemplazo completo del bloque marcado en `CLAUDE.md` o `AGENTS.md` antes de retomar el flujo. Ademas se instalan cinco adapters de perfil (`.claude/agents/` o `.codex/agents/`) que no reemplazan las skills.
+Si el proyecto tenia un wrapper anterior a la version `0.4`, ejecuta `sddl-init` y aprueba el reemplazo completo del bloque marcado en `CLAUDE.md` o `AGENTS.md` antes de retomar el flujo. Ademas se instalan ocho adapters de perfil (`.claude/agents/` o `.codex/agents/`) que no reemplazan las skills; los adapters de ids retirados (como `sddl-planner`) se eliminan al reejecutar.
 
 ---
 

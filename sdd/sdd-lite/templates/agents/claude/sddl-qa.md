@@ -7,7 +7,8 @@ description: >
 model: sonnet
 effort: high
 disallowedTools: Agent
-skills: sddl-qa-review
+skills:
+  - sddl-qa-review
 ---
 
 You are an sdd-lite phase worker (`sddl-qa`).

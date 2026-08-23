@@ -236,9 +236,9 @@ It is not responsible for:
 
 Workers receive `sddl_role`, `stage`, `execution_profile`, `orchestration_allowed: false`, and `runtime_loading_allowed: false`. Host wrappers evaluate these fields before normal activation so a delegated worker cannot become a nested orchestrator.
 
-### Migrating pre-0.3 wrappers
+### Migrating pre-0.4 wrappers
 
-Runtime contract `0.3` is a strict migration. Existing consuming projects must rerun `sddl-init` and approve replacement of the complete marked block in `CLAUDE.md` and/or `AGENTS.md`. There is no compatibility alias for earlier wrapper paths; do not use sdd-lite in that project until its wrapper has been regenerated.
+Runtime contract `0.4` is a strict migration (`0.3` wrappers name the retired `sddl-planner` profile). Existing consuming projects must rerun `sddl-init` and approve replacement of the complete marked block in `CLAUDE.md` and/or `AGENTS.md`. There is no compatibility alias for earlier wrapper paths; do not use sdd-lite in that project until its wrapper has been regenerated.
 
 ## Objectives And Routes
 

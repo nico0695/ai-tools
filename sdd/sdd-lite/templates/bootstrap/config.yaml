@@ -114,23 +114,29 @@ ai_setups:
   #   installed_at: "2026-04-15T00:00:00Z"
   #   profiles:
   #     - sddl-light
+  #     - sddl-framer
   #     - sddl-explorer
-  #     - sddl-planner
+  #     - sddl-architect
+  #     - sddl-sequencer
   #     - sddl-executor
   #     - sddl-reviewer
   #     - sddl-qa
 
 # Optional. Omit to keep template defaults from templates/agents/profiles.yaml.
 # Init regenerates adapter files when these values change.
+# Profile ids: sddl-light, sddl-framer, sddl-explorer, sddl-architect,
+# sddl-sequencer, sddl-executor, sddl-reviewer, sddl-qa.
 # execution_profiles:
-#   sddl-light:
+#   sddl-framer:
 #     claude:
-#       model: haiku
-#       effort: low
+#       model: opus          # raise proposal to the high tier for ambiguous projects
+#       effort: high
 #     codex:
-#       model: gpt-5.6-luna
-#       effort: low
+#       model: gpt-5.6-sol
+#       effort: high
 #   sddl-executor:
+#     claude:
+#       model: inherit       # let the session model write code instead of sonnet
 #     codex:
 #       model: inherit       # omit the generated TOML model key
 #       effort: high         # effort remains independently configurable

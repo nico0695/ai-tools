@@ -361,9 +361,13 @@ properties:
     properties:
       sddl-light:
         $ref: "#/$defs/executionProfileOverride"
+      sddl-framer:
+        $ref: "#/$defs/executionProfileOverride"
       sddl-explorer:
         $ref: "#/$defs/executionProfileOverride"
-      sddl-planner:
+      sddl-architect:
+        $ref: "#/$defs/executionProfileOverride"
+      sddl-sequencer:
         $ref: "#/$defs/executionProfileOverride"
       sddl-executor:
         $ref: "#/$defs/executionProfileOverride"
@@ -397,8 +401,10 @@ $defs:
     type: string
     enum:
       - sddl-light
+      - sddl-framer
       - sddl-explorer
-      - sddl-planner
+      - sddl-architect
+      - sddl-sequencer
       - sddl-executor
       - sddl-reviewer
       - sddl-qa

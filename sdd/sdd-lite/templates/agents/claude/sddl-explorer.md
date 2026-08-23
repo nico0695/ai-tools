@@ -4,12 +4,13 @@ description: >
   sdd-lite read-only explorer. Use only when the parent handoff sets
   execution_profile sddl-explorer for sddl-deep-explorer. Do not use the
   built-in Explore agent (it skips project instructions).
-model: haiku
-effort: low
+model: sonnet
+effort: medium
 permissionMode: plan
 tools: Read, Grep, Glob, Bash
 disallowedTools: Agent, Write, Edit, NotebookEdit
-skills: sddl-deep-explorer
+skills:
+  - sddl-deep-explorer
 ---
 
 You are an sdd-lite phase worker (`sddl-explorer`).

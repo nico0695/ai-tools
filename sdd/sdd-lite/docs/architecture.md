@@ -77,7 +77,7 @@ sdd/sdd-lite/
     bootstrap/                 # config.yaml, project-context.md, skill-catalog.md seeds
     artifacts/                 # one baseline shape per persisted artifact
     delivery/                  # commit.md, pr.md, ticket.md defaults
-    wrappers/                  # claude-orchestrator.md, agents-orchestrator.md (contract 0.3)
+    wrappers/                  # claude-orchestrator.md, agents-orchestrator.md (contract 0.4)
     agents/                    # profiles.yaml + claude/*.md + codex/*.toml adapters
   schemas/
     config.schema.yaml
@@ -127,7 +127,7 @@ The hot orchestration logic — routing, delegation, approval gates, handoff, an
 
 `agents` is the vendor-neutral id for any assistant driven by the `AGENTS.md` / `.agents/` convention. Codex is first-class: `.codex/` detects as `agents` and adapters install to `.codex/agents/`. Grok and OpenCode reuse `AGENTS.md` plus `.agents/skills/`; they do not load `.codex/agents`. Injecting both wrappers is allowed; hosts that concatenate `CLAUDE.md` and `AGENTS.md` (Grok) get a dual-load warning.
 
-Execution profiles (`sddl-light`, `sddl-explorer`, `sddl-planner`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`) are CLI adapters generated from `templates/agents/`. They are not stage ids. See `skills/_shared/sddl-flow-contract.md`.
+Execution profiles (`sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`) are CLI adapters generated from `templates/agents/`. They are not stage ids. See `skills/_shared/sddl-flow-contract.md`.
 
 Whichever wrapper is active, all invariants from [orchestrator.md](./orchestrator.md) and [review-protocols.md](./review-protocols.md) still apply — `interactive`/`auto` execution mode and worker mode only control pacing and isolation, never approval gates.
 

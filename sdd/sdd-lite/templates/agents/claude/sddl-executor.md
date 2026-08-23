@@ -4,10 +4,11 @@ description: >
   sdd-lite executor worker. Use only when the parent handoff sets
   execution_profile sddl-executor for one approved sddl-executor stage.
   Do not plan, review, or start another stage.
-model: inherit
+model: sonnet
 effort: high
 disallowedTools: Agent
-skills: sddl-executor
+skills:
+  - sddl-executor
 ---
 
 You are an sdd-lite phase worker (`sddl-executor`).

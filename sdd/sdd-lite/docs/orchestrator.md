@@ -34,7 +34,7 @@ Every native worker receives these fields before stage-specific instructions:
 ```yaml
 sddl_role: phase-worker # review-worker for lenses, judges, and refuters
 stage: sddl-*
-execution_profile: sddl-light # explorer | planner | executor | reviewer | qa
+execution_profile: sddl-framer # light | explorer | architect | sequencer | executor | reviewer | qa
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
@@ -51,7 +51,7 @@ Modules are loaded once per session. After compaction, reload a module only if i
 
 ## Wrapper migration
 
-Wrapper contract `0.3` is intentionally strict. A consuming project with a pre-0.3 marked block must rerun `sddl-init`, preview the replacement, and approve replacing the entire block in `CLAUDE.md` and/or `AGENTS.md`. Do not merge old and new orchestration prose.
+Wrapper contract `0.4` is intentionally strict. A consuming project with a pre-0.4 marked block must rerun `sddl-init`, preview the replacement, and approve replacing the entire block in `CLAUDE.md` and/or `AGENTS.md`. Do not merge old and new orchestration prose.
 
 `execution_profiles` is an optional config addition. Existing `config.yaml` files without that section stay valid; adapter files then keep template defaults.
 
@@ -67,4 +67,5 @@ Wrapper contract `0.3` is intentionally strict. A consuming project with a pre-0
 - Named profile launch: Claude Agent type and Codex named role match the stage map; review children are `sddl-reviewer`.
 - Inline fallback: same approvals, routing, module triggers, and guardrails without claiming fresh-context isolation or that a named agent ran.
 - Interactive and auto: pacing differs; mandatory approvals do not.
-- Regenerated wrapper: marker version is `0.3` and points directly to `SDDL-RUNTIME.md`.
+- Regenerated wrapper: marker version is `0.4` and points directly to `SDDL-RUNTIME.md`.
+- Adapter directory: exactly the eight `profiles.yaml` ids, no stale `sddl-planner.*` file, and each adapter's model/effort matches `profiles.yaml` or the `execution_profiles` override.

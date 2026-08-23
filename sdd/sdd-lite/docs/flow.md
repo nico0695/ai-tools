@@ -64,7 +64,7 @@ Key ownership per artifact along this path:
 
 The orchestrator routes from digests and metadata in these files before rereading full bodies — see [config-and-state.md](./config-and-state.md).
 
-Launch uses execution profiles, not extra stages: proposal/archive/delivery → `sddl-light`; deep-explorer → `sddl-explorer`; spec/design/plan → `sddl-planner`; executor → `sddl-executor`; 4R/judgment-day → `sddl-reviewer`; QA → `sddl-qa`. `state.yaml` still records skill ids.
+Launch uses execution profiles, not extra stages: proposal → `sddl-framer`; spec/design → `sddl-architect`; plan → `sddl-sequencer`; archive/delivery → `sddl-light`; deep-explorer → `sddl-explorer`; executor → `sddl-executor`; 4R/judgment-day → `sddl-reviewer`; QA → `sddl-qa`. `state.yaml` still records skill ids.
 
 ## Standalone review flows
 

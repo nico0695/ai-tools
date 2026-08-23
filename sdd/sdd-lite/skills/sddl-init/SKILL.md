@@ -204,12 +204,14 @@ Chat interaction may follow the detected or confirmed `chat_language`.
 
    After skills are installed for a selected AI, install execution-profile adapters. Do not ask a second method question. Adapters are always **copy** (generated). Profile ids, host files, and defaults come from `<package-root>/templates/agents/profiles.yaml`. Apply `execution_profiles` overrides from the existing or about-to-be-written `config.yaml` when present; otherwise use the template defaults.
 
-   **Profiles to install** (all six): `sddl-light`, `sddl-explorer`, `sddl-planner`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`.
+   **Profiles to install** (all eight, read the ids from `profiles.yaml`): `sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`.
 
    - `claude_code`: copy each `templates/agents/claude/<profile>.md` to `.claude/agents/<profile>.md`. Replace `<package-root>` with `project.package_root`. If `execution_profiles.<profile>.claude.model` or `.effort` is set, write those values into the frontmatter `model` / `effort` fields.
    - `agents`: copy each `templates/agents/codex/<profile>.toml` to `.codex/agents/<profile>.toml` and replace `<package-root>` with `project.package_root`. Resolve `model` and `effort` independently: use `execution_profiles.<profile>.codex` when that field is present, otherwise keep the profile default from `templates/agents/profiles.yaml`. For Codex, `model: inherit` is a generation sentinel: remove or omit the TOML `model` key entirely; never write `model = "inherit"`. For any explicit model slug, write exactly one `model = "..."` key. Write the resolved effort as exactly one `model_reasoning_effort = "..."` key. Claude keeps its native `model: inherit` frontmatter behavior.
    - Create the parent directory if it does not exist.
    - On re-run: replace existing adapter files. They are generated; user overrides belong in `config.yaml` `execution_profiles`, not in the copied files.
+   - On re-run: delete any `sddl-*.md` / `sddl-*.toml` in the adapter directory whose id is not in `profiles.yaml` (for example `sddl-planner.*` from profiles `0.3`) and list the deletions in the final summary. A stale adapter is a launch target the wrapper no longer names.
+   - If the existing `config.yaml` carries `execution_profiles.sddl-planner`, move that override to `sddl-architect`, drop the `sddl-planner` key, and say so in the summary. Any other override key absent from `profiles.yaml` is reported and dropped.
    - `sddl-init` itself is not an execution profile.
 
 7. Wrapper injection
@@ -218,7 +220,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
    a. Read the corresponding wrapper template:
       - `claude_code`: `<package-root>/templates/wrappers/claude-orchestrator.md`
       - `agents`: `<package-root>/templates/wrappers/agents-orchestrator.md`
-      Both templates are wrapper contract version `0.3` and point directly to `<package-root>/orchestrator/SDDL-RUNTIME.md`.
+      Both templates are wrapper contract version `0.4` and point directly to `<package-root>/orchestrator/SDDL-RUNTIME.md`.
    b. Resolve placeholders in the template:
       - `<package-root>` → the value of `project.package_root` being written to `config.yaml`
       - `<generated_at>` → current ISO timestamp
@@ -231,7 +233,7 @@ Chat interaction may follow the detected or confirmed `chat_language`.
       - If the target file exists and contains `<!-- sdd-lite:start -->`: replace the entire block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` with the resolved template.
       - If the target file exists but has no `<!-- sdd-lite:start -->` marker: append the resolved block at the end of the file.
       - If the target file does not exist: create it containing only the resolved block.
-      - Treat any existing wrapper with a missing version or a version lower than `0.3` as incompatible. Replace the full marked block; never preserve or merge legacy orchestration text into the new wrapper.
+      - Treat any existing wrapper with a missing version or a version lower than `0.4` as incompatible (a `0.3` wrapper names the retired `sddl-planner` profile). Replace the full marked block; never preserve or merge legacy orchestration text into the new wrapper.
    f. If the user declines: show the resolved block as plain text with instructions on where to paste it manually.
    g. If both `claude_code` and `agents` are being injected, repeat the dual-load warning before the second confirmation.
 
@@ -284,13 +286,14 @@ Before finishing, verify:
 - `config.yaml` includes project identity, stack, quality commands, bootstrap metadata, canonical paths, chat language support, and `ai_setups`
 - persisted artifacts remain English even when `chat_language` is `es`
 - skill files exist at the expected target paths for each configured AI, including `references/` files for skills that ship them
-- for each configured AI, all six adapter files exist at `.claude/agents/` or `.codex/agents/` and contain the resolved `package_root`
+- for each configured AI, all eight adapter files exist at `.claude/agents/` or `.codex/agents/`, contain the resolved `package_root`, and no `sddl-*` adapter remains for an id absent from `profiles.yaml`
+- for each configured AI, the `model` / `effort` in every generated adapter equals the `profiles.yaml` default or the `execution_profiles` override, and `config.yaml` holds no `execution_profiles` key outside the `profiles.yaml` ids
 - for `claude_code`, every skill named in an adapter's `skills:` frontmatter exists under `.claude/skills/<skill-name>/`
 - every generated Codex adapter parses as TOML, contains at most one `model` and one `model_reasoning_effort` key, and never contains `model = "inherit"`
 - in copy mode, every rewritten package-relative path resolves to an existing file
 - wrapper blocks in `CLAUDE.md` / `AGENTS.md` use demarcated markers and contain the correct resolved `package_root`
-- wrapper blocks use contract version `0.3`, point to `orchestrator/SDDL-RUNTIME.md`, contain worker-bypass controls, and name `execution_profile`
-- no installed wrapper still references a pre-0.3 runtime path
+- wrapper blocks use contract version `0.4`, point to `orchestrator/SDDL-RUNTIME.md`, contain worker-bypass controls, and name `execution_profile`
+- no installed wrapper still references a pre-0.4 runtime path or the retired `sddl-planner` profile
 - no wrapper block was inserted without explicit user confirmation
 
 ## Expected Output

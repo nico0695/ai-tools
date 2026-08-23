@@ -132,7 +132,7 @@ Every delegated worker receives:
 ```yaml
 sddl_role: phase-worker # review-worker for lenses, judges, and refuters
 stage: sddl-*
-execution_profile: sddl-light # explorer | planner | executor | reviewer | qa — see flow-contract stage map
+execution_profile: sddl-framer # light | explorer | architect | sequencer | executor | reviewer | qa — see flow-contract stage map
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```

@@ -87,7 +87,7 @@ The main SDD session keeps `orchestrator/SDDL-RUNTIME.md` loaded. Review, combin
 
 `sddl-init` is the bootstrap skill. Run it the first time, or when the bootstrap becomes stale.
 
-When upgrading a project from a wrapper older than contract `0.3`, rerun `sddl-init` and approve complete replacement of the marked `CLAUDE.md` and/or `AGENTS.md` block before resuming SDD work.
+When upgrading a project from a wrapper older than contract `0.4`, rerun `sddl-init` and approve complete replacement of the marked `CLAUDE.md` and/or `AGENTS.md` block before resuming SDD work.
 
 ### What it does
 
@@ -116,7 +116,7 @@ When upgrading a project from a wrapper older than contract `0.3`, rerun `sddl-i
 
    All 12 canonical skills are installed: `sddl-init`, `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-code-review`, `sddl-judgment-day`, `sddl-deep-explorer`, `sddl-qa-review`, `sddl-delivery`, `sddl-archive`.
 
-   Six execution-profile adapters are also copied (generated, replaced on rerun): `sddl-light`, `sddl-explorer`, `sddl-planner`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`. Claude files go to `.claude/agents/`; Codex files go to `.codex/agents/`. They do not replace skills. Codex TOML adapters are optional for inline operation but required for optimized `native-workers` routing. Override models in `execution_profiles` inside `config.yaml`, then rerun init; for Codex, `model: inherit` omits the generated TOML `model` key while preserving the configured effort.
+   Eight execution-profile adapters are also copied (generated, replaced on rerun; stale ids such as `sddl-planner` are removed): `sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`. Claude files go to `.claude/agents/`; Codex files go to `.codex/agents/`. They do not replace skills. Codex TOML adapters are optional for inline operation but required for optimized `native-workers` routing. Override models in `execution_profiles` inside `config.yaml`, then rerun init; for Codex, `model: inherit` omits the generated TOML `model` key while preserving the configured effort.
 
 7. **Wrapper injection.** Inserts a demarcated block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` in `CLAUDE.md` and/or `AGENTS.md`. If the block already exists, it is replaced; if the file is missing, it is created with only the wrapper. Confirmation is always required before inserting.
 
@@ -246,14 +246,18 @@ All runtime files live under `./sdd-lite/`:
 
 Execution profiles (CLI adapters, not extra stages):
 
-| Profile | Launches |
-|---|---|
-| `sddl-light` | proposal, archive, delivery |
-| `sddl-explorer` | deep-explorer |
-| `sddl-planner` | spec, design, plan |
-| `sddl-executor` | executor |
-| `sddl-reviewer` | 4R lenses/judges |
-| `sddl-qa` | qa-review (writes `qa-report.md` + `state.yaml`) |
+| Profile | Launches | Claude default | Codex default |
+|---|---|---|---|
+| `sddl-light` | archive, delivery | haiku / low | gpt-5.6-luna / low |
+| `sddl-framer` | proposal | sonnet / high | gpt-5.6 / high |
+| `sddl-explorer` | deep-explorer (read-only) | sonnet / medium | gpt-5.6 / medium |
+| `sddl-architect` | spec, design | opus / medium | gpt-5.6-sol / medium |
+| `sddl-sequencer` | plan | sonnet / medium | gpt-5.6 / medium |
+| `sddl-executor` | executor | sonnet / high | gpt-5.6 / high |
+| `sddl-reviewer` | 4R lenses/judges (read-only) | sonnet / high | gpt-5.6 / high |
+| `sddl-qa` | qa-review (writes `qa-report.md` + `state.yaml`) | sonnet / high | gpt-5.6 / high |
+
+Tiering: decision stages (spec, design) run on the high tier, framing and execution over decided work run on the mid tier with high effort, mechanical stages run cheap, and verification never runs below the code writer. Override any cell in `execution_profiles` inside `config.yaml` and rerun `sddl-init`.
 
 Key rules:
 
@@ -487,7 +491,7 @@ The orchestrator runs `sddl-init`:
 2. Detects `CLAUDE.md` → proposes configuring Claude Code.
 3. Asks: symlink or copy → user picks `symlink`.
 4. Asks: inject the wrapper into `CLAUDE.md`? → user accepts.
-5. Copies the six execution-profile adapters into `.claude/agents/`.
+5. Copies the eight execution-profile adapters into `.claude/agents/`.
 6. Writes `./sdd-lite/project-context.md`, `./sdd-lite/skill-catalog.md`, `./sdd-lite/openspec/config.yaml`.
 7. Returns a summary covering bootstrap status, skills, adapters, and wrapper results.
 

@@ -1,4 +1,4 @@
-<!-- sdd-lite:start generated_at="<generated_at>" version="0.3" package_root="<package-root>" -->
+<!-- sdd-lite:start generated_at="<generated_at>" version="0.4" package_root="<package-root>" -->
 You have access to `sdd-lite`, a structured workflow for bounded repository changes.
 
 ## Worker bypass — evaluate first
@@ -8,7 +8,7 @@ If the current prompt is a delegated handoff containing all of these controls:
 ```yaml
 sddl_role: phase-worker | review-worker
 stage: sddl-*
-execution_profile: sddl-light | sddl-explorer | sddl-planner | sddl-executor | sddl-reviewer | sddl-qa
+execution_profile: sddl-light | sddl-framer | sddl-explorer | sddl-architect | sddl-sequencer | sddl-executor | sddl-reviewer | sddl-qa
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
@@ -47,7 +47,7 @@ Worker mode controls isolation only; `interactive`/`auto` controls pacing only. 
 ### Native workers
 
 - Resolve `execution_profile` from the handoff (or the stage map in `skills/_shared/sddl-flow-contract.md`).
-- Spawn that named role (`sddl-light`, `sddl-explorer`, `sddl-planner`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`) in a fresh thread — do not fork the parent conversation. Wait for the result before routing. Do not name Claude `Agent` or OpenCode `Task` tools.
+- Spawn that named role (`sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`) in a fresh thread — do not fork the parent conversation. Wait for the result before routing. Do not name Claude `Agent` or OpenCode `Task` tools.
 - Delegate per phase or approved execution stage, not per file.
 - Pass the compact runtime handoff, including every worker-bypass control and `execution_profile`.
 - Parallelize only independent read-only work or fully disjoint writes. Children never launch descendants.

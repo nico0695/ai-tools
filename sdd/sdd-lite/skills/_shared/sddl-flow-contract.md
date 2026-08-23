@@ -58,26 +58,30 @@ Profile ids are not stage ids. Never write an execution profile into `state.yaml
 
 Host CLI adapters. The named skill remains the phase algorithm. Source of truth for defaults: `templates/agents/profiles.yaml`.
 
-| Profile | Skills it may execute | Capability |
-|---|---|---|
-| `sddl-light` | `sddl-proposal`, `sddl-archive`, `sddl-delivery` | workspace-write; prompt-scoped to `./sdd-lite/` |
-| `sddl-explorer` | `sddl-deep-explorer` | read-only |
-| `sddl-planner` | `sddl-spec`, `sddl-design`, `sddl-plan` | workspace-write; prompt-scoped to `./sdd-lite/` |
-| `sddl-executor` | `sddl-executor` | workspace-write; prompt-scoped to the approved stage |
-| `sddl-reviewer` | `sddl-code-review`, `sddl-judgment-day` | read-only |
-| `sddl-qa` | `sddl-qa-review` | workspace-write; prompt-scoped to its owned runtime artifacts |
+| Profile | Skills it may execute | Capability | Tier |
+|---|---|---|---|
+| `sddl-light` | `sddl-archive`, `sddl-delivery` | workspace-write; prompt-scoped to `./sdd-lite/` | cheap |
+| `sddl-framer` | `sddl-proposal` | workspace-write; prompt-scoped to `./sdd-lite/` | mid, high effort |
+| `sddl-explorer` | `sddl-deep-explorer` | read-only | mid |
+| `sddl-architect` | `sddl-spec`, `sddl-design` | workspace-write; prompt-scoped to `./sdd-lite/` | high |
+| `sddl-sequencer` | `sddl-plan` | workspace-write; prompt-scoped to `./sdd-lite/` | mid |
+| `sddl-executor` | `sddl-executor` | workspace-write; prompt-scoped to the approved stage | mid, high effort |
+| `sddl-reviewer` | `sddl-code-review`, `sddl-judgment-day` | read-only | mid, high effort |
+| `sddl-qa` | `sddl-qa-review` | workspace-write; prompt-scoped to its owned runtime artifacts | mid, high effort |
+
+Tiering rule: decision stages (spec, design) run on the high tier, framing and execution over decided work run on the mid tier, mechanical stages run cheap, and verification (reviewer, QA) never runs below the code writer. Host models per tier live in `templates/agents/profiles.yaml`.
 
 `workspace-write` grants access to the workspace; the narrower paths above are behavioral contract boundaries, not host-enforced subdirectory sandboxes.
 
 | Stage | Profile |
 |---|---|
-| `sddl-proposal` | `sddl-light` |
-| `sddl-spec` | `sddl-planner` |
+| `sddl-proposal` | `sddl-framer` |
+| `sddl-spec` | `sddl-architect` |
 | `sddl-archive` | `sddl-light` |
 | `sddl-delivery` | `sddl-light` |
 | `sddl-deep-explorer` | `sddl-explorer` |
-| `sddl-design` | `sddl-planner` |
-| `sddl-plan` | `sddl-planner` |
+| `sddl-design` | `sddl-architect` |
+| `sddl-plan` | `sddl-sequencer` |
 | `sddl-executor` | `sddl-executor` |
 | `sddl-code-review` | `sddl-reviewer` |
 | `sddl-judgment-day` | `sddl-reviewer` |
@@ -146,7 +150,7 @@ Every delegated worker handoff must carry these controls before any stage-specif
 ```yaml
 sddl_role: phase-worker # review-worker for lenses, judges, and refuters
 stage: sddl-*
-execution_profile: sddl-light # or sddl-explorer | sddl-planner | sddl-executor | sddl-reviewer | sddl-qa
+execution_profile: sddl-framer # or sddl-light | sddl-explorer | sddl-architect | sddl-sequencer | sddl-executor | sddl-reviewer | sddl-qa
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```

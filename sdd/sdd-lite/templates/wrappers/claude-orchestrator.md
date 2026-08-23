@@ -1,4 +1,4 @@
-<!-- sdd-lite:start generated_at="<generated_at>" version="0.3" package_root="<package-root>" -->
+<!-- sdd-lite:start generated_at="<generated_at>" version="0.4" package_root="<package-root>" -->
 You have access to `sdd-lite`, a structured workflow for bounded repository changes.
 
 ## Worker bypass — evaluate first
@@ -8,7 +8,7 @@ If the current prompt is a delegated handoff containing all of these controls:
 ```yaml
 sddl_role: phase-worker | review-worker
 stage: sddl-*
-execution_profile: sddl-light | sddl-explorer | sddl-planner | sddl-executor | sddl-reviewer | sddl-qa
+execution_profile: sddl-light | sddl-framer | sddl-explorer | sddl-architect | sddl-sequencer | sddl-executor | sddl-reviewer | sddl-qa
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
@@ -33,7 +33,7 @@ Use canonical skills under `<package-root>/skills/`, standards at `./sdd-lite/sk
 
 ## Platform: Claude Code
 
-- Resolve `execution_profile` from the handoff (or the stage map in `skills/_shared/sddl-flow-contract.md`) and delegate through the native Agent tool as that named type (`sddl-light`, `sddl-explorer`, `sddl-planner`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`). Fresh context; wait for the result. Do not use the Skill tool or a history fork as the stage launcher. Do not use the built-in Explore type.
+- Resolve `execution_profile` from the handoff (or the stage map in `skills/_shared/sddl-flow-contract.md`) and delegate through the native Agent tool as that named type (`sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`). Fresh context; wait for the result. Do not use the Skill tool or a history fork as the stage launcher. Do not use the built-in Explore type.
 - `interactive`/`auto` controls pacing only. It never bypasses `stage_approval` or another mandatory gate.
 - Parallelize only independent read-only work or fully disjoint write scopes. Never overlap artifact writes.
 - For 4R and judgment-day, first load `<package-root>/orchestrator/modules/review-runtime.md`, then launch each selected lens, judge, or refuter as waited `sddl-reviewer` workers. Judges remain blind; workers return findings only.
