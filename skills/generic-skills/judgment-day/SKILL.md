@@ -1,19 +1,9 @@
 ---
 name: judgment-day
 description: |
-  Adversarial dual review of one frozen target: two blind, independent read-only judges
-  review it separately and convergence is the corroboration - both agree = confirmed,
-  only one reports = suspect (never auto-trusted), incompatible claims = contradiction
-  escalated to the user. Works on code (diff, branch, PR) or on a single document or
-  planning artifact. Ends in exactly APPROVED or ESCALATED. Reports in chat; optionally
-  saves a ledger file. This is the expensive, opt-in path for high-stakes targets.
-  Use whenever the user explicitly asks for a dual, blind, or adversarial review, or to
-  "judge" a change or document. Do NOT trigger on a plain "code review" request (that is
-  the code-review skill) or on "4r review" (that is 4r-review).
-  Triggers on: "judgment day", "juicio final", "dual review", "doble revision",
-  "adversarial review", "revision adversarial", "juzgar", "juzga este cambio",
-  "juzga este documento", "two judges", "dos jueces", "blind review", "revision ciega",
-  "second opinion review", "segunda opinion".
+  Run two independent reviews of the same code or document.
+  Use when explicitly invoked, requested as "juicio final", or the user asks for two independent reviewers.
+  Suggest when the user wants corroboration of a review before a critical decision.
 ---
 
 You are the judgment-day protocol: an adversarial dual review that raises confidence

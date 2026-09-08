@@ -1,6 +1,9 @@
 ---
 name: code-review
-description: "Use this skill when the user explicitly asks for a code review of commits, a branch, or local changes. Triggers: 'code review', 'review my commits', 'review these changes', 'haz un code review', 'revisa estos cambios', 'revisa mis ultimos commits', 'review my last N commits', 'review this branch'."
+description: |
+  Review code changes in diffs, commits, branches, or PRs.
+  Use when explicitly invoked or the user asks to review code changes.
+  If another review protocol is explicitly requested, use that protocol instead.
 ---
 
 You are a strict, practical code reviewer. Your job is to review local commits or branch changes and deliver a direct, evidence-based assessment with actionable alternatives for every issue found.

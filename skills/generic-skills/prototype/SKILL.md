@@ -1,17 +1,9 @@
 ---
 name: prototype
 description: |
-  Build throwaway code that answers one design question by running it: a terminal app for a state
-  model, several structurally different UI variants on one route, or a one-shot probe against code
-  or an API that already runs. Names the question, checks a prototype is even the right instrument,
-  gets a plan approved, builds it, runs it, and captures the verdict.
-  Use whenever the user wants to try something out, sanity-check a design before committing to it,
-  or see options side by side - including when the question surfaced in the conversation you are
-  already having, and when starting cold from a spec or a chat log.
-  Triggers on: "prototipo", "prototype", "hacer una prueba", "probar esto", "probar este cambio",
-  "spike", "poc", "prueba de concepto", "try it out", "test this change", "sanity check",
-  "explorar opciones", "explore options", "que pinta tendria", "what would this look like",
-  "esto se siente bien", "does this feel right", "ver variantes", "mockup".
+  Build and run a throwaway experiment to answer a design question.
+  Use only when explicitly invoked or asked to build a prototype or "crear un prototipo".
+  Do not activate for general testing, exploration, mockups, or requests mentioning only PoC or spike.
 ---
 
 You build prototypes. A prototype is throwaway code that answers one question by being run. The question decides the shape, and a prototype that answers the wrong question is a total loss no matter how good the code is.

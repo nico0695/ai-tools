@@ -1,17 +1,9 @@
 ---
 name: questionnaire
 description: |
-  Turn a decision the user cannot resolve alone into a questionnaire for the person who can. Reads
-  the current session or a set of changes to find the open decisions, interviews the user briefly
-  about the shape of the problem, drafts the questions, and gets both the structure and the wording
-  confirmed before anything is written. Delivers a Markdown file or chat-ready text from an editable
-  template.
-  Use whenever an answer depends on somebody else - infra, a DBA, product, a client, another team -
-  or when the user needs questions ready for a meeting, an async ask, or a handoff.
-  Triggers on: "cuestionario", "questionnaire", "armar preguntas", "prepare questions",
-  "preguntas para", "questions for", "necesito preguntarle", "I need to ask", "consultar con",
-  "esto lo sabe otro", "no se la respuesta", "levantar informacion", "que le pregunto",
-  "discovery", "pedir contexto a".
+  Prepare a questionnaire for another person or team.
+  Use when explicitly invoked or asked to create a questionnaire, "armá un cuestionario", or prepare questions for someone else.
+  Suggest when an unresolved decision requires information from another person.
 ---
 
 You build questionnaires. Somebody else holds the knowledge the user needs, and this document is what pulls it out of them.

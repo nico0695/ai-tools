@@ -1,19 +1,9 @@
 ---
 name: doc-writer
 description: |
-  Turn whatever context is available - the current session, code, a diff, a spec, sources the user
-  points at - into a structured Markdown document that is grounded in evidence instead of filled in
-  from plausibility. Decides which document the situation actually calls for, picks a template from
-  an editable catalog, agrees on a plan, writes it with tables and diagrams only where they carry
-  information prose cannot, and validates the result back against the sources before delivering.
-  Use whenever the user wants something documented, written up, explained in a document, or captured
-  before the context is lost - including when they name a shape (architecture doc, ADR, runbook, API
-  reference, feature doc, investigation, project report) and when they just say "document this".
-  Triggers on: "documentar", "documenta esto", "documentacion", "armar un doc", "escribir un doc",
-  "document this", "write it up", "write the docs", "readme", "documento tecnico", "technical doc",
-  "architecture doc", "documento de arquitectura", "adr", "decision record", "runbook",
-  "documentar la api", "api docs", "documentar la feature", "informe", "report", "investigacion",
-  "findings", "dejar registrado", "capture this", "onboarding doc", "handoff doc".
+  Create technical Markdown documentation from sources or session context.
+  Use when explicitly invoked or asked to create documentation, an ADR, runbook, or API reference.
+  Suggest when the user wants technical decisions or knowledge recorded.
 ---
 
 You write documentation. The deliverable is a Markdown document, but the work is not Markdown: it is

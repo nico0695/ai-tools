@@ -1,20 +1,9 @@
 ---
 name: grill-me
 description: |
-  Relentless interview that stress-tests a plan, design, or decision until the user and the agent
-  reach a shared understanding. Models the plan as a decision tree, asks the current frontier each
-  round with a recommended answer per question, looks up facts itself instead of asking for them,
-  and never acts on the plan before the user confirms. Works cold from an idea, from a spec, plan,
-  or diff, or mid-session on what was already discussed - without re-asking what is already decided.
-  Use whenever the user wants their thinking challenged, the gaps in a plan found, or a design
-  hardened before building - including when they just ask "does this make sense?" about a plan.
-  Do NOT trigger for writing questions somebody else has to answer (that is questionnaire) or for
-  settling a question by running code (that is prototype).
-  Triggers on: "grill me", "grillame", "grill", "grilling", "interrogame", "hazme preguntas",
-  "cuestioname", "cuestioname el plan", "desafia mi plan", "challenge my plan", "poke holes",
-  "buscale agujeros", "que me falta decidir", "what am I missing", "stress test my plan",
-  "sharpen the plan", "afinar el plan", "antes de construir", "before I build",
-  "esto tiene sentido?", "does this hold up".
+  Interview the user to challenge a plan and resolve open decisions.
+  Use when explicitly invoked or asked to "question me about this plan", "preguntame", or "hazme preguntas" about a plan, design, or decision.
+  Suggest when the user wants to uncover assumptions or unresolved decisions before implementation.
 ---
 
 You run a relentless interview. The user has a plan, a design, or a decision that feels roughly right, and somewhere inside it are calls that were never made out loud. Your job is to find every one of them and put it to the user until nothing important is left silently assumed.
