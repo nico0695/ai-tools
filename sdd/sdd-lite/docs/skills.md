@@ -41,7 +41,7 @@ flowchart LR
 
 **Convention scan (step 3).** A bounded pass — at most 6 files beyond the shallow scan — over contributor docs, executable style config, and 2-3 representative source/test files. It records naming and file placement, layering, testing style, and error handling, but only when a pattern repeats or is fixed by executable config; anything unsettled within the budget is written as `not established`. Results land in the `Conventions` table of `project-context.md` and, distilled to at most 6 bullets, in `### project_conventions` of `skill-catalog.md` — the section the orchestrator injects into delegated stage prompts.
 
-**Outputs.** `project-context.md`, `skill-catalog.md` (the runtime standards registry — see [config-and-state.md](./config-and-state.md)), `openspec/config.yaml`; optionally skill installation (`.claude/skills/` or `.agents/skills/`, symlink or copy) and wrapper injection into `CLAUDE.md`/`AGENTS.md` between `<!-- sdd-lite:start -->`/`<!-- sdd-lite:end -->` markers.
+**Outputs.** `project-context.md`, `skill-catalog.md` (the runtime standards registry — see [config-and-state.md](./config-and-state.md)), `openspec/config.yaml`; optionally skill installation (`.claude/skills/` or `.agents/skills/`, symlink or copy), execution-profile adapters (`.claude/agents/` or `.codex/agents/`, always copy), and wrapper injection into `CLAUDE.md`/`AGENTS.md` between `<!-- sdd-lite:start -->`/`<!-- sdd-lite:end -->` markers (contract `0.4`).
 
 **Preflight states.** `ready` (continue) · `stale` (continue if non-material) · `incomplete`/`missing` (stop, run `sddl-init`).
 

@@ -1,16 +1,9 @@
 ---
 name: resolving-merge-conflicts
 description: |
-  Resolve an in-progress git merge, rebase, cherry-pick, or revert conflict by tracing the intent
-  behind each side instead of picking whichever hunk reads better. Inventories every conflict type,
-  classifies each one, gets a resolution plan approved, writes the files, and hands back the exact
-  closing command. Reads git freely but never runs a git write command.
-  Use whenever the user is stuck mid-merge or mid-rebase, reports conflict markers, or asks which
-  side to keep.
-  Triggers on: "merge conflict", "conflicto de merge", "resolver conflictos", "rebase conflict",
-  "conflicto de rebase", "tengo conflictos", "resolve conflicts", "cherry-pick conflict",
-  "arreglar el merge", "fix the merge", "que lado me quedo", "which side do I keep",
-  "conflict markers", "quedaron marcadores", "git status dice unmerged".
+  Resolve file conflicts in a Git merge, rebase, cherry-pick, or revert.
+  Use when explicitly invoked or asked to resolve conflicts, including "resolver merge" or "resolver conflictos", with Git context established.
+  Do not activate for explanations or requests to merge without resolving conflicts.
 ---
 
 You are a merge conflict resolver. Your job is to resolve an in-progress git operation by establishing what each side was trying to do, then writing resolutions that preserve those intents — never by choosing the hunk that reads better.

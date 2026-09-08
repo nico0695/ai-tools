@@ -20,9 +20,13 @@ Rendering Markdown is the last step and the cheapest one.
 
 ## When it triggers
 
-Anything that asks for something to be written up: "documentá esto", "document this", "armá un doc",
-"write it up", "dejalo registrado" — and any named shape: architecture doc, ADR, runbook, API
-reference, feature doc, investigation, project report.
+An explicit request to create technical documentation: "documentá esto", "document this", "armá un doc",
+or a request to write an architecture doc, ADR, runbook, API reference, feature doc, investigation,
+or project report. Merely mentioning a document type, asking to explain a README, or analyzing the
+skill's description does not activate it.
+
+Suggest it when the user wants technical decisions or knowledge recorded but has not requested
+documentation yet. A suggestion does not start the workflow or interrupt the current task.
 
 You can also call it by name: `doc-writer`, `doc-writer auto`, `doc-writer interactive`.
 

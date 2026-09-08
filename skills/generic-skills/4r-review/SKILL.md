@@ -1,17 +1,9 @@
 ---
 name: 4r-review
 description: |
-  Risk-tiered 4R code review (Risk, Readability, Reliability, Resilience) of a frozen
-  diff, branch, or PR. Triages the target into trivial/standard/full-4r, runs only the
-  lens passes the risk justifies as read-only subagents, merges findings into a severity
-  ledger (BLOCKER/CRITICAL/WARNING/SUGGESTION), and corroborates severe inferential
-  findings with a single refuter pass. Reports in chat; optionally saves a ledger file.
-  Use whenever the user asks for a 4R review by name or wants a risk-proportional review
-  with corroborated findings. Do NOT trigger on a plain "code review" request (that is
-  the code-review skill) or on "judgment day" / "dual review" (that is judgment-day).
-  Triggers on: "4r review", "review 4r", "4r", "revision 4r", "revisa con 4r",
-  "haz un 4r", "four r review", "full 4r", "triage review", "lens review",
-  "revision por lentes".
+  Review code using the risk-tiered 4R protocol.
+  Use only when the user explicitly requests "4r-review", "4r", or "revisión 4R".
+  During a requested code review, suggest once if the inspected diff exceeds 600 added-plus-deleted lines or 15 changed files; do not start automatically.
 ---
 
 You are the 4R review protocol: a risk-tiered, evidence-backed code review sized to

@@ -72,7 +72,7 @@ In those cases, **escalate to `sdd-v2`**.
 |---|---|
 | **Bootstrap** | Initial preparation of the repo: creates `./sdd-lite/` with project context, skill catalog, and `config.yaml`. Mandatory before any change routing. |
 | **Orchestrator** | Thin coordinator that reads minimum state, chooses the route, and delegates. It does not implement, run builds/tests, or rewrite other stages' artifacts. |
-| **Worker / Skill** | Fresh executor that performs one concrete stage (proposal, design, execution, QA, exploration). |
+| **Worker / Skill** | Fresh executor that performs one concrete stage (proposal, design, execution, QA, exploration). The skill is the algorithm; the execution profile is the CLI agent that launches it. |
 | **Objective (`objective`)** | `new-feature`, `bug-fix`, `planner`, or `refactor-rework`. |
 | **Route (`route`)** | `continue-lite`, `macro-plan-first`, or `escalate-to-sdd-v2`. |
 | **`state.yaml`** | Resume anchor. Records lifecycle, current stage, checkpoints, and next action. |
@@ -87,7 +87,7 @@ The main SDD session keeps `orchestrator/SDDL-RUNTIME.md` loaded. Review, combin
 
 `sddl-init` is the bootstrap skill. Run it the first time, or when the bootstrap becomes stale.
 
-When upgrading a project from a wrapper older than contract `0.2`, rerun `sddl-init` and approve complete replacement of the marked `CLAUDE.md` and/or `AGENTS.md` block before resuming SDD work.
+When upgrading a project from a wrapper older than contract `0.4`, rerun `sddl-init` and approve complete replacement of the marked `CLAUDE.md` and/or `AGENTS.md` block before resuming SDD work.
 
 ### What it does
 
@@ -102,8 +102,9 @@ When upgrading a project from a wrapper older than contract `0.2`, rerun `sddl-i
    | `.claude/` directory exists | `claude_code` |
    | `AGENTS.md` exists | `agents` |
    | `.agents/` directory exists | `agents` |
+   | `.codex/` directory exists | `agents` |
 
-   `agents` is the vendor-neutral id for any agent driven by the `AGENTS.md` / `.agents/` convention, Codex included.
+   `agents` is the vendor-neutral id for any agent driven by the `AGENTS.md` / `.agents/` convention. Codex is first-class under this id (named roles install to `.codex/agents/`). Grok and OpenCode reuse the same wrapper and `.agents/skills/`; they do not load `.codex/agents`.
 
 5. **Selection checkpoint.** Asks the user which AI(s) to configure: `claude_code`, `agents`, both, or skip.
 6. **Skill installation.** The user chooses between two methods:
@@ -114,6 +115,8 @@ When upgrading a project from a wrapper older than contract `0.2`, rerun `sddl-i
    | **Copy** | Copies each skill directory (`SKILL.md` plus `references/` when present) to the target and rewrites package-relative paths. | The package may move, or symlinks are unsupported. |
 
    All 12 canonical skills are installed: `sddl-init`, `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-code-review`, `sddl-judgment-day`, `sddl-deep-explorer`, `sddl-qa-review`, `sddl-delivery`, `sddl-archive`.
+
+   Eight execution-profile adapters are also copied (generated, replaced on rerun; stale ids such as `sddl-planner` are removed): `sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`. Claude files go to `.claude/agents/`; Codex files go to `.codex/agents/`. They do not replace skills. Codex TOML adapters are optional for inline operation but required for optimized `native-workers` routing. Override models in `execution_profiles` inside `config.yaml`, then rerun init; for Codex, `model: inherit` omits the generated TOML `model` key while preserving the configured effort.
 
 7. **Wrapper injection.** Inserts a demarcated block between `<!-- sdd-lite:start -->` and `<!-- sdd-lite:end -->` in `CLAUDE.md` and/or `AGENTS.md`. If the block already exists, it is replaced; if the file is missing, it is created with only the wrapper. Confirmation is always required before inserting.
 
@@ -149,7 +152,7 @@ Main sections (validated by `schemas/config.schema.yaml`):
 | `conventions` | `persisted_language: en`, `chat_language` (`es`/`en`), `asks_only_when_material`, etc. |
 | `archive` | Optional. `suggest_threshold` (default 15) and `stale_days` (default 30) for the cleanup suggestion. |
 | `delivery` | Optional. `base_branch`, `pr_suggest_min_commits` (default 3), and `output_language` for `sddl-delivery`. |
-| `ai_setups` | Result of `sddl-init` steps 3–6: `detected`, `configured`, `skills_installed` (target + method + timestamp), `wrappers_injected`. |
+| `ai_setups` | Result of `sddl-init` steps 4–7: `detected`, `configured`, `skills_installed`, `agents_installed`, `wrappers_injected`. Optional top-level `execution_profiles` overrides adapter model/effort. |
 | `metadata` | `bootstrap_version`, `package_mode: lite`, `planner_terminal_skill: sddl-plan`, `final_closure_skill: sddl-qa-review`. |
 
 All internal paths live under `./sdd-lite/`. A root-level `openspec/` is never used.
@@ -240,6 +243,21 @@ All runtime files live under `./sdd-lite/`:
 | `sddl-qa-review` | Unified review in `stage` or `final` mode. | `qa-report.md`, `state.yaml`. |
 | `sddl-delivery` | Drafts the commit message, PR description, and ticket content for work already done. `commit`, `pr`, or `ticket` mode. | `delivery-report.md`, `state.yaml`. |
 | `sddl-archive` | Moves finished, planned, or abandoned changes into the archive tree. `single` or `batch` mode. | `archive/{YYYY-MM-DD}-{change-name}/archive-report.md`. |
+
+Execution profiles (CLI adapters, not extra stages):
+
+| Profile | Launches | Claude default | Codex default |
+|---|---|---|---|
+| `sddl-light` | archive, delivery | haiku / low | gpt-5.6-luna / low |
+| `sddl-framer` | proposal | sonnet / high | gpt-5.6 / high |
+| `sddl-explorer` | deep-explorer (read-only) | sonnet / medium | gpt-5.6 / medium |
+| `sddl-architect` | spec, design | opus / medium | gpt-5.6-sol / medium |
+| `sddl-sequencer` | plan | sonnet / medium | gpt-5.6 / medium |
+| `sddl-executor` | executor | sonnet / high | gpt-5.6 / high |
+| `sddl-reviewer` | 4R lenses/judges (read-only) | sonnet / high | gpt-5.6 / high |
+| `sddl-qa` | qa-review (writes `qa-report.md` + `state.yaml`) | sonnet / high | gpt-5.6 / high |
+
+Tiering: decision stages (spec, design) run on the high tier, framing and execution over decided work run on the mid tier with high effort, mechanical stages run cheap, and verification never runs below the code writer. Override any cell in `execution_profiles` inside `config.yaml` and rerun `sddl-init`.
 
 Key rules:
 
@@ -473,8 +491,9 @@ The orchestrator runs `sddl-init`:
 2. Detects `CLAUDE.md` → proposes configuring Claude Code.
 3. Asks: symlink or copy → user picks `symlink`.
 4. Asks: inject the wrapper into `CLAUDE.md`? → user accepts.
-5. Writes `./sdd-lite/project-context.md`, `./sdd-lite/skill-catalog.md`, `./sdd-lite/openspec/config.yaml`.
-6. Returns a summary covering bootstrap status and AI setup results.
+5. Copies the eight execution-profile adapters into `.claude/agents/`.
+6. Writes `./sdd-lite/project-context.md`, `./sdd-lite/skill-catalog.md`, `./sdd-lite/openspec/config.yaml`.
+7. Returns a summary covering bootstrap status, skills, adapters, and wrapper results.
 
 ### Example 2 — Add a bounded feature
 

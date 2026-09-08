@@ -1,4 +1,4 @@
-<!-- sdd-lite:start generated_at="<generated_at>" version="0.2" package_root="<package-root>" -->
+<!-- sdd-lite:start generated_at="<generated_at>" version="0.4" package_root="<package-root>" -->
 You have access to `sdd-lite`, a structured workflow for bounded repository changes.
 
 ## Worker bypass — evaluate first
@@ -8,6 +8,7 @@ If the current prompt is a delegated handoff containing all of these controls:
 ```yaml
 sddl_role: phase-worker | review-worker
 stage: sddl-*
+execution_profile: sddl-light | sddl-framer | sddl-explorer | sddl-architect | sddl-sequencer | sddl-executor | sddl-reviewer | sddl-qa
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
@@ -32,23 +33,27 @@ Use canonical skills under `<package-root>/skills/`, standards at `./sdd-lite/sk
 
 ## Platform: AGENTS.md
 
-This wrapper is vendor-neutral for assistants driven by `AGENTS.md`/`.agents/`.
+This wrapper is vendor-neutral for assistants driven by `AGENTS.md`/`.agents/`. Codex CLI is first-class: named roles live in `.codex/agents/`. Grok and OpenCode reuse this wrapper and `.agents/skills/`; they do not load `.codex/agents` and may fall back to a generic child or inline.
+
+Codex TOML adapters are optional for `inline-sequential` operation. All named profile files are required for optimized `native-workers` routing.
 
 After bootstrap preflight passes on the first main-session SDD stage request, ask worker mode together with the runtime's execution-mode question and cache both:
 
-- `native-workers` (recommended when supported): fresh native sub-agent per canonical stage.
-- `inline-sequential`: main context executes stages sequentially when selected or native delegation is unavailable.
+- `native-workers` (recommended when supported): spawn the named execution profile as a fresh native sub-agent and wait.
+- `inline-sequential`: main context executes the named skill sequentially when selected or native delegation is unavailable.
 
-Worker mode controls isolation only; `interactive`/`auto` controls pacing only. Neither changes approvals or guardrails.
+Worker mode controls isolation only; `interactive`/`auto` controls pacing only. Neither changes approvals or guardrails. Codex cloud tasks, background terminals, and API multi-agent are not the stage bus.
 
 ### Native workers
 
+- Resolve `execution_profile` from the handoff (or the stage map in `skills/_shared/sddl-flow-contract.md`).
+- Spawn that named role (`sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`) in a fresh thread — do not fork the parent conversation. Wait for the result before routing. Do not name Claude `Agent` or OpenCode `Task` tools.
 - Delegate per phase or approved execution stage, not per file.
-- Pass the compact runtime handoff, including every worker-bypass control, and wait for the result before routing.
+- Pass the compact runtime handoff, including every worker-bypass control and `execution_profile`.
 - Parallelize only independent read-only work or fully disjoint writes. Children never launch descendants.
-- For 4R and judgment-day, first load `<package-root>/orchestrator/modules/review-runtime.md`, then use waited native fan-out. Judges remain blind; workers return findings only.
+- For 4R and judgment-day, first load `<package-root>/orchestrator/modules/review-runtime.md`, then spawn waited `sddl-reviewer` children. If the host concurrency cap is below the batch size, run sequential batches. Judges remain blind; workers return findings only.
 
 ### Inline fallback
 
-State that fresh-context isolation is unavailable. Retain state, decisions, digests, and the current handoff; prefer targeted persisted reads and do not claim conversation context was manually removed. Persist state after every stage and apply the full runtime result, routing, approval, and module rules. Explain the degradation when a mandatory delegation trigger fires.
+State that fresh-context isolation is unavailable. Execute the named **skill** in the main context — do not claim a named agent ran. Retain state, decisions, digests, and the current handoff; prefer targeted persisted reads and do not claim conversation context was manually removed. Persist state after every stage and apply the full runtime result, routing, approval, and module rules. Explain the degradation when a mandatory delegation trigger fires.
 <!-- sdd-lite:end -->

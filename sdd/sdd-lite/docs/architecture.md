@@ -43,7 +43,7 @@ flowchart TB
 
 **Layer 1 — Orchestrator.** `orchestrator/SDDL-RUNTIME.md` is the main-session event loop: read minimal persisted evidence, decide the next stage, build a compact handoff, dispatch, process the result, repeat. It loads one normative module only when review, combined closeout, or exceptional recovery is active. See [orchestrator.md](./orchestrator.md).
 
-**Layer 2 — Skills.** Twelve `SKILL.md` files under `skills/sddl-*/`. Each is a phase executor: it receives a handoff envelope, does one bounded unit of work, writes its own owned artifact(s), and returns a structured result. Skills never become nested orchestrators and never launch sub-agents themselves. Two skills (`sddl-code-review`, `sddl-judgment-day`) are protocols the orchestrator executes directly rather than linear stages — their lens/judge workers are read-only and the orchestrator itself writes `review-ledger.md`. See [skills.md](./skills.md) and [review-protocols.md](./review-protocols.md).
+**Layer 2 — Skills.** Twelve `SKILL.md` files under `skills/sddl-*/`. Each is a phase executor: it receives a handoff envelope, does one bounded unit of work, writes its own owned artifact(s), and returns a structured result. Skills never become nested orchestrators and never launch sub-agents themselves. Host CLI adapters under `templates/agents/` choose model, effort, and tools; they do not copy skill algorithms. Two skills (`sddl-code-review`, `sddl-judgment-day`) are protocols the orchestrator executes directly rather than linear stages — their lens/judge workers are read-only and the orchestrator itself writes `review-ledger.md`. See [skills.md](./skills.md) and [review-protocols.md](./review-protocols.md).
 
 **Layer 3 — Shared contracts.** Five documents under `skills/_shared/` that fix vocabulary so the twelve skills do not drift independently:
 
@@ -77,7 +77,8 @@ sdd/sdd-lite/
     bootstrap/                 # config.yaml, project-context.md, skill-catalog.md seeds
     artifacts/                 # one baseline shape per persisted artifact
     delivery/                  # commit.md, pr.md, ticket.md defaults
-    wrappers/                  # claude-orchestrator.md, agents-orchestrator.md
+    wrappers/                  # claude-orchestrator.md, agents-orchestrator.md (contract 0.4)
+    agents/                    # profiles.yaml + claude/*.md + codex/*.toml adapters
   schemas/
     config.schema.yaml
     state.schema.yaml
@@ -121,11 +122,13 @@ The hot orchestration logic — routing, delegation, approval gates, handoff, an
 
 | Wrapper | AI id | Target file | Worker launch mechanism |
 |---|---|---|---|
-| `claude-orchestrator.md` | `claude_code` | `CLAUDE.md` | native Agent tool; lens/judge fan-out runs in parallel, waited |
-| `agents-orchestrator.md` | `agents` | `AGENTS.md` | native sub-agents when available (`native-workers` mode), asked once per session; falls back to `inline-sequential`, which compresses context between stages |
+| `claude-orchestrator.md` | `claude_code` | `CLAUDE.md` | native Agent tool as the named `execution_profile`; lens/judge fan-out is waited `sddl-reviewer` |
+| `agents-orchestrator.md` | `agents` | `AGENTS.md` | named Codex roles in `.codex/agents/` when `native-workers` is available; otherwise `inline-sequential` (skill in-parent, no claimed isolation) |
 
-`agents` is the vendor-neutral id for any assistant driven by the `AGENTS.md` / `.agents/` convention, Codex included. `sddl-init`'s AI-setup detection (step 4) recognizes `CLAUDE.md`/`.claude/` for `claude_code` and `AGENTS.md`/`.agents/` for `agents`; vendor-specific directories such as `.codex/` are not detection signals on their own. An assistant that follows neither convention is served by installing the `agents` wrapper block into its instruction file by hand.
+`agents` is the vendor-neutral id for any assistant driven by the `AGENTS.md` / `.agents/` convention. Codex is first-class: `.codex/` detects as `agents` and adapters install to `.codex/agents/`. Grok and OpenCode reuse `AGENTS.md` plus `.agents/skills/`; they do not load `.codex/agents`. Injecting both wrappers is allowed; hosts that concatenate `CLAUDE.md` and `AGENTS.md` (Grok) get a dual-load warning.
+
+Execution profiles (`sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`) are CLI adapters generated from `templates/agents/`. They are not stage ids. See `skills/_shared/sddl-flow-contract.md`.
 
 Whichever wrapper is active, all invariants from [orchestrator.md](./orchestrator.md) and [review-protocols.md](./review-protocols.md) still apply — `interactive`/`auto` execution mode and worker mode only control pacing and isolation, never approval gates.
 
-Both wrapper variants evaluate the handoff controls before activation. A `phase-worker` or `review-worker` therefore loads only its named skill and input evidence, not `SDDL-RUNTIME.md` or any orchestration module.
+Both wrapper variants evaluate the handoff controls (including `execution_profile`) before activation. A `phase-worker` or `review-worker` therefore loads only its named skill and input evidence, not `SDDL-RUNTIME.md` or any orchestration module.

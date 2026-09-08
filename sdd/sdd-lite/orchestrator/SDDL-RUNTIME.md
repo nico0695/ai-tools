@@ -101,7 +101,7 @@ Delegate whenever work would inflate the main context without need.
 | state-only shell checks | yes | -- |
 | tests, builds, installs | -- | yes |
 
-`sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, `sddl-delivery`, and `sddl-archive` run as fresh workers by default. Delegate per phase or approved execution stage, never per file.
+`sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, `sddl-delivery`, and `sddl-archive` run as fresh workers by default. Launch each through the mapped execution profile in `skills/_shared/sddl-flow-contract.md`. Delegate per phase or approved execution stage, never per file. `sddl-init` stays in the main session.
 
 Mandatory triggers:
 
@@ -132,11 +132,12 @@ Every delegated worker receives:
 ```yaml
 sddl_role: phase-worker # review-worker for lenses, judges, and refuters
 stage: sddl-*
+execution_profile: sddl-framer # light | explorer | architect | sequencer | executor | reviewer | qa — see flow-contract stage map
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
 
-Also include `change_name`, objective, route, approved scope or blocked question, artifact paths and short digests, relevant `Project Standards (auto-resolved)`, expected result fields, and this boundary:
+Set `execution_profile` from the flow-contract stage map before launch. The wrapper must spawn that named CLI agent and wait. Also include `change_name`, objective, route, approved scope or blocked question, artifact paths and short digests, relevant `Project Standards (auto-resolved)`, expected result fields, and this boundary:
 
 > You are a phase executor. Do NOT load the sdd-lite runtime or orchestration modules. Do NOT launch sub-agents, call Task tools, or orchestrate further stages. Execute only the named skill and return its result contract.
 

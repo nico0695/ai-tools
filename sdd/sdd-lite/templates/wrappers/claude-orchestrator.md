@@ -1,4 +1,4 @@
-<!-- sdd-lite:start generated_at="<generated_at>" version="0.2" package_root="<package-root>" -->
+<!-- sdd-lite:start generated_at="<generated_at>" version="0.4" package_root="<package-root>" -->
 You have access to `sdd-lite`, a structured workflow for bounded repository changes.
 
 ## Worker bypass — evaluate first
@@ -8,6 +8,7 @@ If the current prompt is a delegated handoff containing all of these controls:
 ```yaml
 sddl_role: phase-worker | review-worker
 stage: sddl-*
+execution_profile: sddl-light | sddl-framer | sddl-explorer | sddl-architect | sddl-sequencer | sddl-executor | sddl-reviewer | sddl-qa
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
@@ -32,11 +33,13 @@ Use canonical skills under `<package-root>/skills/`, standards at `./sdd-lite/sk
 
 ## Platform: Claude Code
 
-- Delegate each canonical stage through the native Agent tool with a fresh context and the compact handoff from `SDDL-RUNTIME.md`; do not use the Skill or Task tool as the stage delegation mechanism.
+- Resolve `execution_profile` from the handoff (or the stage map in `skills/_shared/sddl-flow-contract.md`) and delegate through the native Agent tool as that named type (`sddl-light`, `sddl-framer`, `sddl-explorer`, `sddl-architect`, `sddl-sequencer`, `sddl-executor`, `sddl-reviewer`, `sddl-qa`). Fresh context; wait for the result. Do not use the Skill tool or a history fork as the stage launcher. Do not use the built-in Explore type.
 - `interactive`/`auto` controls pacing only. It never bypasses `stage_approval` or another mandatory gate.
 - Parallelize only independent read-only work or fully disjoint write scopes. Never overlap artifact writes.
-- For 4R and judgment-day, first load `<package-root>/orchestrator/modules/review-runtime.md`, then launch the selected read-only Agent workers as one waited batch where appropriate. Judges remain blind; workers return findings only.
-- Every child receives the worker-bypass controls. If it discovers out-of-scope work, it returns `partial` or `blocked`; it does not delegate.
+- For 4R and judgment-day, first load `<package-root>/orchestrator/modules/review-runtime.md`, then launch each selected lens, judge, or refuter as waited `sddl-reviewer` workers. Judges remain blind; workers return findings only.
+- Every child receives the worker-bypass controls including `execution_profile`. If it discovers out-of-scope work, it returns `partial` or `blocked`; it does not delegate.
+- If the named `sddl-*` agent type is not available (adapters not installed or stale), launch `general-purpose` with `model` taken from that profile in `<package-root>/templates/agents/profiles.yaml`, paste the body of `<package-root>/templates/agents/claude/<profile>.md` at the top of the handoff, state that host-level tool limits are not enforced, and recommend rerunning `sddl-init`.
+- Under `auto` or `bypassPermissions`, the host ignores `permissionMode: plan` in `sddl-explorer`/`sddl-reviewer`; read-only is then prompt-level only. Keep the review-runtime rule: reject and audit any worker file write.
 
-If the Agent tool is denied or unavailable, state that fresh-context isolation is unavailable, continue inline under the complete runtime contract, persist state after each stage, and explain the degradation when a mandatory delegation trigger fires.
+If the Agent tool is denied or unavailable, state that fresh-context isolation is unavailable and execute the named **skill** in the main context — do not claim a named agent ran. Continue under the complete runtime contract, persist state after each stage, and explain the degradation when a mandatory delegation trigger fires.
 <!-- sdd-lite:end -->

@@ -20,6 +20,7 @@ Extend the standard handoff with:
 ```yaml
 sddl_role: review-worker
 stage: sddl-code-review # or sddl-judgment-day
+execution_profile: sddl-reviewer
 orchestration_allowed: false
 runtime_loading_allowed: false
 ```
@@ -32,8 +33,9 @@ Judgment-day judges receive byte-identical envelopes except for judge letter and
 
 | Capability | Execution |
 |---|---|
-| parallel workers | launch all selected lenses/judges together and wait for every result |
+| parallel workers | launch each selected lens/judge/refuter as `sddl-reviewer` and wait for every result |
 | native sub-agents | same waited fan-out; never fire-and-forget |
+| host concurrency cap | if the host cap is below the batch size, run sequential batches — lenses first, then the refuter |
 | inline fallback | run passes sequentially, retaining only each findings result; note weaker judge blindness in the ledger |
 
 The active wrapper selects the mechanism. Worker boundaries and ledger ownership never change.

@@ -1,0 +1,502 @@
+{
+  "description": "Static routing expectations, not measured activation results. Evaluate each skill independently: another skill may activate when this one is expected to suggest or remain inactive. An activate outcome means selection, not bypassing workflow prerequisites.",
+  "cases": [
+    {
+      "skill": "grill-me",
+      "prompt": "Use grill-me for this task.",
+      "context": "The current task is within grill-me's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "grill-me",
+      "prompt": "Analyze the description of \"grill-me\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "code-review",
+      "prompt": "Use code-review for this task.",
+      "context": "The current task is within code-review's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "code-review",
+      "prompt": "Analyze the description of \"code-review\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Use 4r-review for this task.",
+      "context": "The current task is within 4r-review's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Analyze the description of \"4r-review\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "judgment-day",
+      "prompt": "Use judgment-day for this task.",
+      "context": "The current task is within judgment-day's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "judgment-day",
+      "prompt": "Analyze the description of \"judgment-day\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "commit-closer",
+      "prompt": "Use commit-closer for this task.",
+      "context": "The current task is within commit-closer's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "commit-closer",
+      "prompt": "Analyze the description of \"commit-closer\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "doc-writer",
+      "prompt": "Use doc-writer for this task.",
+      "context": "The current task is within doc-writer's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "doc-writer",
+      "prompt": "Analyze the description of \"doc-writer\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Use prototype for this task.",
+      "context": "The current task is within prototype's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Analyze the description of \"prototype\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "questionnaire",
+      "prompt": "Use questionnaire for this task.",
+      "context": "The current task is within questionnaire's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "questionnaire",
+      "prompt": "Analyze the description of \"questionnaire\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "resolving-merge-conflicts",
+      "prompt": "Use resolving-merge-conflicts for this task.",
+      "context": "The current task is within resolving-merge-conflicts's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "resolving-merge-conflicts",
+      "prompt": "Analyze the description of \"resolving-merge-conflicts\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "grill-me",
+      "prompt": "Hazme preguntas sobre este plan antes de implementarlo.",
+      "context": "A database migration plan is under discussion.",
+      "expected": "activate",
+      "reason": "The user explicitly requests an interview about a plan."
+    },
+    {
+      "skill": "code-review",
+      "prompt": "Revisá los cambios de código de esta rama.",
+      "context": "A branch diff is the target.",
+      "expected": "activate",
+      "reason": "Explicit code review request."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Hacé una revisión 4R de estos cambios.",
+      "context": "A code diff is the target.",
+      "expected": "activate",
+      "reason": "Explicit request for the named protocol."
+    },
+    {
+      "skill": "judgment-day",
+      "prompt": "Quiero dos revisores independientes para esta spec.",
+      "context": "A single design document is the target.",
+      "expected": "activate",
+      "reason": "Explicit request for two independent reviewers."
+    },
+    {
+      "skill": "commit-closer",
+      "prompt": "Redactá el mensaje de commit para estos cambios.",
+      "context": "Git changes are available.",
+      "expected": "activate",
+      "reason": "Explicit commit-message drafting request."
+    },
+    {
+      "skill": "doc-writer",
+      "prompt": "Documentá esta arquitectura en Markdown.",
+      "context": "Architecture sources have been provided.",
+      "expected": "activate",
+      "reason": "Explicit technical documentation request."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Quiero crear un prototipo para validar esta transición.",
+      "context": "The user requests a runnable throwaway design experiment.",
+      "expected": "activate",
+      "reason": "Explicit request to build a prototype."
+    },
+    {
+      "skill": "questionnaire",
+      "prompt": "Armá un cuestionario para el equipo de infraestructura.",
+      "context": "An infrastructure decision needs answers from another team.",
+      "expected": "activate",
+      "reason": "Explicit questionnaire request for a third party."
+    },
+    {
+      "skill": "resolving-merge-conflicts",
+      "prompt": "Resolver conflictos.",
+      "context": "The conversation established an active Git rebase with file conflicts.",
+      "expected": "activate",
+      "reason": "Git context can come from the conversation."
+    },
+    {
+      "skill": "grill-me",
+      "prompt": "¿Esto tiene sentido?",
+      "context": "The user asks for a brief opinion about a plan, not questions.",
+      "expected": "none",
+      "reason": "An opinion request alone does not request an interview."
+    },
+    {
+      "skill": "code-review",
+      "prompt": "Revisá la redacción de este documento.",
+      "context": "The target is prose, not code changes.",
+      "expected": "none",
+      "reason": "Prose review is outside this activation rule."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Revisá este cambio de autenticación.",
+      "context": "Requested code review; inspected diff has 80 added-plus-deleted lines and 2 files.",
+      "expected": "none",
+      "reason": "Security content alone neither activates nor suggests 4R."
+    },
+    {
+      "skill": "judgment-day",
+      "prompt": "Dame una segunda opinión sobre esta función.",
+      "context": "No request for two reviewers or corroboration before a critical decision.",
+      "expected": "none",
+      "reason": "A generic second opinion is not a dual review."
+    },
+    {
+      "skill": "commit-closer",
+      "prompt": "Analizá qué cambió en esta rama.",
+      "context": "No request to prepare a commit or PR, or to draft text.",
+      "expected": "none",
+      "reason": "Change analysis is not commit or PR drafting."
+    },
+    {
+      "skill": "doc-writer",
+      "prompt": "Explicame este README.",
+      "context": "The user wants an explanation, not new documentation.",
+      "expected": "none",
+      "reason": "Mentioning a document does not request documentation creation."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Probá este cambio con los tests existentes.",
+      "context": "The user requests running existing tests.",
+      "expected": "none",
+      "reason": "Ordinary testing does not request a prototype."
+    },
+    {
+      "skill": "questionnaire",
+      "prompt": "No sé la respuesta.",
+      "context": "No decision, third-party information need, or questionnaire request is established.",
+      "expected": "none",
+      "reason": "Lack of knowledge alone is not sufficient."
+    },
+    {
+      "skill": "resolving-merge-conflicts",
+      "prompt": "Explicame qué significa ours en este rebase.",
+      "context": "The user requests an explanation of an active Git operation.",
+      "expected": "none",
+      "reason": "Git context without a resolution request is insufficient."
+    },
+    {
+      "skill": "grill-me",
+      "prompt": "Quiero detectar los supuestos y decisiones abiertas antes de implementar.",
+      "context": "A plan is available; no interview is explicitly requested.",
+      "expected": "suggest",
+      "reason": "Relevant contextual recommendation; do not start the skill."
+    },
+    {
+      "skill": "judgment-day",
+      "prompt": "Necesito corroborar esta revisión antes de decidir si aprobamos la migración crítica.",
+      "context": "An existing review is available; no dual review is explicitly requested.",
+      "expected": "suggest",
+      "reason": "Relevant contextual recommendation; do not start the skill."
+    },
+    {
+      "skill": "commit-closer",
+      "prompt": "Ayudame a preparar el PR.",
+      "context": "No specific request to draft its description has been made.",
+      "expected": "suggest",
+      "reason": "Relevant contextual recommendation; do not start the skill."
+    },
+    {
+      "skill": "doc-writer",
+      "prompt": "Quiero dejar registradas estas decisiones técnicas.",
+      "context": "Decisions are available; no specific documentation deliverable is requested.",
+      "expected": "suggest",
+      "reason": "Relevant contextual recommendation; do not start the skill."
+    },
+    {
+      "skill": "questionnaire",
+      "prompt": "Para decidir la retención necesitamos que infraestructura confirme el límite de almacenamiento.",
+      "context": "An open decision requires information from another team; no questionnaire is requested.",
+      "expected": "suggest",
+      "reason": "Relevant contextual recommendation; do not start the skill."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Revisá estos cambios de código.",
+      "context": "Requested review; already inspected diff has 600 added-plus-deleted text lines and 15 changed files. No prior 4R suggestion.",
+      "expected": "none",
+      "reason": "Thresholds are strictly greater than 600 lines or 15 files; binary files count without invented lines."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Revisá estos cambios de código.",
+      "context": "Requested review; already inspected diff has 601 added-plus-deleted text lines and 15 changed files. No prior 4R suggestion.",
+      "expected": "suggest",
+      "reason": "Thresholds are strictly greater than 600 lines or 15 files; binary files count without invented lines."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Revisá estos cambios de código.",
+      "context": "Requested review; already inspected diff has 600 added-plus-deleted text lines and 16 changed files. No prior 4R suggestion.",
+      "expected": "suggest",
+      "reason": "Thresholds are strictly greater than 600 lines or 15 files; binary files count without invented lines."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Revisá estos cambios de código.",
+      "context": "Requested review; already inspected diff has 0 added-plus-deleted text lines and 16 changed files; all files are binary. No prior 4R suggestion.",
+      "expected": "suggest",
+      "reason": "Thresholds are strictly greater than 600 lines or 15 files; binary files count without invented lines."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Resumí los archivos que cambiaron.",
+      "context": "No code review requested; already inspected diff has 900 lines and 20 files.",
+      "expected": "none",
+      "reason": "Size alone does not justify suggesting or activating a review."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Revisá estos cambios.",
+      "context": "Code review requested, but diff size has not been inspected.",
+      "expected": "none",
+      "reason": "Do not broaden inspection just to evaluate a recommendation trigger."
+    },
+    {
+      "skill": "4r-review",
+      "prompt": "Continuá con la revisión.",
+      "context": "Diff has 900 lines and 20 files; 4R was already suggested in this task.",
+      "expected": "none",
+      "reason": "Do not repeat the suggestion or interpret continuation as consent to use 4R."
+    },
+    {
+      "skill": "grill-me",
+      "prompt": "Preguntame sobre este diseño.",
+      "context": "A design is available.",
+      "expected": "activate",
+      "reason": "Natural Spanish alias with a design target."
+    },
+    {
+      "skill": "grill-me",
+      "prompt": "Prepará preguntas para el DBA.",
+      "context": "The DBA, not the user, will answer.",
+      "expected": "none",
+      "reason": "Third-party questions belong to questionnaire."
+    },
+    {
+      "skill": "questionnaire",
+      "prompt": "Preguntame sobre mi plan.",
+      "context": "The user wants an interview about their own plan.",
+      "expected": "none",
+      "reason": "The user interview belongs to grill-me."
+    },
+    {
+      "skill": "judgment-day",
+      "prompt": "Hacé un juicio final de este documento.",
+      "context": "A document is the review target.",
+      "expected": "activate",
+      "reason": "Explicit Spanish alias."
+    },
+    {
+      "skill": "commit-closer",
+      "prompt": "Write a PR description for this branch.",
+      "context": "A Git branch is the target.",
+      "expected": "activate",
+      "reason": "Explicit PR drafting request."
+    },
+    {
+      "skill": "doc-writer",
+      "prompt": "Escribí un ADR sobre esta decisión.",
+      "context": "An accepted decision and its rationale are provided.",
+      "expected": "activate",
+      "reason": "An explicit ADR creation request is sufficient."
+    },
+    {
+      "skill": "doc-writer",
+      "prompt": "Analizá este ADR.",
+      "context": "The user wants analysis of an existing document.",
+      "expected": "none",
+      "reason": "Analysis is not creation."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Construí una PoC para validar esta API.",
+      "context": "No invocation of prototype or explicit request to build a prototype.",
+      "expected": "none",
+      "reason": "PoC, spike, mockup, and general exploration are excluded as independent triggers."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Hacé un spike para explorar la integración.",
+      "context": "No invocation of prototype or explicit request to build a prototype.",
+      "expected": "none",
+      "reason": "PoC, spike, mockup, and general exploration are excluded as independent triggers."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Diseñá un mockup de esta pantalla.",
+      "context": "No invocation of prototype or explicit request to build a prototype.",
+      "expected": "none",
+      "reason": "PoC, spike, mockup, and general exploration are excluded as independent triggers."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Explorá opciones para esta interfaz.",
+      "context": "No invocation of prototype or explicit request to build a prototype.",
+      "expected": "none",
+      "reason": "PoC, spike, mockup, and general exploration are excluded as independent triggers."
+    },
+    {
+      "skill": "prototype",
+      "prompt": "Esta duda solo se resuelve ejecutando un experimento.",
+      "context": "No prototype requested.",
+      "expected": "none",
+      "reason": "Prototype has no contextual suggestion trigger."
+    },
+    {
+      "skill": "resolving-merge-conflicts",
+      "prompt": "Resolver merge.",
+      "context": "An active Git merge with conflicts was established in the conversation.",
+      "expected": "activate",
+      "reason": "Natural resolution request in Git context."
+    },
+    {
+      "skill": "resolving-merge-conflicts",
+      "prompt": "Merge this branch into main.",
+      "context": "No file conflicts are present or reported.",
+      "expected": "none",
+      "reason": "A request to perform a merge is not a conflict-resolution request."
+    },
+    {
+      "skill": "resolving-merge-conflicts",
+      "prompt": "Resolver conflictos.",
+      "context": "The conversation concerns scheduling disagreements between teams, not Git.",
+      "expected": "none",
+      "reason": "Git context is required."
+    },
+    {
+      "skill": "resolving-merge-conflicts",
+      "prompt": "Git status muestra unmerged paths.",
+      "context": "The user only reports status and has not requested resolution.",
+      "expected": "none",
+      "reason": "Status output alone is not a request to resolve conflicts."
+    },
+    {
+      "skill": "code-review",
+      "prompt": "Review this code using 4r-review.",
+      "context": "A code diff is available.",
+      "expected": "none",
+      "reason": "The explicitly named review protocol takes precedence."
+    },
+    {
+      "skill": "code-review",
+      "prompt": "Review this code using judgment-day.",
+      "context": "A code diff is available.",
+      "expected": "none",
+      "reason": "The explicitly named review protocol takes precedence."
+    },
+    {
+      "skill": "grill-me",
+      "prompt": "Quiero detectar los supuestos y decisiones abiertas antes de implementar.",
+      "context": "A plan is available; no interview is explicitly requested. The skill has already been suggested during this task.",
+      "expected": "none",
+      "reason": "Do not repeat a contextual suggestion."
+    },
+    {
+      "skill": "judgment-day",
+      "prompt": "Necesito corroborar esta revisión antes de decidir si aprobamos la migración crítica.",
+      "context": "An existing review is available; no dual review is explicitly requested. The skill has already been suggested during this task.",
+      "expected": "none",
+      "reason": "Do not repeat a contextual suggestion."
+    },
+    {
+      "skill": "commit-closer",
+      "prompt": "Ayudame a preparar el PR.",
+      "context": "No specific request to draft its description has been made. The skill has already been suggested during this task.",
+      "expected": "none",
+      "reason": "Do not repeat a contextual suggestion."
+    },
+    {
+      "skill": "doc-writer",
+      "prompt": "Quiero dejar registradas estas decisiones técnicas.",
+      "context": "Decisions are available; no specific documentation deliverable is requested. The skill has already been suggested during this task.",
+      "expected": "none",
+      "reason": "Do not repeat a contextual suggestion."
+    },
+    {
+      "skill": "questionnaire",
+      "prompt": "Para decidir la retención necesitamos que infraestructura confirme el límite de almacenamiento.",
+      "context": "An open decision requires information from another team; no questionnaire is requested. The skill has already been suggested during this task.",
+      "expected": "none",
+      "reason": "Do not repeat a contextual suggestion."
+    }
+  ]
+}

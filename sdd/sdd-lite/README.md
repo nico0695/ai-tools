@@ -39,7 +39,7 @@ Default runtime heuristics:
 
 - inline only local routing decisions that require at most 3 repo files
 - delegate bounded analysis when routing or planning needs 4 or more files
-- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, `sddl-delivery`, and `sddl-archive` as fresh workers by default
+- delegate `sddl-proposal`, `sddl-spec`, `sddl-design`, `sddl-plan`, `sddl-executor`, `sddl-qa-review`, `sddl-delivery`, and `sddl-archive` as fresh workers by default, launched via the mapped execution profile
 - run `sddl-code-review` and `sddl-judgment-day` as orchestrator-executed protocols: read-only lens/judge workers, ledger written by the orchestrator
 - do not run multi-file edits inline in the orchestrator
 - do not run builds, installs, or broad test suites inline in the orchestrator
@@ -131,6 +131,13 @@ sdd/sdd-lite/
       review-ledger.md
       delivery-report.md
       archive-report.md
+    wrappers/
+      claude-orchestrator.md
+      agents-orchestrator.md
+    agents/
+      profiles.yaml
+      claude/
+      codex/
   schemas/
     config.schema.yaml
     state.schema.yaml
@@ -198,7 +205,7 @@ It should contain:
 
 - skill triggers
 - compact rules
-- support-agent references
+- execution-profile table
 - delegation heuristics
 - `Project Standards (auto-resolved)` blocks suitable for direct prompt injection
 
@@ -227,11 +234,11 @@ It is not responsible for:
 - writing stage-owned artifacts
 - trusting chat memory over persisted evidence
 
-Workers receive `sddl_role`, `stage`, `orchestration_allowed: false`, and `runtime_loading_allowed: false`. Host wrappers evaluate these fields before normal activation so a delegated worker cannot become a nested orchestrator.
+Workers receive `sddl_role`, `stage`, `execution_profile`, `orchestration_allowed: false`, and `runtime_loading_allowed: false`. Host wrappers evaluate these fields before normal activation so a delegated worker cannot become a nested orchestrator.
 
-### Migrating pre-0.2 wrappers
+### Migrating pre-0.4 wrappers
 
-Runtime contract `0.2` is a strict migration. Existing consuming projects must rerun `sddl-init` and approve replacement of the complete marked block in `CLAUDE.md` and/or `AGENTS.md`. There is no compatibility alias for the earlier monolithic runtime path; do not use sdd-lite in that project until its wrapper has been regenerated.
+Runtime contract `0.4` is a strict migration (`0.3` wrappers name the retired `sddl-planner` profile). Existing consuming projects must rerun `sddl-init` and approve replacement of the complete marked block in `CLAUDE.md` and/or `AGENTS.md`. There is no compatibility alias for earlier wrapper paths; do not use sdd-lite in that project until its wrapper has been regenerated.
 
 ## Objectives And Routes
 

@@ -143,8 +143,8 @@ Rules:
 Use this split consistently:
 
 - `project-context.md` for reusable repository context
-- `skill-catalog.md` for the runtime standards registry, trigger map, compact rules, and support-agent references
-- `config.yaml` for project identity, canonical paths, bootstrap metadata, and quality commands
+- `skill-catalog.md` for the runtime standards registry, trigger map, compact rules, and execution-profile table
+- `config.yaml` for project identity, canonical paths, bootstrap metadata, quality commands, and optional `execution_profiles`
 - `proposal.md` for problem framing, desired outcome, initial scope sketch, and feasibility signal
 - `spec.md` for firm scope boundary, acceptance criteria, expected behavior, and non-goals
 - `design.md` for technical approach, architecture, patterns, interfaces, and affected areas
