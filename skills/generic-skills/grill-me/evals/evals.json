@@ -1,0 +1,62 @@
+{
+  "skill_name": "grill-me",
+  "evals": [
+    {
+      "id": 1,
+      "name": "cold-start-rate-limiting",
+      "prompt": "quiero agregar rate limiting a los endpoints publicos de la API (es un backend node/express, chico, un solo proceso por ahora). grillame antes de que empiece a escribir codigo.",
+      "expected_output": "Round 0 with no settled read-back (cold), then a first round of at most ~5 numbered questions in the ❓/➡️ format starting at the root of the decision tree (what is being protected, from what, what is non-negotiable), each with a recommended answer. Does not ask facts that could be read from a repo, does not write files, does not start implementing, and stops to wait for answers.",
+      "files": [],
+      "assertions": [
+        "Every question uses the ❓ **Qn** - **title**: body format",
+        "Every question is followed by a ➡️ recommended answer",
+        "The first round contains at most 5 questions",
+        "The response is in Spanish (the user's language)",
+        "The response stops and waits for the user's answers; it does not answer its own questions, implement, or propose code",
+        "No question asks for a fact that is already stated in the prompt or available files",
+        "Questions start at the root of the decision tree (what is being protected, from what, what is non-negotiable) rather than jumping to implementation details like library choice",
+        "No question depends on the answer to another question in the same round"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "from-spec-webhooks",
+      "prompt": "Tengo este spec de webhooks en spec-webhooks.md. Hazme preguntas para afinarlo antes de pasarlo a implementacion.",
+      "expected_output": "Reads the spec. Round 0 reads back the 'Decided' section as settled (async via BullMQ, JSON payload shape, 5 endpoints, existing settings page) without re-asking any of it. First frontier targets the 'Open' items in dependency order (signing/rotation, retries/backoff, timeouts, ordering promise) with a recommended answer each, ≤5 questions, ❓/➡️ format. Does not ask about non-goals as if they were open. Stops and waits.",
+      "files": [
+        "spec-webhooks.md"
+      ],
+      "assertions": [
+        "Every question uses the ❓ **Qn** - **title**: body format",
+        "Every question is followed by a ➡️ recommended answer",
+        "The first round contains at most 5 questions",
+        "The response is in Spanish (the user's language)",
+        "The response stops and waits for the user's answers; it does not answer its own questions, implement, or propose code",
+        "No question asks for a fact that is already stated in the prompt or available files",
+        "Round 0 reads back the spec's 'Decided' items as settled (async/BullMQ, JSON payload shape, 5 endpoints, existing settings page)",
+        "No question re-asks any item from the spec's 'Decided' section",
+        "Questions target the spec's 'Open' items (signing/rotation, retries/backoff, timeouts, ordering)",
+        "Non-goals (inbound webhooks, attribute filtering) are not asked about as if they were open"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "mid-session-already-decided",
+      "prompt": "Contexto de lo que venimos hablando en esta sesion:\n\n---\nUser: quiero mover el envio de emails transaccionales de sendgrid a resend.\nAssistant: ok. tenes preferencia de como manejar el fallback si resend falla?\nUser: si, decidido: no hay fallback, si falla se reintenta 3 veces y despues va a una dead letter queue. tambien decidi que los templates los migramos a react-email, nada de html a mano.\nAssistant: perfecto. y el tema de los dominios/dkim?\nUser: eso ya lo configure ayer en resend, esta listo y verificado.\nAssistant: bien. supongo que las metricas de apertura las seguimos sacando de sendgrid mientras tanto?\nUser: si, probablemente, por ahora dejemoslo asi.\nAssistant: y el feature flag para el rollout lo hacemos por porcentaje de usuarios o por tipo de email?\nUser: mmm no se, veremos.\n---\n\ngrillame sobre este plan.",
+      "expected_output": "Round 0 reads back as settled: no fallback + 3 retries + DLQ, react-email templates, DKIM/domains done. Does NOT ask any question that reopens those three. First frontier targets what was left open or assumed: open-rate metrics ('probably, for now'), rollout flag strategy ('we'll see'), plus genuinely downstream questions (e.g. what 'retry' means across which failures, DLQ handling, cutover order). ≤5 questions in ❓/➡️ format, each with a recommendation. Stops and waits.",
+      "files": [],
+      "assertions": [
+        "Every question uses the ❓ **Qn** - **title**: body format",
+        "Every question is followed by a ➡️ recommended answer",
+        "The first round contains at most 5 questions",
+        "The response is in Spanish (the user's language)",
+        "The response stops and waits for the user's answers; it does not answer its own questions, implement, or propose code",
+        "No question asks for a fact that is already stated in the prompt or available files",
+        "Round 0 reads back as settled: no fallback + 3 retries + DLQ, react-email templates, DKIM/domains already configured",
+        "No question reopens the three explicitly decided items (fallback/retries/DLQ, react-email, DKIM)",
+        "At least one question targets the open-rate metrics item answered with 'probably, for now'",
+        "At least one question targets the rollout feature-flag strategy answered with 'we'll see'"
+      ]
+    }
+  ]
+}

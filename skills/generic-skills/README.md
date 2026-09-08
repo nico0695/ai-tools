@@ -38,6 +38,15 @@ Use when:
 - You want an architecture doc, ADR, runbook, API reference, feature doc, investigation or project report
 - Existing notes and a session have to become one document somebody else can read
 
+## [grill-me](./grill-me/SKILL.md)
+
+Relentless interview that stress-tests a plan, design, or decision until you and the agent reach a shared understanding. Models the plan as a decision tree and asks the current frontier each round, every question with a recommended answer. Looks up facts itself instead of asking for them; the decisions are yours. Works cold, from a spec or diff, or mid-session without re-asking what you already decided. Writes nothing - the output is a final read-back of what was decided, what was assumed, and what got parked for somebody else or for a prototype.
+
+Use when:
+- A plan feels roughly right but you sense unresolved calls hiding in it
+- You want the gaps found before writing code
+- A session left several things "probably" or "for now" and you want them made explicit
+
 ## [judgment-day](./judgment-day/SKILL.md)
 
 Adversarial dual review: two blind, independent judges review the same frozen target and convergence decides what counts - both agree = confirmed, one reports = suspect, incompatible claims = contradiction escalated to you. Works on code or on a single document. Ends in exactly APPROVED or ESCALATED. The expensive, opt-in path; never run on a target 4r-review already covered.
