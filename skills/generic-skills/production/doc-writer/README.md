@@ -6,9 +6,8 @@ Markdown document grounded in the sources instead of filled in from what usually
 The work is deciding **what matters**, **what shape holds it**, and **what can honestly be claimed**.
 Rendering Markdown is the last step and the cheapest one.
 
-This is the production copy. It is deliberately more deterministic than the incubation version in
-`../../doc-writer/`: the document type comes from an ordered test instead of a ranking, the sections
-come from a rule instead of a judgment call, and length is an output rather than a target.
+Three things that usually rest on judgment are decided by rule here, so that two runs over the same
+material produce the same document: which type it is, which sections exist, and how long it gets.
 
 ## Table of Contents
 
@@ -99,8 +98,8 @@ Exception: `generic` declares `content: free`, so its content sections come from
 structure.
 
 This is what keeps filler out. A required section with nothing behind it becomes a stated gap, which
-is information; the old behavior was to fill it from plausibility, which is a liability because the
-reader cannot tell which sentences were grounded.
+is information. The alternative — filling it from plausibility — is a liability, because the reader
+has no way to tell which sentences were grounded and which were plausible.
 
 ## Document length
 
@@ -144,13 +143,14 @@ Five, in `assets/templates/`, discovered at runtime:
 | `report` | work done over a bounded period | executive summary, scope, what changed, problems encountered, current state, open work |
 | `generic` | material that fits none of the above | overview, summary |
 
-`system` absorbs what used to be three separate templates (technical-overview, architecture, feature),
-which overlapped heavily and competed for the same request — that competition was the main cause of
-the wrong template being picked. Depth that used to live in `architecture` is now optional sections of
-`system`, gated by the section rule.
+`system` is deliberately broad: a whole system, one module, a section and a single capability all get
+the same shape. Splitting those into separate templates makes the choice harder without making the
+documents different — what actually distinguishes them is depth, and depth lives in the optional
+sections, gated by the section rule.
 
-`api` and `runbook` are not here. They are the two most structurally distinct shapes, and they live in
-the incubation copy for whoever needs them.
+There is no dedicated API-reference or runbook shape. Both are structurally distinct enough to earn
+their own template if you write them often; until then they fall to `generic`, whose `content: free`
+lets the material set its own structure.
 
 ### Frontmatter
 
@@ -177,9 +177,11 @@ the delivered document.
 ### Adding one
 
 Copy the closest template, edit it, drop it in `assets/templates/`. Then add a test for it to the
-route in `SKILL.md` — unlike the incubation version, templates are **not** auto-selected by prose
-matching. If it has no test, it can only be reached by name, which is a legitimate way to ship a rare
-template without adding to the choice burden.
+route in `SKILL.md`.
+
+Templates are **not** auto-selected by prose matching. A template with no test in the route can only
+be reached by name — which is a legitimate way to ship a rare shape without adding to the burden of
+choosing.
 
 ## Files
 
@@ -208,10 +210,8 @@ trigger rather than a judgment about the material.
 
 ## What it does not do
 
-- It does not review or update existing documentation against current code — that is a different
-  problem (read a doc, read the code, report the drift). The name leaves room for it: `doc-writer`
-  writes, a future `doc-reviewer` checks drift.
+- It does not review or update existing documentation against current code. That is a different
+  problem — read the doc, read the code, report the drift — and this skill writes rather than checks.
 - It does not draw diagrams as a standalone request.
 - It does not maintain what it writes. A document goes stale the moment the code moves.
-- It does not write API references or runbooks from a dedicated shape. Ask for one by name in the
-  incubation copy, or it falls to `generic` here.
+- It does not carry a dedicated API-reference or runbook shape; that material falls to `generic`.

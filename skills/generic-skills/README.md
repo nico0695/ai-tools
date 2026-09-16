@@ -7,15 +7,13 @@ quotes, documents, examples, or requests to analyze a skill are not invocations.
 Suggestions are separate from activation: offer them only when relevant to the current request,
 without starting the skill, interrupting the task, or repeating a suggestion already made.
 
-## [production/](./production/)
+## [production/](./production/README.md)
 
 Validated copies, ready to install. A skill lands there once its behavior has been audited and
 simplified; the version in the root stays as the incubation copy, and the two are allowed to diverge.
 When both exist, the one in `production/` is the one to install.
 
-Currently holds [doc-writer](./production/doc-writer/README.md): five templates instead of nine, the
-document type chosen by an ordered test instead of a prose ranking, sections rendered by a fixed rule
-instead of judgment, and length as an output rather than a target.
+See [production/README.md](./production/README.md) for what's there and how to use each one.
 
 Static activation scenarios live in [evals/trigger-cases.json](./evals/trigger-cases.json).
 They record expected routing (`activate`, `suggest`, `none`), not measured activation results.
