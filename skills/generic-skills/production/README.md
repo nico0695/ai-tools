@@ -16,3 +16,4 @@ Each one keeps two docs, for two different readers:
 | `doc-writer` | Turns available context into a grounded Markdown document — an ADR, an investigation, a report, a system doc | [USAGE.md](./doc-writer/USAGE.md) | [README.md](./doc-writer/README.md) |
 | `4r-review` | Risk-tiered code review across four lenses, sized to what the change actually risks | [USAGE.md](./4r-review/USAGE.md) | [README.md](./4r-review/README.md) |
 | `judgment-day` | Adversarial dual review: two blind judges, convergence decides what counts | [USAGE.md](./judgment-day/USAGE.md) | [README.md](./judgment-day/README.md) |
+| `commit-closer` | Drafts a commit message and/or PR description from resolved git changes, read-only | [USAGE.md](./commit-closer/USAGE.md) | [README.md](./commit-closer/README.md) |
