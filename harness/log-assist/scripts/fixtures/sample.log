@@ -1,0 +1,472 @@
+2026-01-15 03:45:00.00 INFO [System Manager] CPU: 11.56%. Used RAM: 658.75 Mb
+2026-01-15 03:45:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:45:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:45:00.07 INFO [System Manager] Device will reboot in 15 minutes
+2026-01-15 03:45:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:45:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:45:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:46:00.00 INFO [System Manager] CPU: 52.14%. Used RAM: 735.66 Mb
+2026-01-15 03:46:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:46:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:46:00.07 INFO [System Manager] Device will reboot in 14 minutes
+2026-01-15 03:46:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:46:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:46:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:47:00.00 INFO [System Manager] CPU: 51.96%. Used RAM: 743.26 Mb
+2026-01-15 03:47:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:47:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:47:00.07 INFO [System Manager] Device will reboot in 13 minutes
+2026-01-15 03:47:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:47:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:47:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:48:00.00 INFO [System Manager] CPU: 53.54%. Used RAM: 765.98 Mb
+2026-01-15 03:48:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:48:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:48:00.07 INFO [System Manager] Device will reboot in 12 minutes
+2026-01-15 03:48:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:48:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:48:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:49:00.00 INFO [System Manager] CPU: 33.08%. Used RAM: 799.95 Mb
+2026-01-15 03:49:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:49:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:49:00.07 INFO [System Manager] Device will reboot in 11 minutes
+2026-01-15 03:49:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:49:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:49:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:50:00.00 INFO [System Manager] CPU: 36.92%. Used RAM: 665.60 Mb
+2026-01-15 03:50:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:50:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:50:00.07 INFO [System Manager] Device will reboot in 10 minutes
+2026-01-15 03:50:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:50:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:50:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:51:00.00 INFO [System Manager] CPU: 51.92%. Used RAM: 754.73 Mb
+2026-01-15 03:51:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:51:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:51:00.07 INFO [System Manager] Device will reboot in 9 minutes
+2026-01-15 03:51:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:51:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:51:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:52:00.00 INFO [System Manager] CPU: 11.19%. Used RAM: 771.94 Mb
+2026-01-15 03:52:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:52:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:52:00.07 INFO [System Manager] Device will reboot in 8 minutes
+2026-01-15 03:52:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:52:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:52:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:53:00.00 INFO [System Manager] CPU: 39.99%. Used RAM: 794.71 Mb
+2026-01-15 03:53:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:53:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:53:00.07 INFO [System Manager] Device will reboot in 7 minutes
+2026-01-15 03:53:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:53:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:53:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:54:00.00 INFO [System Manager] CPU: 25.93%. Used RAM: 654.28 Mb
+2026-01-15 03:54:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:54:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:54:00.07 INFO [System Manager] Device will reboot in 6 minutes
+2026-01-15 03:54:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:54:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:54:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:55:00.00 INFO [System Manager] CPU: 21.49%. Used RAM: 711.82 Mb
+2026-01-15 03:55:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:55:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:55:00.07 INFO [System Manager] Device will reboot in 5 minutes
+2026-01-15 03:55:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:55:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:55:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:56:00.00 INFO [System Manager] CPU: 30.57%. Used RAM: 653.49 Mb
+2026-01-15 03:56:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:56:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:56:00.07 INFO [System Manager] Device will reboot in 4 minutes
+2026-01-15 03:56:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:56:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:56:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:57:00.00 INFO [System Manager] CPU: 45.87%. Used RAM: 655.01 Mb
+2026-01-15 03:57:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:57:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:57:00.07 INFO [System Manager] Device will reboot in 3 minutes
+2026-01-15 03:57:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:57:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:57:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:58:00.00 INFO [System Manager] CPU: 47.57%. Used RAM: 795.86 Mb
+2026-01-15 03:58:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:58:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:58:00.07 INFO [System Manager] Device will reboot in 2 minutes
+2026-01-15 03:58:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:58:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:58:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 03:59:00.00 INFO [System Manager] CPU: 50.47%. Used RAM: 778.15 Mb
+2026-01-15 03:59:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 03:59:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 03:59:00.07 INFO [System Manager] Device will reboot in 1 minutes
+2026-01-15 03:59:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 03:59:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 03:59:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 04:00:00.00 INFO [Dex Player] System will reboot. Reason: Scheduled reboot
+2026-01-15 04:00:00.06 INFO [Input Source] clear() success.
+1969-12-31 21:00:17.63 INFO =====================================================
+1969-12-31 21:00:17.64 INFO Dex Player 6.4.2408.2600
+1969-12-31 21:00:17.64 INFO =====================================================
+1969-12-31 21:00:17.64 INFO [Main] Initializing Dex Player. Platform "tizen"
+1969-12-31 21:00:17.64 INFO Device UserAgent: Mozilla/5.0 (SMART-TV; LINUX; Tizen 4.0) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 TV Safari/537.36
+1969-12-31 21:00:18.21 ERROR Dir failed playlists
+1969-12-31 21:00:18.21 ERROR Dir failed schedules
+1969-12-31 21:00:26.63 INFO [Main] Player files checked
+1969-12-31 21:00:28.85 INFO [Node Server Manager] Starting node as service
+1969-12-31 21:00:28.85 INFO [Node Server Manager] Node server file: server2018.js
+1969-12-31 21:00:29.21 INFO [Tizen App] Device time: Wed Dec 31 1969 21:00:29 -03:00
+1969-12-31 21:00:29.22 INFO [Tizen App] Device time with timezone applied: Wed Dec 31 1969 21:00:29 -03:00
+1969-12-31 21:00:29.22 INFO [Tizen App] Waiting for system date time
+1969-12-31 21:00:29.25 SUCCESS [Node Server Manager] Node server started
+1969-12-31 21:00:29.93 INFO [Main] Player playlists and schedules files format checked
+1969-12-31 21:00:31.21 INFO [Tizen App] Device time: Wed Dec 31 1969 21:00:31 -03:00
+1969-12-31 21:00:31.22 INFO [Tizen App] Waiting for system date time
+2026-01-15 04:00:38.86 INFO [Tizen App] Device time: Thu Jan 15 2026 04:00:38 -03:00
+2026-01-15 04:00:38.87 INFO [Tizen App] Device time with timezone applied: Thu Jan 15 2026 04:00:38 -03:00
+2026-01-15 04:00:38.98 INFO [System Manager] Server time offset: 1042 milliseconds. Time zone: -3  hs Screen Time zone:  -03:00
+2026-01-15 04:00:39.16 INFO [Screenshots Manager] Started with 15 minutes interval
+2026-01-15 04:00:42.86 INFO [Server Manager] Fetching dex config on https://demo.example.invalid:443/dex_config.xml
+2026-01-15 04:00:42.90 WARNING [Server Manager] No tenant code found in dex_config.xml
+2026-01-15 04:00:42.94 INFO [Server Manager] Sending Handshake
+2026-01-15 04:00:43.23 INFO [System Manager] CPU: 51.27%. Used RAM: 646.70 Mb
+2026-01-15 04:00:43.25 INFO [Server Manager] Hostname: 10.0.0.11 AA:BB:CC:DD:EE:01
+2026-01-15 04:00:43.40 INFO [System Manager] The player has connectivity with the server
+2026-01-15 04:00:45.53 SUCCESS [Server Manager] Handshake received. Code "LICOK"
+2026-01-15 04:00:45.54 INFO [Server Manager] Machine: DEMO STORE 01
+2026-01-15 04:00:45.54 INFO [Server Manager] Machine HB Interval: 60 seconds
+2026-01-15 04:00:45.79 INFO [Node] [Sync] Joining multicast group
+2026-01-15 04:00:48.08 INFO [Node] [Sync] New member discovered: 10.0.0.12 | State: PLAYING | Channel: 3 | Is Master: false | MachineId: 3059
+2026-01-15 04:00:48.08 INFO [Node] [Sync] Channels empty
+2026-01-15 04:00:48.09 INFO [Node] [Sync] Master false | memberInfo false | masterDetermined false
+2026-01-15 04:00:48.11 INFO [Player] Dex Sync v1.6.21 is Running
+2026-01-15 04:01:10.79 INFO [Node] [Sync] This Machine is Master
+2026-01-15 04:02:00.00 INFO [System Manager] CPU: 16.31%. Used RAM: 694.78 Mb
+2026-01-15 04:02:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:02:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:02:00.07 INFO [System Manager] Device will reboot in 1440 minutes
+2026-01-15 04:02:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:02:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:02:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 04:03:00.00 INFO [System Manager] CPU: 31.64%. Used RAM: 609.02 Mb
+2026-01-15 04:03:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:03:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:03:00.07 INFO [System Manager] Device will reboot in 1439 minutes
+2026-01-15 04:03:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:03:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:03:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 04:04:00.00 INFO [System Manager] CPU: 3.17%. Used RAM: 623.67 Mb
+2026-01-15 04:04:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:04:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:04:00.07 INFO [System Manager] Device will reboot in 1438 minutes
+2026-01-15 04:04:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:04:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:04:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 04:05:00.00 INFO [System Manager] CPU: 10.94%. Used RAM: 735.26 Mb
+2026-01-15 04:05:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:05:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:05:00.07 INFO [System Manager] Device will reboot in 1437 minutes
+2026-01-15 04:05:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:05:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:05:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:06:00.00 INFO [System Manager] CPU: 3.04%. Used RAM: 657.95 Mb
+2026-01-15 04:06:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:06:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:06:00.07 INFO [System Manager] Device will reboot in 1436 minutes
+2026-01-15 04:06:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:06:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:06:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:07:00.00 INFO [System Manager] CPU: 11.03%. Used RAM: 692.84 Mb
+2026-01-15 04:07:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:07:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:07:00.07 INFO [System Manager] Device will reboot in 1435 minutes
+2026-01-15 04:07:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:07:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:07:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:08:00.00 INFO [System Manager] CPU: 52.70%. Used RAM: 732.71 Mb
+2026-01-15 04:08:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:08:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:08:00.07 INFO [System Manager] Device will reboot in 1434 minutes
+2026-01-15 04:08:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:08:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:08:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:09:00.00 INFO [System Manager] CPU: 41.27%. Used RAM: 707.22 Mb
+2026-01-15 04:09:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:09:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:09:00.07 INFO [System Manager] Device will reboot in 1433 minutes
+2026-01-15 04:09:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:09:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:09:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:10:00.00 INFO [System Manager] CPU: 26.15%. Used RAM: 655.03 Mb
+2026-01-15 04:10:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:10:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:10:00.07 INFO [System Manager] Device will reboot in 1432 minutes
+2026-01-15 04:10:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:10:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:10:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:11:00.00 INFO [System Manager] CPU: 9.77%. Used RAM: 719.87 Mb
+2026-01-15 04:11:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:11:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:11:00.07 INFO [System Manager] Device will reboot in 1431 minutes
+2026-01-15 04:11:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:11:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:11:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:12:00.00 INFO [System Manager] CPU: 6.40%. Used RAM: 597.84 Mb
+2026-01-15 04:12:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:12:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:12:00.07 INFO [System Manager] Device will reboot in 1430 minutes
+2026-01-15 04:12:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:12:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:12:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:13:00.00 INFO [System Manager] CPU: 38.50%. Used RAM: 644.51 Mb
+2026-01-15 04:13:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:13:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:13:00.07 INFO [System Manager] Device will reboot in 1429 minutes
+2026-01-15 04:13:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:13:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:13:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:14:00.00 INFO [System Manager] CPU: 1.95%. Used RAM: 631.44 Mb
+2026-01-15 04:14:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:14:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:14:00.07 INFO [System Manager] Device will reboot in 1428 minutes
+2026-01-15 04:14:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:14:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:14:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:15:00.00 INFO [System Manager] CPU: 22.14%. Used RAM: 779.25 Mb
+2026-01-15 04:15:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:15:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:15:00.07 INFO [System Manager] Device will reboot in 1427 minutes
+2026-01-15 04:15:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:15:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:15:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:16:00.00 INFO [System Manager] CPU: 5.84%. Used RAM: 829.64 Mb
+2026-01-15 04:16:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:16:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:16:00.07 INFO [System Manager] Device will reboot in 1426 minutes
+2026-01-15 04:16:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:16:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:16:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:17:00.00 INFO [System Manager] CPU: 13.14%. Used RAM: 712.58 Mb
+2026-01-15 04:17:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:17:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:17:00.07 INFO [System Manager] Device will reboot in 1425 minutes
+2026-01-15 04:17:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:17:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:17:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:18:00.00 INFO [System Manager] CPU: 20.21%. Used RAM: 640.11 Mb
+2026-01-15 04:18:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:18:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:18:00.07 INFO [System Manager] Device will reboot in 1424 minutes
+2026-01-15 04:18:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:18:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:18:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:19:00.00 INFO [System Manager] CPU: 49.17%. Used RAM: 807.43 Mb
+2026-01-15 04:19:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:19:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:19:00.07 INFO [System Manager] Device will reboot in 1423 minutes
+2026-01-15 04:19:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:19:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:19:00.14 ERROR [Server Manager] Heartbeat Sync failed. Status: Error: Network Error
+2026-01-15 04:20:00.00 INFO [System Manager] CPU: 53.64%. Used RAM: 724.52 Mb
+2026-01-15 04:20:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:20:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:20:00.07 INFO [System Manager] Device will reboot in 1422 minutes
+2026-01-15 04:20:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:20:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:20:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 04:21:00.00 INFO [System Manager] CPU: 45.91%. Used RAM: 808.00 Mb
+2026-01-15 04:21:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 04:21:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 04:21:00.07 INFO [System Manager] Device will reboot in 1421 minutes
+2026-01-15 04:21:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 04:21:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 04:21:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 04:23:51.00 INFO ======================================================
+2026-01-15 04:23:51.01 INFO Player Version: 6.4.2408.2600
+2026-01-15 04:23:51.02 INFO Serial Number: DEMOSERIAL0001
+2026-01-15 04:23:51.02 INFO Webview Version: 
+2026-01-15 04:23:51.02 INFO Server: https://demo.example.invalid:443
+2026-01-15 04:23:51.02 INFO Firmware Version: T-INFOLINK2018-1052
+2026-01-15 04:23:51.02 INFO Machine time zone offset: -180
+2026-01-15 04:23:51.03 INFO Screenshots Interval: 900
+2026-01-15 04:23:51.04 INFO CPU usage: 12.18%. Used RAM: 793.73 Mb
+2026-01-15 04:23:51.04 INFO Client IP: 10.0.0.11
+2026-01-15 04:23:51.05 INFO Machine ID: 3057
+2026-01-15 04:23:51.06 INFO Machine Tags: DEMO, SYNC01
+2026-01-15 04:23:51.06 INFO Tenant ID: 3. Tenant Name: DEMO TENANT
+2026-01-15 04:23:51.07 INFO Machine Sync ID:  1
+2026-01-15 04:23:51.07 INFO Multicast IP:  239.0.0.1
+2026-01-15 04:23:51.07 INFO Device will reboot at: 2021-04-30T04:00:00
+2026-01-15 04:23:51.07 INFO ======================================================
+2026-01-15 04:23:51.09 INFO [Player] [Sync] Version: 1.6.21 - Group: DEMO GROUP - Members: 10.0.0.11 [Master] 10.0.0.12 10.0.0.13 
+2026-01-15 04:23:51.14 INFO ===================SYNC GROUP INFO====================
+2026-01-15 04:23:51.14 INFO 10.0.0.11 | PLAYING | Playlist: 6065 [2026-01-08T14:46:31.027Z] | Schedule: 238 [2026-01-08T14.46.45.703] | Playlist To Change: [a.json,b.json,c.json]  (MASTER)
+2026-01-15 04:23:51.14 INFO 10.0.0.12 | PLAYING | Playlist: 6065 [2026-01-08T14:46:31.027Z] | Schedule: 238 [2026-01-08T14.46.45.703] | Playlist To Change: [a.json,b.json,c.json] 
+2026-01-15 04:23:51.14 INFO 10.0.0.13 | PLAYING | Playlist: 6065 [2026-01-08T14:46:31.027Z] | Schedule: 238 [2026-01-08T14.46.45.703] | Playlist To Change: [a.json,b.json,c.json] 
+2026-01-15 04:23:51.15 INFO ======================================================
+2026-01-15 05:00:12.00 INFO [MENUBOARD_TPL] [INFO] STOP_TPL received
+2026-01-15 05:00:12.27 SUCCESS [Player] Processing State Sync
+2026-01-15 05:00:12.45 SUCCESS [Player] Playing Playlist "DEMO MORNING [2026-01-08T14:46:31.027Z]"
+2026-01-15 05:00:12.54 INFO [MENUBOARD_TPL] [INFO] Clean media managers on unload
+2026-01-15 05:00:12.54 INFO [Node] [Sync] PLAYLIST ID = 6065
+2026-01-15 05:00:12.55 INFO [Node] [Sync] New Playlist received
+2026-01-15 05:00:12.67 INFO [Player] Schedule time: LOCAL
+2026-01-15 05:00:12.68 INFO [Player] End date: Thu Jan 15 2026 11:00:12 GMT-0300. Now: Thu Jan 15 2026 05:00:12 GMT-0300
+2026-01-15 05:00:12.69 INFO [Player] Next Playlist in 359 minutes
+2026-01-15 05:00:12.69 INFO [Player] Playing Schedule
+2026-01-15 05:00:14.51 INFO [Node] [Sync] Sending command PLAY burst to all members
+2026-01-15 05:00:15.46 INFO [Player] [Sync] PLAY Command received. Media "tpl-menuboard.1.2.3.4-store"
+2026-01-15 05:00:15.48 INFO [Node] [Sync] [SyncShouldPlay] Don't play 'tpl-menuboard.1.2.3.4-store' from: 22:00:00 - to: 06:00:00
+2026-01-15 05:00:15.50 INFO [MENUBOARD_TPL] [INFO] [OffsetsManager] platform: QM
+2026-01-15 05:00:15.51 INFO [MENUBOARD_TPL] [INFO] [DataManager] SKUs found in configs:  42
+2026-01-15 05:00:15.52 INFO [MENUBOARD_TPL] [INFO] [StoreDataManager] TPL Mode: STORE 
+2026-01-15 05:02:00.00 INFO [System Manager] CPU: 13.13%. Used RAM: 570.55 Mb
+2026-01-15 05:02:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:02:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:02:00.07 INFO [System Manager] Device will reboot in 1380 minutes
+2026-01-15 05:02:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:02:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:02:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:03:00.00 INFO [System Manager] CPU: 21.65%. Used RAM: 720.44 Mb
+2026-01-15 05:03:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:03:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:03:00.07 INFO [System Manager] Device will reboot in 1379 minutes
+2026-01-15 05:03:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:03:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:03:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:04:00.00 INFO [System Manager] CPU: 4.91%. Used RAM: 684.72 Mb
+2026-01-15 05:04:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:04:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:04:00.07 INFO [System Manager] Device will reboot in 1378 minutes
+2026-01-15 05:04:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:04:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:04:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:05:00.00 INFO [System Manager] CPU: 45.89%. Used RAM: 736.27 Mb
+2026-01-15 05:05:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:05:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:05:00.07 INFO [System Manager] Device will reboot in 1377 minutes
+2026-01-15 05:05:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:05:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:05:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:06:00.00 INFO [System Manager] CPU: 3.10%. Used RAM: 686.54 Mb
+2026-01-15 05:06:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:06:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:06:00.07 INFO [System Manager] Device will reboot in 1376 minutes
+2026-01-15 05:06:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:06:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:06:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:07:00.00 INFO [System Manager] CPU: 42.10%. Used RAM: 705.64 Mb
+2026-01-15 05:07:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:07:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:07:00.07 INFO [System Manager] Device will reboot in 1375 minutes
+2026-01-15 05:07:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:07:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:07:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:08:44.00 DEBUG [Player] hbMetadata: {"machineId":3057,"playlistId":6065,"scheduleId":238}
+2026-01-15 05:08:44.06 INFO [Server Manager] New Tags saved ["DEMO","Debug","SYNC01"]
+2026-01-15 05:08:44.20 DEBUG [System Manager] TimeOffset : 1042
+2026-01-15 05:08:44.24 DEBUG [Download Manager] Downloading false
+2026-01-15 05:08:44.28 DEBUG [Pending Downloads] Already checked pending downloads once, not checking again.
+2026-01-15 05:08:44.33 DEBUG [Player] [Sync] All group members have the same content
+2026-01-15 05:08:44.41 DEBUG [Player] [State] Schedule fields playlistId=6065 scheduleId=238 trigger=false
+2026-01-15 05:08:44.52 DEBUG [Player] [HB] Schedule fields playlistId=6065 scheduleId=238 trigger=false
+2026-01-15 05:08:44.61 DEBUG [Machine Files Reporter] this.machineFilesArray Updated [{"MachineFileId":7100,"Name":"demo-asset-00.png","Size":10240,"Hash":"0000000000000000abcdef0123456789","Status":"OK"},{"MachineFileId":7101,"Name":"demo-asset-01.png","Size":10377,"Hash":"0000000000000000abcdef0123458678","Status":"OK"},{"MachineFileId":7102,"Name":"demo-asset-02.png","Size":10514,"Hash":"0000000000000000abcdef012345a567","Status":"OK"},{"MachineFileId":7103,"Name":"demo-asset-03.png","Size":10651,"Hash":"0000000000000000abcdef012345c456","Status":"OK"},{"MachineFileId":7104,"Name":"demo-asset-04.png","Size":10788,"Hash":"0000000000000000abcdef012345e345","Status":"OK"},{"MachineFileId":7105,"Name":"demo-asset-05.png","Size":10925,"Hash":"0000000000000000abcdef0123460234","Status":"OK"},{"MachineFileId":7106,"Name":"demo-asset-06.png","Size":11062,"Hash":"0000000000000000abcdef0123462123","Status":"OK"},{"MachineFileId":7107,"Name":"demo-asset-07.png","Size":11199,"Hash":"0000000000000000abcdef0123464012","Status":"OK"},{"MachineFileId":7108,"Name":"demo-asset-08.png","Size":11336,"Hash":"0000000000000000abcdef0123465f01","Status":"OK"}]
+2026-01-15 05:12:47.00 WARNING [Tizen Storage] The storage is locked. Cannot write playlists/demo-morning.json.lock
+2026-01-15 05:12:47.01 ERROR [Player] Checking playlist failed  Cannot read property 'message' of undefined
+2026-01-15 05:12:47.03 WARNING [Tizen Storage] The storage is locked. Cannot write playlists/demo-morning.json.lock
+2026-01-15 05:12:47.04 ERROR [Player] Checking playlist failed  Cannot read property 'message' of undefined
+2026-01-15 05:12:47.06 WARNING [Tizen Storage] The storage is locked. Cannot write playlists/demo-morning.json.lock
+2026-01-15 05:12:47.07 ERROR [Player] Checking playlist failed  Cannot read property 'message' of undefined
+2026-01-15 05:12:47.09 WARNING [Tizen Storage] The storage is locked. Cannot write playlists/demo-morning.json.lock
+2026-01-15 05:12:47.10 ERROR [Player] Checking playlist failed  Cannot read property 'message' of undefined
+2026-01-15 05:12:48.00 ERROR [Player] While updating content. Error listing files for schedules/demo-morning.json. PLATFORM ERROR other
+2026-01-15 05:12:48.02 ERROR [Player] CheckInternalIntegrity. Downloading MachineFiles Cannot read property 'message' of undefined Cannot read property 'message' of undefined
+2026-01-15 05:12:48.10 WARNING [Player] Socket not initialized for report
+2026-01-15 05:13:51.00 INFO [Dex Player] System will reboot. Reason: SOFT_CLEAN_COMMAND
+2026-01-15 05:13:51.06 INFO [Input Source] clear() success.
+1969-12-31 21:00:17.63 INFO =====================================================
+1969-12-31 21:00:17.64 INFO Dex Player 6.4.2408.2600
+1969-12-31 21:00:17.64 INFO =====================================================
+1969-12-31 21:00:17.64 INFO [Main] Initializing Dex Player. Platform "tizen"
+1969-12-31 21:00:17.64 INFO Device UserAgent: Mozilla/5.0 (SMART-TV; LINUX; Tizen 4.0) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 TV Safari/537.36
+1969-12-31 21:00:18.21 ERROR Dir failed playlists
+1969-12-31 21:00:18.21 ERROR Dir failed schedules
+1969-12-31 21:00:26.63 INFO [Main] Player files checked
+1969-12-31 21:00:28.85 INFO [Node Server Manager] Starting node as service
+1969-12-31 21:00:28.85 INFO [Node Server Manager] Node server file: server2018.js
+1969-12-31 21:00:29.21 INFO [Tizen App] Device time: Wed Dec 31 1969 21:00:29 -03:00
+1969-12-31 21:00:29.22 INFO [Tizen App] Device time with timezone applied: Wed Dec 31 1969 21:00:29 -03:00
+1969-12-31 21:00:29.22 INFO [Tizen App] Waiting for system date time
+1969-12-31 21:00:29.25 SUCCESS [Node Server Manager] Node server started
+1969-12-31 21:00:29.93 INFO [Main] Player playlists and schedules files format checked
+1969-12-31 21:00:31.21 INFO [Tizen App] Device time: Wed Dec 31 1969 21:00:31 -03:00
+1969-12-31 21:00:31.22 INFO [Tizen App] Waiting for system date time
+2026-01-15 05:14:29.86 INFO [Tizen App] Device time: Thu Jan 15 2026 05:14:29 -03:00
+2026-01-15 05:14:29.87 INFO [Tizen App] Device time with timezone applied: Thu Jan 15 2026 05:14:29 -03:00
+2026-01-15 05:14:29.98 INFO [System Manager] Server time offset: 1042 milliseconds. Time zone: -3  hs Screen Time zone:  -03:00
+2026-01-15 05:14:30.16 INFO [Screenshots Manager] Started with 15 minutes interval
+2026-01-15 05:14:33.86 INFO [Server Manager] Fetching dex config on https://demo.example.invalid:443/dex_config.xml
+2026-01-15 05:14:33.90 WARNING [Server Manager] No tenant code found in dex_config.xml
+2026-01-15 05:14:33.94 INFO [Server Manager] Sending Handshake
+2026-01-15 05:14:34.23 INFO [System Manager] CPU: 53.89%. Used RAM: 648.20 Mb
+2026-01-15 05:14:34.25 INFO [Server Manager] Hostname: 10.0.0.11 AA:BB:CC:DD:EE:01
+2026-01-15 05:14:34.40 INFO [System Manager] The player has connectivity with the server
+2026-01-15 05:14:36.53 SUCCESS [Server Manager] Handshake received. Code "LICOK"
+2026-01-15 05:14:36.54 INFO [Server Manager] Machine: DEMO STORE 01
+2026-01-15 05:14:36.54 INFO [Server Manager] Machine HB Interval: 60 seconds
+2026-01-15 05:16:00.00 INFO [System Manager] CPU: 50.25%. Used RAM: 812.17 Mb
+2026-01-15 05:16:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:16:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:16:00.07 INFO [System Manager] Device will reboot in 1320 minutes
+2026-01-15 05:16:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:16:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:16:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:17:00.00 INFO [System Manager] CPU: 3.61%. Used RAM: 631.65 Mb
+2026-01-15 05:17:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:17:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:17:00.07 INFO [System Manager] Device will reboot in 1319 minutes
+2026-01-15 05:17:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:17:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:17:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:18:00.00 INFO [System Manager] CPU: 35.87%. Used RAM: 646.59 Mb
+2026-01-15 05:18:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:18:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:18:00.07 INFO [System Manager] Device will reboot in 1318 minutes
+2026-01-15 05:18:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:18:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:18:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 05:19:00.00 INFO [System Manager] CPU: 49.03%. Used RAM: 601.89 Mb
+2026-01-15 05:19:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 05:19:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 05:19:00.07 INFO [System Manager] Device will reboot in 1317 minutes
+2026-01-15 05:19:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 05:19:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 05:19:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 14:30:00.00 INFO [System Manager] CPU: 39.75%. Used RAM: 736.80 Mb
+2026-01-15 14:30:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 14:30:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 14:30:00.07 INFO [System Manager] Device will reboot in 810 minutes
+2026-01-15 14:30:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 14:30:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 14:30:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 14:31:00.00 INFO [System Manager] CPU: 12.90%. Used RAM: 761.64 Mb
+2026-01-15 14:31:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 14:31:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 14:31:00.07 INFO [System Manager] Device will reboot in 809 minutes
+2026-01-15 14:31:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 14:31:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 14:31:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 14:32:00.00 INFO [System Manager] CPU: 13.11%. Used RAM: 603.97 Mb
+2026-01-15 14:32:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 14:32:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 14:32:00.07 INFO [System Manager] Device will reboot in 808 minutes
+2026-01-15 14:32:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 14:32:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 14:32:00.14 SUCCESS [Server Manager] Heartbeat received from server
+2026-01-15 14:33:00.00 INFO [System Manager] CPU: 3.56%. Used RAM: 629.10 Mb
+2026-01-15 14:33:00.03 INFO [Hardware Policies] Processing policies
+2026-01-15 14:33:00.04 INFO [Hardware Policies] Next Display State policy: NONE
+2026-01-15 14:33:00.07 INFO [System Manager] Device will reboot in 807 minutes
+2026-01-15 14:33:00.09 INFO [Input Manager] Remote Control Enabled
+2026-01-15 14:33:00.11 SUCCESS [Input Manager] Panel Unlocked
+2026-01-15 14:33:00.14 SUCCESS [Server Manager] Heartbeat received from server

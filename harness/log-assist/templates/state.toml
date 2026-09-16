@@ -1,0 +1,42 @@
+# state.toml — machine-facing state of one analysis.
+# Owner: the orchestrator. Workers never write this file.
+# loga_new fills id, title, created, updated and status; the rest grows as the
+# analysis advances. loga_progress validates it and derives the next step.
+# Dates are ISO strings, not TOML date literals.
+
+id = "<ref>-<slug>"                  # required, identical to the folder name
+title = "<one line: what the user reported>"   # required
+jira = ""                            # optional, e.g. "DEX-1234"
+created = "<YYYY-MM-DD>"             # required
+updated = "<YYYY-MM-DD>"             # required, touched on every write
+incident_window = ""                 # optional, e.g. "2026-09-10..2026-09-12"
+
+# Suggested by loga_scan during inventory, confirmed by the user before status
+# becomes "analyzing". Screens come from `Machine:` in the log content, never
+# from file names.
+platform = []                        # e.g. ["tizen"], ["webos"]
+player_version = []                  # e.g. ["6.4.2408.2600"]
+screens = []                         # e.g. ["P1", "P3"]
+tags = []                            # e.g. ["black-screen", "playlist"]
+
+status = "new"                       # new | analyzing | needs-info | concluded | closed
+outcome = ""                         # empty until concluded, then:
+                                     # confirmed | probable | inconclusive | not-an-issue
+
+current_round = 0
+next_action = ""                     # one concrete action
+open_questions = []                  # asked and unanswered, or skipped
+related = []                         # ids of other analyses, found by loga_search
+
+# One entry per choice that changed direction. Uncomment and repeat.
+# [[decisions]]
+# date = "<YYYY-MM-DD>"
+# what = "<what was decided, and why>"
+
+# One entry per run of a repeatable skill. Feeds the explorer trigger:
+# two consecutive "no-progress" rounds.
+# [[rounds]]
+# n = 1
+# skill = "loga-inventory"           # loga-intake | loga-inventory | loga-analyze | loga-explorer | loga-challenger
+# question = "<the question this round answered>"
+# result = "progress"                # progress | no-progress

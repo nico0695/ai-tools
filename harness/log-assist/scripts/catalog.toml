@@ -1,0 +1,283 @@
+# Pattern and signature catalog for log-assist.
+#
+# Edited by hand. Adding a signature needs no code: loga_check and loga_grep read
+# this file. Keep every regex anchored against the MESSAGE (what follows the level),
+# never against the whole line.
+#
+# Verified against two corpora, 335,515 lines, webOS and Tizen. Where a form differs
+# by platform the pattern carries alternatives rather than a platform lock, because
+# component names are an open vocabulary.
+
+version = "0.1"
+
+# ---------------------------------------------------------------- system / boot
+
+[[patterns]]
+id = "SYS.BOOT"
+domain = "SYS"
+level = "INFO"
+regex = "^Dex Player [\\d.]+$"
+noise = false
+examples = ["Dex Player 6.4.2408.2600", "Dex Player 6.7.2601.2300"]
+counterexamples = ["Dex Player Sync 1.6.21 is Running"]
+
+[[patterns]]
+id = "SYS.REBOOT.REASON"
+domain = "SYS"
+component = "Dex Player"
+level = "INFO"
+regex = "^System will reboot\\. Reason: (?P<reason>.+)$"
+noise = false
+examples = [
+  "System will reboot. Reason: Scheduled reboot",
+  "System will reboot. Reason: COMMAND",
+  "System will reboot. Reason: SOFT_CLEAN_COMMAND",
+]
+counterexamples = ["Device will reboot in 909 minutes"]
+
+[[patterns]]
+id = "SYS.REBOOT.COUNTDOWN"
+domain = "SYS"
+level = "INFO"
+regex = "^Device will reboot in (?P<minutes>\\d+) minutes$"
+noise = true
+# Present in volume but useless for classification: the lowest value observed in the
+# corpus is 909, and the real scheduled reboots cut at 1439 and 1437 minutes.
+examples = ["Device will reboot in 1439 minutes"]
+counterexamples = ["System will reboot. Reason: Scheduled reboot"]
+
+# ---------------------------------------------------------------- network
+
+[[patterns]]
+id = "NET.HB.OK"
+domain = "NET"
+component = "Server Manager"
+level = "SUCCESS"
+regex = "^Heartbeat received from server$"
+noise = true
+examples = ["Heartbeat received from server"]
+counterexamples = ["Heartbeat Sync failed. Status: Error: Network Error"]
+
+[[patterns]]
+id = "NET.HB.FAIL"
+domain = "NET"
+component = "Server Manager"
+level = "ERROR"
+regex = "^Heartbeat Sync failed\\. Status: (?P<cause>.+)$"
+noise = false
+examples = [
+  "Heartbeat Sync failed. Status: Error: Network Error",
+  "Heartbeat Sync failed. Status: Error: timeout of 50000ms exceeded",
+]
+counterexamples = ["Heartbeat received from server"]
+
+[[patterns]]
+id = "NET.HANDSHAKE.OK"
+domain = "NET"
+component = "Server Manager"
+level = "SUCCESS"
+regex = "^Handshake received\\. Code \"(?P<code>[A-Z]+)\"$"
+noise = false
+examples = ['Handshake received. Code "LICOK"']
+counterexamples = ["Sending Handshake"]
+
+# ---------------------------------------------------------------- content
+
+[[patterns]]
+id = "CNT.JSON.FAIL"
+domain = "CNT"
+level = "ERROR"
+# Two component spellings coexist in the corpus: [WebOS Storage] and
+# [Webos Storage Manager]. Anchoring on one loses half the cases.
+regex = "^Fail parsing JSON\\. File: (?P<file>.+)$"
+noise = false
+examples = ["Fail parsing JSON. File: playlists/67161_2026-02-16T17.05.57.217.json"]
+counterexamples = ["Read operation completed for path: playlists/67161.json"]
+
+[[patterns]]
+id = "STO.READ.FAIL"
+domain = "STO"
+level = "ERROR"
+regex = "^Read operation failed for path: (?P<path>.+)$"
+noise = false
+examples = ['Read operation failed for path: playlists/67161.json {"errorCode":"IO_ERROR"}']
+counterexamples = ["Read operation completed for path: playlists/67161.json"]
+
+[[patterns]]
+id = "CNT.LOAD.FAIL"
+domain = "CNT"
+component = "Playlist Manager"
+level = "ERROR"
+regex = "^Loading playlist (?P<file>\\S+) (?P<cause>.+)$"
+noise = false
+# The orphan bracket in `IO_ERROR]:` is a formatting bug of the player. Tolerated as-is.
+examples = [
+  "Loading playlist 67161_2026-02-16T17.05.57.217.json Unexpected end of JSON input",
+  "Loading playlist 67161_2026-02-16T17.05.57.217.json IO_ERROR]: Failed to read data",
+]
+counterexamples = ["Clearing current playlist"]
+
+[[patterns]]
+id = "CNT.PLAY.FAIL"
+domain = "CNT"
+component = "Player"
+level = "ERROR"
+regex = "^Playing playlist (?P<id>\\d+) (?P<cause>.+)$"
+noise = false
+examples = ["Playing playlist 67161 Unexpected end of JSON input"]
+counterexamples = ['Playing Playlist "MORNING [2026-02-16T17:05:57.217Z]"']
+
+[[patterns]]
+id = "CNT.CLEAR"
+domain = "CNT"
+component = "Playlist Manager"
+level = "INFO"
+regex = "^Clearing current playlist$"
+noise = false
+# On its own this is the ordinary playlist update: 161 lines in the corpus, only 11 of
+# them a real black screen. It only means something as the tail of a cascade.
+examples = ["Clearing current playlist"]
+counterexamples = ["Playlist stopped"]
+
+[[patterns]]
+id = "CNT.ERRMSG"
+domain = "CNT"
+component = "Player"
+level = "INFO"
+regex = "^Error Message: (?P<cause>.+)\\. PlaylistId: (?P<id>\\d+)$"
+noise = false
+examples = ["Error Message: Unexpected end of JSON input. PlaylistId: 67161"]
+counterexamples = ["Clearing current playlist"]
+
+[[patterns]]
+id = "CNT.MISSING"
+domain = "CNT"
+level = "ERROR"
+# Three wordings in the corpus, one of which repeats the fragment twice in one line.
+regex = "Missing Content: (?P<files>\\d+) files"
+noise = false
+examples = [
+  "Checking playlist failed  Missing Content: 8 files. Media: a.mp4, b.mp4",
+  "Error checkIntegrity Missing Content: 2 files. Media: a.mp4",
+]
+counterexamples = ["Checking playlist failed  Cannot read property 'message' of undefined"]
+
+# ---------------------------------------------------------------- sync / cluster
+
+[[patterns]]
+id = "SYNC.MEMBERS"
+domain = "SYNC"
+component = "Player/Sync"
+level = "INFO"
+regex = "^Version: (?P<sync>\\S+) - Group: (?P<group>.*?) - Members:(?P<members>.*)$"
+derive = "sync-members"   # turns the members text into member and master counts
+noise = false
+# The [Master] marks on this line are the reliable count: the line exists in every file
+# that has a group, while the block table is missing from 13 of 35 blocks.
+examples = ["Version: 1.9.1 - Group: PLVE - Members: 10.0.0.1 [Master] 10.0.0.2 "]
+counterexamples = ["Joining multicast group"]
+
+[[patterns]]
+id = "SYNC.MASTER.SELF"
+domain = "SYNC"
+component = "Node/Sync"
+level = "INFO"
+regex = "^This Machine is Master$"
+noise = false
+examples = ["This Machine is Master"]
+counterexamples = ["Joined to group. Member 10.0.0.1 is Master"]
+
+[[patterns]]
+id = "SYNC.MEMBER.INACTIVE"
+domain = "SYNC"
+component = "Node/Sync"
+level = "INFO"
+regex = "^Member (?P<ip>\\S+) is not active$"
+noise = false
+examples = ["Member 10.0.0.5 is not active"]
+counterexamples = ["New member discovered: 10.0.0.5 | State: PLAYING"]
+
+# ---------------------------------------------------------------- signatures
+#
+# rule: sequence | streak | count | match
+#   sequence  steps in order, within `within_ms`
+#   streak    `min_streak` consecutive matches of `pattern`
+#   count     `min_count` matches of `pattern` inside `window_s`
+#   match     a single pattern, refined by `where`
+
+[[signatures]]
+id = "BLACK-SCREEN-JSON"
+symptom = "the screen went black after a playlist change"
+severity = "critical"
+rule = "sequence"
+steps = ["CNT.JSON.FAIL", "CNT.LOAD.FAIL", "CNT.PLAY.FAIL", "CNT.CLEAR"]
+within_ms = 200
+note = "requires the full triplet: a lone ERROR near CNT.CLEAR is the ordinary playlist update"
+evidence = "measured at 20-30 ms in 5 corpus cases"
+
+[[signatures]]
+id = "BLACK-SCREEN-IO"
+symptom = "the screen went black and the playlist file could not be read"
+severity = "critical"
+rule = "sequence"
+steps = ["STO.READ.FAIL", "CNT.LOAD.FAIL", "CNT.PLAY.FAIL", "CNT.CLEAR"]
+within_ms = 200
+note = "requires the full triplet: a lone ERROR near CNT.CLEAR is the ordinary playlist update"
+evidence = "6 corpus cases; cause reads `IO_ERROR]: Failed to read data`, orphan bracket included"
+
+[[signatures]]
+id = "REBOOT-LOOP"
+symptom = "the screen keeps restarting on its own"
+severity = "critical"
+rule = "count"
+pattern = "SYS.BOOT"
+min_count = 3
+window_s = 900
+evidence = "4 boots in 4 min 44 s, none carrying a reason line"
+
+[[signatures]]
+id = "SYNC-SPLIT-BRAIN"
+symptom = "the screens of a group are out of step with each other"
+severity = "critical"
+rule = "match"
+pattern = "SYNC.MEMBERS"
+where = "masters > 1"
+evidence = "5 of 24 snapshots, with 2 and 3 masters"
+
+[[signatures]]
+id = "SYNC-NO-GROUP"
+symptom = "the screen is not part of its sync group"
+severity = "warning"
+rule = "match"
+pattern = "SYNC.MEMBERS"
+where = "group == 'undefined' and members == 0"
+evidence = "1 corpus case, recovered later in the same file"
+
+[[signatures]]
+id = "SYNC-NO-MASTER"
+symptom = "the group has members but nobody is coordinating"
+severity = "critical"
+rule = "match"
+pattern = "SYNC.MEMBERS"
+where = "members > 0 and masters == 0"
+# No corpus has ever shown this. loga_check reports insufficient_data rather than miss,
+# so a clean result is not mistaken for evidence of health.
+evidence = "none — no example in either corpus"
+
+[[signatures]]
+id = "HEARTBEAT-OUTAGE"
+symptom = "the screen lost contact with the server"
+severity = "critical"
+rule = "streak"
+pattern = "NET.HB.FAIL"
+breaks_on = "NET.HB.OK"
+min_streak = 5
+evidence = "98 consecutive failures over 1 h 37 min; also 2 simultaneous on three screens"
+
+[[signatures]]
+id = "MISSING-CONTENT"
+symptom = "the screen is missing media files"
+severity = "warning"
+rule = "match"
+pattern = "CNT.MISSING"
+evidence = "7 files across both platforms, three message wordings"
