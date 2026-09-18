@@ -15,7 +15,7 @@ picks up the repository later.
 # Review Ledger — {target-slug}
 
 - review_mode: 4r
-- immutable_reference: {SHA, range resolved to SHAs, or diff hash}
+- review_reference: {SHA, range resolved to SHAs, or diff hash}
 - tier: trivial | standard | full-4r
 - lenses: {which ran}
 - verdict: pass | pass_with_warnings | fail
@@ -37,12 +37,12 @@ picks up the repository later.
 
 ## Field rules
 
-- **`immutable_reference`** is the one field that must be exact. It is what makes the ledger mean
+- **`review_reference`** is the one field that must be exact. It is what makes the ledger mean
   something later: a ledger whose reference no longer resolves describes a target nobody can
   reconstruct.
-- **`verdict`** — `pass` when no findings at all, `pass_with_warnings` when only `info` rows remain,
-  `fail` when a blocking severe finding is open. Exactly one applies; the three are disjoint by
-  construction.
+- **`verdict`** — `pass` when no findings at all, `pass_with_warnings` when only non-blocking rows remain
+  (including `info`, pre-existing/unknown severe findings, or refuted findings), `fail` when a blocking
+  severe finding is open. Exactly one applies; the three are disjoint by construction.
 - **`open_severe_findings`** counts rows with `status: open`. It is the number a person scans for.
 - **Every row that was reported is a row here**, including `info` rows and refuted ones. A ledger
   that only records what survived cannot be audited.
@@ -56,4 +56,6 @@ does not exist here.
 
 The consequence, stated plainly: a fix round is only possible while the report or this file is in
 front of you. Reopening a months-old ledger in a fresh conversation gives you a record of what was
-found, not a review in progress. That is the correct reading of an artifact that old.
+found, not a review in progress. That is the correct reading of an artifact that old. There is no
+fixed round count: continue only while the user supplies meaningful new deltas and findings or
+verification work remains, and stop when no progress is possible.

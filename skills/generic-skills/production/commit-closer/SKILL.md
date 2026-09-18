@@ -15,7 +15,8 @@ Three rules decide most of what follows:
 
 - **Read-only with git, always.** `status`, `diff`, `log`, `show`, `merge-base`, `rev-parse`,
   `ls-files` — nothing that writes. Never run `add`, `commit`, `push`, `stash`, or any other
-  state-changing command, and never offer to.
+  state-changing command. A request to commit, push, or open a PR is treated as a request for draft
+  text; it never authorizes a write.
 - **Draft what was asked for, not a fixed bundle.** A commit message request drafts a commit
   message. A PR description request drafts a PR description. Only draft both when both were asked
   for, or when the request doesn't say which one.
@@ -31,31 +32,33 @@ regardless of language.
 
 ## Step 1 — Resolve what to draft
 
-First match wins:
+If the user names more than one output or Git action, ask one scope question before reading anything:
+confirm which draft artifacts are wanted and state that this skill will not mutate Git. Do not infer a
+compound action from first-match order. For one requested draft, use this routing:
 
 1. The user asked for a commit message → `commit`.
 2. The user asked for a PR description → `pr`.
 3. The user asked for both, or didn't say which → `both`.
 
-## Step 2 — Resolve the source (one question, always)
+## Step 2 — Resolve the source
 
 Before reading any diff, check what's available, read-only:
 
 | Source | How to check |
 |---|---|
 | staged changes | `git diff --cached --name-only` |
-| working tree (including new files) | `git diff --name-only` + `git ls-files --others --exclude-standard` |
+| working tree (including new files) | `git diff --name-only` + `git ls-files --others --exclude-standard`; read each listed untracked file directly |
 | branch against its base | resolve the base from `git symbolic-ref refs/remotes/origin/HEAD` (or ask once if it doesn't resolve), then `git merge-base HEAD {base}` and `git diff --name-only {merge-base}..HEAD` for the file count |
 | an explicit commit range | only if the user names one; `git diff --name-only {range}` for the file count |
 
 Also check what was worked on in this session — it informs which source to propose, not which
 source to use without asking.
 
-Ask exactly one question, every time, even when only one source has changes: list every source
-that has changes, with its file count, and mark one as the proposed default based on the session's
-context. Include the explicit-range option as an escape hatch. If drafting a PR is in scope
-(`pr` or `both`), fold a second choice into the same question: whether to include validation
-steps.
+Ask a source question every time, even when only one source has changes: list every source that has
+changes, with its file count, and mark one as the proposed default based on the session's context.
+Include the explicit-range option as an escape hatch. If drafting a PR is in scope (`pr` or `both`),
+include whether to add validation steps. Ask additional focused questions when the source, intent, or
+impact remains genuinely unclear; do not repeat information the user already supplied.
 
 If no source has any changes, say so and stop.
 
@@ -64,8 +67,9 @@ depends on `HEAD` and work from staged and working-tree changes only.
 
 ## Step 3 — Read the changes
 
-Read the diff for the resolved source. Open a full file only where the diff itself isn't enough to
-understand what changed — don't read every modified file and its dependents by default.
+Read the diff for the resolved source. For untracked files, open each listed file directly because
+`git diff` has no content for them. Open a full tracked file only where the diff itself isn't enough
+to understand what changed — don't read every modified file and its dependents by default.
 
 ## Step 4 — Fill in the why (ask only if still missing)
 
@@ -85,7 +89,9 @@ type(scope): summary
 [optional footer — BREAKING CHANGE: ..., Closes #X]
 ```
 
-**Type** — first match wins:
+**Type** — first check whether the entire change is one of the exclusive categories: `docs`, `test`,
+`ci`, `build`, or `style`. If so, use that category. Otherwise, first match wins among the remaining
+types:
 
 | Type | When to use |
 |---|---|
@@ -93,13 +99,10 @@ type(scope): summary
 | `feat` | Adds a new capability |
 | `perf` | Same behavior, measurably faster |
 | `refactor` | Restructures without changing behavior |
-| `docs` | Only if the entire change is documentation |
-| `test` | Only if the entire change is tests |
-| `ci` | Only if the entire change is CI/CD config |
-| `build` | Only if the entire change is build or dependency config |
-| `style` | Only if the entire change is formatting, with no logic change |
 | `chore` | Only if nothing above fits |
 | `revert` | Reverts a previous commit |
+
+Exclusive categories are selected only when every changed file and hunk belongs to that category.
 
 **Scope** — the module or directory the change is actually about, when one is obvious from the
 diff. Leave it out rather than force one.
@@ -155,10 +158,13 @@ with a short TL;DR: what changed and what needs attention, in one or two sentenc
 ## Rules
 
 - Follow the Language Policy for chat versus drafted output.
-- Never run or suggest a git command that writes.
-- Ask at most two questions in a run: the Step 2 source question (with the validation-steps choice
-  folded in when relevant), and the Step 4 why question, only if still needed after reading the
-  diff.
+- Never run or suggest a git command that writes. If another workflow explicitly supports `git add`,
+  it must list the exact files and receive explicit confirmation before staging; this skill itself does
+  not stage files.
+- A request to execute multiple Git actions is never treated as permission to execute them; ask the
+  scope question and offer only the corresponding drafts.
+- Ask focused questions until the source, intent, and impact are clear. Do not repeat answered
+  questions or ask unrelated questions; keep each question purposeful and concise.
 - Never present a file table in the PR description.
 - Never mark a validation step as "check that it works" — name what to verify and in what scenario.
 - Keep sentences short. Avoid filler phrases like "it is worth noting" or "it is important to

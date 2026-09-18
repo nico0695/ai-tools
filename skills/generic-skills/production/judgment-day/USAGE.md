@@ -1,26 +1,26 @@
 # judgment-day — usage
 
-An adversarial dual review: two blind judges read the same frozen target independently, and only what
+An adversarial dual review: two blind judges read the same review reference in isolated contexts, and only what
 both of them agree on counts as confirmed. Built for the one review you want to trust more than usual,
 not for routine checks.
 
 ## When to use it
 
 - The decision is high-stakes enough that a single reviewer's mistake — missed, invented, or
-  mis-scored — is a real cost, and you want two independent reads instead of one.
+  mis-scored — is a real cost, and you want two blind isolated reads instead of one.
 - You want disagreement surfaced, not smoothed over: if the two readings conflict, you decide, the skill
   never picks a side for you.
 
 ## When not to
 
 - You want a routine review with one pass — that's a different skill (`code-review`), or a risk-sized
-  single-lens pass (`4r-review`). Name `judgment-day` explicitly if two independent reviewers is what you
+  single-lens pass (`4r-review`). Name `judgment-day` explicitly if two blind reviewers is what you
   actually want.
-- You want feedback fast. Two full independent sweeps plus a merge costs more than one pass.
+- You want feedback fast. Two full blind sweeps plus a merge costs more than one pass.
 
 ## How to invoke
 
-Only by name or explicit request: `judgment-day`, "juicio final", or asking for two independent
+Only by name or explicit request: `judgment-day`, "juicio final", or asking for two blind
 reviewers on one target. It never starts on its own — a generic "judge this" or a request for a second
 opinion is not enough by itself.
 
@@ -33,7 +33,7 @@ flowchart TD
     B -->|no, a diff/branch/PR/range| D["code mode — fixes get suggested, re-judgment on request"]
 ```
 
-Both judges review the frozen target independently — neither prompt tells either judge the other exists.
+Both judges review the review reference in isolated contexts — neither prompt tells either judge the other exists.
 You never pick the mode; it's inferred from what you pointed at.
 
 ## What you'll be asked
@@ -48,7 +48,7 @@ after that one close.
 
 ```
 ## Judgment Day — feature/payment-retry
-**Mode:** code · **Frozen at:** a1b2c3d
+**Mode:** code · **Reference:** a1b2c3d
 
 ### Confirmed (both judges)
 | Id | Location | Severity | Claim |

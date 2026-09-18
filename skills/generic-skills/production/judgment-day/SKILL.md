@@ -1,20 +1,20 @@
 ---
 name: judgment-day
 description: |
-  Run two independent reviews of the same code or document.
-  Use when explicitly invoked, requested as "juicio final", or the user asks for two independent reviewers.
+  Run two blind reviews of the same code or document in isolated contexts.
+  Use when explicitly invoked, requested as "juicio final", or the user asks for two blind reviewers.
   Suggest when the user wants corroboration of a review before a critical decision.
 ---
 
 You are the judgment-day protocol: an adversarial dual review that raises confidence on one high-stakes
-target by having two blind judges review it independently and treating their convergence as the
-corroboration mechanism — agreement confirms, a solitary finding stays suspect, an incompatible claim
-escalates to you.
+target by having two blind judges review it in isolated contexts and treating their convergence as the
+corroboration mechanism. The passes are blind and independently prompted, not statistically independent
+models — agreement confirms, a solitary finding stays suspect, and an incompatible claim escalates to you.
 
 The failure mode this skill exists to prevent is a single reviewer's mistake — a missed defect, an
-invented one, a misjudged severity — passing as fact because nothing checked it. Two independent
-readings of the same target either agree, in which case the finding earns real confidence, or they
-don't, in which case that disagreement is itself the signal, not something to paper over.
+invented one, a misjudged severity — passing as fact because nothing checked it. Two blind readings of
+the same target either agree, in which case the finding earns more confidence, or they don't, in which
+case that disagreement is itself the signal, not something to paper over.
 
 Four rules decide most of what follows. Where they apply, they beat a better idea in the moment.
 
@@ -28,8 +28,9 @@ Four rules decide most of what follows. Where they apply, they beat a better ide
 
 State is optional, not absent. The chat report is the only guaranteed output; a ledger file exists only
 if the user asks for one, and a scoped re-judgment depends on one of the two still being in front of
-you. Every lineage ends in exactly one of two terminal states, `APPROVED` or `ESCALATED` — no
-open-ended loop.
+you. Every completed lineage ends in exactly one of two terminal states, `APPROVED` or `ESCALATED` —
+no open-ended loop. A run that cannot obtain both valid judge results is operationally `INCOMPLETE` and
+has no target verdict.
 
 ## Language Policy
 
@@ -54,8 +55,8 @@ Infer the mode without asking. First match wins:
    still `code`: a PR is a change, not a standalone artifact, even when its content happens to be prose.
 4. Still unclear → ask one scope question and stop.
 
-Freeze the target: a commit SHA, a range resolved to SHAs, a diff hash, or a content digest of the
-artifact. Every judgment in this lineage runs against that reference.
+Record a review reference: a commit SHA, a range resolved to SHAs, a diff hash, or a content digest of
+the artifact. Every judgment in this lineage uses that reference.
 
 ---
 
@@ -66,12 +67,13 @@ from its first heading onward, filling `{target_reference}`, the mode, `{paths_o
 the matching `{criteria_block}`, and `{project_standards_block}` (from `CLAUDE.md`/`AGENTS.md` if
 present; omit otherwise). Launch it twice, unmodified — the two runs are byte-identical.
 `{judge_letter}` (A/B) is your own bookkeeping to track which subagent produced which result; it never
-appears inside the text either judge reads. That is what makes the two reviews independent: neither
+appears inside the text either judge reads. That is what keeps the two reviews isolated: neither
 prompt mentions that a second pass exists.
 
 Launch them per the Subagent Delegation Rules below. Budget: one exhaustive sweep per judge per round.
-Wait for BOTH results before merging — never accept a partial judgment; if one judge's result is
-missing or malformed, relaunch that judge or stop and say so.
+Wait for BOTH results before merging — never accept a partial judgment. A missing or malformed result
+gets one retry for that judge (two attempts total); if it still fails, stop with `Run status: INCOMPLETE`
+and do not print a target verdict.
 
 ---
 
@@ -83,6 +85,10 @@ never severe and always become `info`, regardless of how many judges reported th
 Two rows describe the same defect when they name overlapping location — the same file with
 intersecting or adjacent line ranges (code), or the same section anchor (artifact) — **and** a
 compatible claim: the same observable failure, worded differently, is still one defect.
+
+Compare explicit assessments by criterion and location before merging findings. `correct` from one
+judge and `broken` from the other is a `contradiction`; `not_assessed` is an absence of evidence, not
+an approval and does not create a contradiction by itself.
 
 Assign ids `JD-{NNN}` and classify every finding into exactly one bucket:
 
@@ -106,7 +112,9 @@ only the user can do, so their full evidence is inline, in this same message, ne
 
 ```
 ## Judgment Day — [target description]
-**Mode:** [code / artifact] · **Frozen at:** [immutable reference]
+**Mode:** [code / artifact] · **Reference:** [review reference]
+**Run status:** [COMPLETE / INCOMPLETE] — operational status, separate from the target verdict
+**Action:** [NONE / CHANGES REQUIRED] — remediation requested, separate from the target verdict
 
 ### Confirmed (both judges)
 | Id | Location | Severity | Claim |
@@ -149,6 +157,11 @@ Rules for it:
   exhausted, or a contradiction stays unresolved past the closing question in Phase 5.
 - Until every contradiction is resolved, the printed verdict is `PENDING ADJUDICATION` — never a final
   `APPROVED`/`ESCALATED` the report has not yet earned.
+- `Run status: INCOMPLETE` is used only when both valid judge results were not obtained after the retry;
+  it is not a target verdict and is not mapped to approval or escalation.
+- On an initial report with a confirmed severe finding, keep `Verdict: ESCALATED`. Set `Action:
+  CHANGES REQUIRED` when remediation is expected, or `Action: NONE` when no remediation is being
+  requested. Explain the context and rationale; `Action` is not a verdict.
 - The chat verdict and the ledger `verdict` field describe the same outcome for two different readers:
   see the field rule in `references/ledger.md`.
 
@@ -191,7 +204,7 @@ not round 2. Say which of the two is happening instead of guessing.
 1. Freeze the fix delta: a new SHA or diff hash.
 2. Send BOTH judges the Scoped Re-Judgment prompt from `references/judge-prompts.md`, with
    `assets/judge-contract.md` appended the same way as round one: only the frozen findings rows (never
-   which judge originally reported each one) plus the immutable fix delta — never the original target
+   which judge originally reported each one) plus the review fix delta — never the original target
    again.
 3. Update statuses per their converged outcome: `open → fixed` when both judges agree the delta
    addresses it, `fixed → verified` when both confirm the delta actually resolves it, or still `open`
@@ -210,8 +223,8 @@ alone — its correctness depends on context the delta does not carry — say so
 
 - Keep the main context lean: freeze, launch, merge, adjudicate, report. Only you merge and write.
 - Each judge gets one filled-in prompt — the round-one or re-judgment template plus
-  `assets/judge-contract.md` — nothing else. Judges are read-only, launch no sub-agents, return only
-  findings rows plus `evidence`, and never write files.
+  `assets/judge-contract.md` — nothing else. Judges are read-only, launch no sub-agents, return the
+  output required by the active prompt and contract plus `evidence`, and never write files.
 - Parallel launch is preferred: two subagents in one turn give real isolation, and neither prompt
   mentions that the other exists.
 - Sequential fallback: run Judge A, keep its output out of Judge B's prompt entirely, then run Judge B.

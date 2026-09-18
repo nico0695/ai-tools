@@ -38,9 +38,29 @@ inferential finding one judge invents and the other does not becomes a suspect, 
 Only the first three can block. In `artifact` mode, `causal_disposition` is `introduced` unless the
 defect demonstrably comes from a source the document cites — then it is `pre-existing`.
 
+## Round-one assessment contract
+
+For a round-one prompt, return one assessment for each criterion in the supplied criteria block. Use
+`not_assessed` when the criterion does not apply or the target does not provide enough evidence. Use
+the same criterion and location in both judges' results when evaluating the same behavior; this makes
+`correct` versus `broken` disagreements observable.
+
+```yaml
+assessments:
+  - criterion: correctness
+    location: "path/to/file.ext:42"      # or an artifact section anchor
+    status: correct | broken | not_assessed
+    claim: "one-sentence reason for the status"
+    proof_refs: ["concrete proof: file:line, command output, spec section"]
+```
+
+`correct` is an explicit statement that the assessed behavior is sound; `broken` identifies a
+defect and should normally have a matching finding; `not_assessed` is not approval.
+
 ## Findings contract
 
-Return exactly this shape. Never assign ids or statuses — the orchestrator does that when merging.
+Return this findings shape for round-one prompts. Never assign ids or statuses — the orchestrator does
+that when merging.
 
 ```yaml
 findings:
@@ -53,6 +73,10 @@ findings:
     proof_refs: ["concrete proof: file:line, command output, spec section"]
 evidence: ["what you inspected"]
 ```
+
+For round-one prompts, return both `assessments` and `findings` (the findings list may be empty), plus
+`evidence`. Scoped re-judgment prompts use the `results` shape defined in `references/judge-prompts.md`
+and do not require round-one assessments.
 
 ## Precision gate
 

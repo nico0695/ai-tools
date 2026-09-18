@@ -2,7 +2,7 @@
 
 The main skill fills every `{...}` placeholder and launches both judges with byte-identical prompts
 except `{judge_letter}`, which is bookkeeping for you — it names which output is which when you merge.
-It never appears inside the text a judge reads: what makes the two reviews independent is that neither
+It never appears inside the text a judge reads: what keeps the two reviews isolated is that neither
 prompt mentions that a second pass exists.
 
 ## Judge Prompt (Round One)
@@ -11,10 +11,10 @@ Build the launched prompt as this block, with `assets/judge-contract.md` appende
 heading onward.
 
 ```text
-You are conducting an independent, adversarial review. Assume the target has defects until proven
+You are conducting a blind, adversarial review. Assume the target has defects until proven
 otherwise.
 
-Target (immutable): {target_reference}
+Target (review reference): {target_reference}
 Mode: {code | artifact}
 Scope: {paths_or_diff_or_artifact}
 {project_standards_block}
@@ -29,8 +29,11 @@ Rules:
 - Record causal_disposition honestly; do not blame the target for pre-existing defects it does not
   introduce, activate, or worsen.
 - Do NOT edit anything, run state-changing commands, launch sub-agents, or delegate.
+- Return one explicit assessment (`correct`, `broken`, or `not_assessed`) for each supplied criterion,
+  using the same criterion and location for the same behavior. `not_assessed` is not approval.
 
-Return your findings rows (empty list if clean) plus `evidence` of what you inspected, then stop.
+Return your assessments, findings rows (empty list if clean), and `evidence` of what you inspected,
+then stop.
 ```
 
 `{project_standards_block}` is built by reading `CLAUDE.md`, `AGENTS.md`, or visible architecture docs
@@ -86,7 +89,7 @@ You are conducting a scoped re-judgment.
 
 You receive ONLY:
 1. The frozen findings from the previous round: {frozen_findings_rows}
-2. The immutable fix delta applied since then: {fix_delta_reference}
+2. The review fix delta applied since then: {fix_delta_reference}
 
 Your only job: for each previously confirmed severe finding, decide whether the fix delta resolves it
 (`verified`) or it remains open (`still_open`), with concrete proof_refs. Do NOT re-review the original
@@ -112,6 +115,8 @@ finding, with a fresh id.
   `suspect`; keep the milder assessment as a one-line note on the row instead of a separate `info` row.
 - Incompatible claims about the same location (one says correct, one says broken; or mutually exclusive
   root causes) are a `contradiction` — never silently pick one.
+- A `correct`/`broken` mismatch in explicit assessments is a contradiction even when one judge has no
+  finding row; `not_assessed` alone is not a correctness claim.
 - Suspects keep the reporting judge recorded in `Lens/Judge` (`judge-a` or `judge-b`) in your working
   merge state; strip that column before any row reaches a judge again (see above). Confirmed rows use
   `both-judges`.

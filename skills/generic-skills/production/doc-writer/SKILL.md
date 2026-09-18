@@ -5,13 +5,13 @@ description: |
   into a structured Markdown document grounded in evidence instead of filled in from plausibility.
   Routes to one of five document types by an ordered test, renders sections by a fixed rule instead of
   judgment, and validates the result back against the sources before delivering.
-  Use whenever the user wants something documented, written up, explained in a document, or captured
-  before the context is lost - including when they name a shape (system or module doc, ADR,
-  investigation, report) and when they just say "document this".
-  Triggers on: "documentar", "documenta esto", "documentacion", "armar un doc", "escribir un doc",
-  "document this", "write it up", "write the docs", "documento tecnico", "technical doc", "adr",
-  "decision record", "informe", "report", "investigacion", "findings", "dejar registrado",
-  "capture this", "onboarding doc", "handoff doc".
+  Use when the user explicitly asks to create, write, or document a Markdown document - including a
+  named shape such as a system or module doc, ADR, investigation, or report. Ambiguous requests such
+  as "dejar registrado" are suggestions only unless they also ask to create or write the document.
+  Triggers on explicit phrases such as: "documentar", "documenta esto", "crear documentación",
+  "armar un doc", "crear un doc", "escribir un doc", "document this", "write it up", "write the
+  docs", "crear un ADR", "write an ADR", "crear un informe", "write a report", "hacer un relevamiento",
+  "capture this", "crear un onboarding doc", "write a handoff".
 ---
 
 You write documentation. The deliverable is a Markdown document, but the work is deciding what
@@ -127,8 +127,9 @@ is what decides whether to ask.
 | 0 | `generic` — ask, offering `generic` and the nearest type |
 
 The route decides; do not ask the user to choose a type when exactly one test matched. When the
-question does fire: in **interactive** it is folded into the plan gate below — one interruption, not
-two. In **auto** it is asked on its own, before writing.
+question does fire, ask it before loading a template or presenting the plan in both modes. In
+**interactive**, present the plan only after the type is chosen; in **auto**, ask the type before
+writing.
 
 > El material matchea dos tipos. ¿Cuál querés?
 > - **adr** — la decisión, sus alternativas y lo que cuesta
@@ -182,7 +183,7 @@ This is a rule, not a judgment call. It is what keeps filler out and keeps real 
 | Section | Rendered when |
 |---|---|
 | in `required` | **always** — if the sources cannot fill it, the section carries one line: `No establecido: <what is missing and what would confirm it>` |
-| in `optional` | **only if ≥1 confirmed fact** maps to it |
+| in `optional` | **only if ≥1 confirmed fact** maps to it, except `Open Questions`, which also renders when ≥1 relevant unknown exists |
 | not in the template | **only if ≥3 confirmed facts** need a home the template does not offer |
 
 Nothing else may be added or dropped. A required section with no material is a stated gap, which is
@@ -191,6 +192,12 @@ information; a required section filled from plausibility is a liability.
 One exception, and only when the template declares it: `content: free` means the sections between the
 opening and the closing are created from the material's own structure, and the ≥3-facts rule does not
 apply to them. Only `generic` declares it.
+
+`Open Questions` is a second narrow exception: relevant unknowns may create it even with no confirmed
+fact. Each entry must state that it is unconfirmed and what would resolve it.
+
+`Known Inconsistencies` is a third narrow exception: one relevant conflict is enough to render the
+section, even when fewer than three confirmed facts need a home outside the template.
 
 `DETALLE` changes depth, never which sections exist:
 

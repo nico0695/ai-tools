@@ -1,12 +1,12 @@
 # judgment-day
 
-An adversarial dual review: two blind judges read the same frozen target independently, and their
+An adversarial dual review: two blind judges read the same review reference in isolated contexts, and their
 convergence — not either judge alone — decides what counts. Agreement confirms a finding, a solitary
 report stays suspect, and an incompatible claim between the two escalates to a person instead of getting
 silently resolved by preference.
 
-The work is producing two readings that are actually independent, merging them by a rule instead of by
-judgment, and never printing a verdict the adjudication hasn't earned yet.
+The work is producing two isolated blind readings, merging them by a rule instead of by judgment, and
+never printing a verdict the adjudication hasn't earned yet.
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ judgment, and never printing a verdict the adjudication hasn't earned yet.
 
 ## When it triggers
 
-Only explicit requests: naming the skill, asking for "juicio final", or asking for two independent
+Only explicit requests: naming the skill, asking for "juicio final", or asking for two blind
 reviewers on one target. It never starts on its own — a generic second opinion or "judge this" is not
 by itself a request for two blind passes.
 
@@ -32,7 +32,7 @@ by itself a request for two blind passes.
 
 ```mermaid
 flowchart TD
-    A[Target] --> B[Freeze: infer mode, get an immutable reference]
+    A[Target] --> B[Infer mode, record review reference]
     B --> C[Launch Judge A and Judge B — byte-identical prompts, neither knows the other exists]
     C --> D[Wait for both]
     D --> E[Merge by convergence]
@@ -67,14 +67,15 @@ delta to freeze against a moving target the way there is with a diff.
 
 Exactly one prompt: the round-one (or scoped re-judgment) template with a shared contract file appended
 — the severity table, the evidence-class table, the causal-disposition table, and the findings YAML
-shape. Every judge gets the same contract every run, because a judge that has to assign a severity or a
+shape plus explicit criterion assessments. Every judge gets the same contract every run, because a judge that has to assign a severity or a
 causal disposition it was never given will invent one, and an invented enum breaks the convergence match
 before it starts.
 
 Neither judge's prompt mentions the other pass. The only difference between the two launches is
 bookkeeping the orchestrator keeps to itself — which subagent produced which result — never text either
 judge reads. That is the actual blindness mechanism: not a rule asking for restraint, but two prompts
-with nothing in them to leak.
+with nothing in them to leak. This is context isolation, not statistical independence: the same model
+and prompt may share errors or biases.
 
 ## Convergence buckets
 
@@ -87,7 +88,9 @@ with nothing in them to leak.
 
 A finding is severe only at `BLOCKER` or `CRITICAL`. One judge severe and the other mild at the same
 location is a `suspect` with a note, not a `contradiction` — a contradiction is two judges disagreeing
-about what happened, not two judges disagreeing about how much it matters.
+about what happened, not two judges disagreeing about how much it matters. Explicit `correct` versus
+`broken` assessments expose that disagreement even when one judge has no finding row; `not_assessed`
+is not approval.
 
 ## The report
 
@@ -104,6 +107,13 @@ track of.
 The printed verdict is `PENDING ADJUDICATION` for as long as a contradiction sits unresolved; it becomes
 `APPROVED` or `ESCALATED` only once every contradiction has an answer. A verdict printed before that is a
 verdict the report hasn't earned yet.
+
+If a judge is still missing or malformed after one retry (two attempts total), the report shows
+`Run status: INCOMPLETE` and does not print a target verdict. This operational status is separate from
+`APPROVED`/`ESCALATED`.
+
+When the first pass already has a confirmed severe finding, the verdict is `ESCALATED`; use
+`Action: CHANGES REQUIRED` only when remediation is requested. `Action` is separate from the verdict.
 
 ## Close
 
@@ -145,7 +155,7 @@ needs. `ledger.md` loads at most once, only on an explicit yes to persisting.
 | + persistence | `ledger.md` once more (~70 lines) |
 
 The contract is the one file duplicated across the two launches, and deliberately so: appending the same
-severity, evidence-class and causal-disposition definitions to both prompts is what lets two independent
+severity, evidence-class and causal-disposition definitions to both prompts is what lets two isolated
 subagents assign the same fields the same way, which is the entire premise convergence relies on.
 
 ## Why it is shaped this way
@@ -175,7 +185,7 @@ subagents assign the same fields the same way, which is the entire premise conve
   decoration that looks like state — and decoration that looks like state is worse than no field at all,
   because it invites someone to depend on it later.
 - **Two judges convergence corroborates; nothing else does.** There is no separate refuter pass and no
-  corroboration log restating the same bucket in different words — agreement between two independent
+  corroboration log restating the same bucket in different words — agreement between two isolated
   reads is the entire corroboration mechanism this protocol has, and it is stated exactly once.
 
 ## What it does not do

@@ -17,8 +17,10 @@ picks up the repository later.
 
 - review_mode: judgment-day
 - target_kind: code | artifact
-- immutable_reference: {SHA, range resolved to SHAs, or artifact digest}
-- verdict: pass | pass_with_warnings | fail
+- review_reference: {SHA, range resolved to SHAs, or artifact digest}
+- run_status: complete | incomplete
+- action: none | changes_required
+- verdict: pass | pass_with_warnings | fail | unavailable
 - counts: confirmed={n} suspect={n} escalated={n} info={n}
 - open_severe_findings: {count}
 - updated_at: {ISO date}
@@ -41,13 +43,18 @@ digest for `artifact` mode: `feat-checkout-a1b2c3d`, `design-doc-9f1a2b3`.
 
 ## Field rules
 
-- **`immutable_reference`** is the one field that must be exact. It is what makes the ledger mean
+- **`review_reference`** is the one field that must be exact. It is what makes the ledger mean
   something later: a ledger whose reference no longer resolves describes a target nobody can
   reconstruct.
 - **`verdict`** maps from the chat verdict for a reader who only sees this file: `APPROVED` with no
   remaining suspects is `pass`; `APPROVED` with suspects still open is `pass_with_warnings`;
   `ESCALATED` — a confirmed severe finding still open, or an unresolved contradiction — is always
   `fail`. Exactly one applies.
+- **`run_status`** is operational: `incomplete` means both valid judge results were not obtained after
+  the one retry per judge. It maps the ledger `verdict` to `unavailable`; it never maps to `pass` or
+  `fail`.
+- **`action`** records whether the report requests remediation. It is separate from `verdict`: a
+  confirmed severe finding uses `verdict: fail` and may use `action: changes_required`.
 - **`open_severe_findings`** counts only rows with `status: open` — `suspect` rows never count as open,
   even though they are severe.
 - **`counts`** uses the fixed keys `confirmed`, `suspect`, `escalated`, `info`. The convergence buckets
@@ -62,7 +69,7 @@ digest for `artifact` mode: `feat-checkout-a1b2c3d`, `design-doc-9f1a2b3`.
 ## What this deliberately does not carry
 
 No round counter, no separate corroboration log, no next-action digest. `Lens/Judge` already states how
-a row was corroborated — `both-judges` means both judges converged on it independently, which is the
+a row was corroborated — `both-judges` means both judges converged on it separately, which is the
 only corroboration mechanism this protocol has; a separate log restating that fact in different words is
 not new information. Nothing reads a round counter or a next-action digest: the orchestrator that would
 have routed on them does not exist here.

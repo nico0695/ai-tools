@@ -16,8 +16,7 @@ a verdict whose inputs the reader cannot see.
 
 Four rules decide most of what follows. Where they apply, they beat a better idea in the moment.
 
-- **Freeze first.** Nothing is analyzed before an immutable reference exists. A moving target is not
-  reviewable.
+- **Reference first.** Nothing is analyzed before a review reference exists.
 - **Tier and lens come from ordered tests, not from feel** (Phase 2). Two runs over the same diff
   review it the same way.
 - **Only a defect this change introduced, activated or worsened can block.** Everything else is
@@ -45,8 +44,8 @@ Infer the target without asking. First match wins:
 3. Otherwise the current branch against its base: `origin/HEAD`, falling back to `main`, then
    `master`.
 
-Freeze it: record an immutable reference — a commit SHA, a range resolved to SHAs, or a hash of the
-working-tree diff. Every pass in this review runs against that reference.
+Record a review reference — a commit SHA, a range resolved to SHAs, or a hash of the working-tree diff.
+Every pass in this review uses that reference.
 
 Ask a scope question only when step 3 has nothing to resolve: no `origin/HEAD`, no `main`, no
 `master`, and no uncommitted changes. Anything else is already decided by the order above. Do not
@@ -71,7 +70,7 @@ Evaluate in order. First match wins.
 `password`, `crypto`, `secret`, `permission`, `role`, `payment`, `billing`, `charge`, `invoice`,
 `migration`, `schema`, and any path the project's own standards mark as critical.
 
-**Changed lines** means added plus deleted, from `git diff --numstat` against the frozen reference,
+**Changed lines** means added plus deleted, from `git diff --numstat` against the review reference,
 excluding lockfiles, generated output and vendored directories. Binary files count as files with no
 line count.
 
@@ -94,8 +93,9 @@ no ledger offer.
 | — | nothing matched | `readability` (R2) |
 
 The order is the tiebreak: a diff that touches both a new dependency and a retry loop gets `risk`,
-because test 1 fires first. Never add a lens to a `standard` review, and never ask the user to pick
-one — the triage decides depth.
+because test 1 fires first. A `standard` review is a focused pass over the dominant signal, not an
+exhaustive review of every possible concern. Never add a lens to a `standard` review, and never ask
+the user to pick one — the triage decides depth.
 
 ---
 
@@ -110,7 +110,7 @@ Placeholders, all of them:
 
 | Placeholder | Filled with |
 |---|---|
-| `{target_reference}` | the frozen reference from Phase 1 |
+| `{target_reference}` | the review reference from Phase 1 |
 | `{paths_or_diff}` | the files or diff in scope |
 | `{project_standards_block}` | the project's own standards from `CLAUDE.md` or `AGENTS.md` if either exists. **No other source.** If neither exists, delete the line — never ship an unfilled placeholder |
 | `{findings_batch}` | refuter only: the full candidate list |
@@ -148,7 +148,7 @@ where, and stops. Detail is available on request, not by default.
 
 ```
 ## 4R Review — [target]
-**Tier:** [tier] · **Lenses:** [list] · **Frozen at:** [reference] · **Scope:** [N files, ~N lines]
+**Tier:** [tier] · **Lenses:** [list] · **Reference:** [reference] · **Scope:** [N files, ~N lines]
 
 ### Findings
 
@@ -185,8 +185,9 @@ Rules for it:
   came back clean. An empty table reads like a failed pass.
 - Drop `### Info` and `### Corroboration` when empty rather than printing an empty heading.
 - **Findings before reassurance.** Never open with a summary a severe finding below contradicts.
-- Verdict: `pass` when nothing was reported, `pass_with_warnings` when only info rows remain, `fail`
-  when a blocking severe finding is open. Exactly one applies.
+- Verdict: `pass` when nothing was reported, `pass_with_warnings` when only non-blocking findings remain
+  (including info, pre-existing/unknown severe findings, or refuted findings), `fail` when a blocking
+  severe finding is open. Exactly one applies.
 
 ---
 
@@ -220,14 +221,17 @@ state, not round 2. Say which of the two is happening instead of guessing.
 1. Freeze the fix delta: a new SHA or diff hash.
 2. Scoped re-review: the previous findings plus the frozen delta. Reviewing the original diff again
    produces the same findings and costs a full pass.
-3. Update statuses: `open → fixed` when the delta addresses it, `fixed → verified` when the delta
-   proves it, or still `open` with the evidence that it does not.
+3. Update statuses: `open → verified` when the delta directly proves the correction; otherwise use
+   `open → fixed` when it addresses the finding but still needs verification, then
+   `fixed → verified` when later evidence proves it. Leave it `open` with the evidence when the delta
+   does not address it.
 4. Re-report using the Phase 5 shape, with `Status` as a column this time.
 
-**Two fix rounds per review, then stop.** Whatever remains open is reported and the loop ends. If a
-fix cannot be verified from the delta alone — its correctness depends on context the delta does not
-carry — say so and leave it `fixed`, not `verified`. An unverifiable claim of verification is worse
-than an honest `fixed`.
+**No fixed round limit.** Continue a fix round when the user supplies a new delta and there are
+findings or verification work remaining. Stop when the user stops requesting re-review, no findings
+remain open, or the new delta provides no meaningful progress. If a fix cannot be verified from the
+delta alone — its correctness depends on context the delta does not carry — say so and leave it
+`fixed`, not `verified`. An unverifiable claim of verification is worse than an honest `fixed`.
 
 ---
 

@@ -46,7 +46,7 @@ the review to a file. Nothing else interrupts.
 ```
 ## 4R Review — feature/login-retry
 **Tier:** full-4r · **Lenses:** risk, readability, reliability, resilience
-**Frozen at:** a1b2c3d · **Scope:** 3 files, ~110 lines
+**Reference:** a1b2c3d · **Scope:** 3 files, ~110 lines
 
 ### Findings
 | Id | Lens | Location | Severity | Blocks | Claim |
