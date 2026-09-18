@@ -24,9 +24,10 @@ material produce the same document: which type it is, which sections exist, and 
 
 ## When it triggers
 
-Anything that asks for something to be written up: "documentá esto", "document this", "armá un doc",
-"write it up", "dejalo registrado" — and any named shape: system or module doc, ADR, investigation,
-report.
+An explicit request to create or write a Markdown document: "documentá esto", "creá documentación",
+"document this", "armá un doc", "hacé un relevamiento", "write it up", or a named shape with a
+creation verb such as "creá un ADR" or "write a report". Ambiguous phrases such as "dejalo
+registrado" suggest the skill but do not activate it by themselves.
 
 You can also call it by name: `doc-writer`, `doc-writer auto`.
 
@@ -80,9 +81,9 @@ All four tests are evaluated — the count decides whether you get asked.
 | 2 or more | you get asked, with the matched types as the options |
 | 0 | falls to `generic`, and you get asked |
 
-In interactive mode that question is folded into the plan gate, so it costs no extra interruption. In
-auto mode it is asked on its own — that is the one place auto stops before writing, and it exists
-because auto has no plan gate to catch a badly inferred type.
+That question is asked before loading a template or presenting the plan. In interactive mode the plan
+follows after the type is chosen; in auto mode it is asked before writing because auto has no plan gate
+to catch a badly inferred type.
 
 ## Which sections end up in the document
 
@@ -91,11 +92,17 @@ Not a judgment call:
 | Section | Rendered when |
 |---|---|
 | in the template's `required` | **always** — if the sources cannot fill it, it carries one line: `No establecido: <what is missing and what would confirm it>` |
-| in the template's `optional` | **only if ≥1 confirmed fact** maps to it |
+| in the template's `optional` | **only if ≥1 confirmed fact** maps to it, except `Open Questions`, which also renders when ≥1 relevant unknown exists |
 | in neither | **only if ≥3 confirmed facts** need a home the template does not offer |
 
 Exception: `generic` declares `content: free`, so its content sections come from the material's own
 structure.
+
+`Open Questions` may therefore be rendered from relevant unknowns alone; each question says it is
+unconfirmed and what would resolve it.
+
+`Known Inconsistencies` may likewise be rendered for a single relevant conflict so it is never silently
+dropped.
 
 This is what keeps filler out. A required section with nothing behind it becomes a stated gap, which
 is information. The alternative — filling it from plausibility — is a liability, because the reader
@@ -124,7 +131,7 @@ Auto only when you ask for it explicitly. Otherwise interactive. **It never asks
 
 | Mode | Typical | Worst case |
 |---|---|---|
-| interactive | 2 — plan, destination | 2 — an ambiguous type folds into the plan gate |
+| interactive | 2 — plan, destination | 3 — ambiguous type, plan, destination |
 | auto | 1 — destination | 2 — ambiguous type, then destination |
 
 Auto skips the plan gate; it does not write without confirming where the file lands. A conflict
@@ -160,7 +167,7 @@ Five fields, all of them consumed by the skill:
 ---
 id: system            # matches the filename
 required: [...]       # section ids rendered always
-optional: [...]       # section ids rendered only with a confirmed fact behind them
+optional: [...]       # section ids rendered with a confirmed fact; Open Questions also accepts relevant unknowns
 closing: summary      # which section lands the document
 toc: auto             # auto (TOC at ≥5 sections) | disabled
 ---

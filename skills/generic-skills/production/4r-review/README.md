@@ -41,7 +41,7 @@ have chosen it. They are independent and do not need to agree.
 
 ```mermaid
 flowchart TD
-    A[Request] --> B[Freeze: immutable reference]
+    A[Request] --> B[Record review reference]
     B --> C{Triage}
     C -->|trivial| D[Say why, stop]
     C -->|standard| E[One lens, by first match]
@@ -55,7 +55,7 @@ flowchart TD
     J --> K[One closing offer: expand or save]
 ```
 
-Everything runs against the frozen reference recorded in step one — a commit SHA, a range resolved to
+Everything runs against the review reference recorded in step one — a commit SHA, a range resolved to
 SHAs, or a hash of the working-tree diff. A target that moves mid-review is not reviewable, and a
 finding that cannot be tied to a fixed reference cannot be re-checked later.
 
@@ -78,7 +78,7 @@ Two ordered tables, both first-match. Neither asks you anything.
 The sensitive list covers auth, sessions, tokens, secrets, permissions, payments, billing, and
 migrations or schema changes — plus anything the project's own standards mark as critical.
 
-"Changed lines" means added plus deleted, from `git diff --numstat` against the frozen reference,
+"Changed lines" means added plus deleted, from `git diff --numstat` against the review reference,
 excluding lockfiles, generated output and vendored paths. Binary files count as files, with no
 invented line count.
 
@@ -99,7 +99,8 @@ lenses, no report template, no offer to save.
 | 4 | naming, structure, dead code, behavior-preserving refactors | `readability` |
 
 The order *is* the tiebreak. A diff touching both a new dependency and a retry loop gets `risk`,
-because test 1 fires first. A `standard` review never gets a second lens, and you are never asked to
+because test 1 fires first. A `standard` review is a focused pass over the dominant signal, not an
+exhaustive review of every possible concern. It never gets a second lens, and you are never asked to
 choose one — that is what the triage is for.
 
 ## What a worker receives
@@ -138,7 +139,7 @@ Compact by default, detailed on request.
 
 | Part | What it carries |
 |---|---|
-| header | tier, lenses, frozen reference, scope |
+| header | tier, lenses, review reference, scope |
 | findings table | **severe findings only**, worst first: id, lens, location, severity, blocks, one-sentence claim |
 | info | one line each, outside the table |
 | corroboration | `full-4r` only, when a refuter pass ran |
@@ -180,9 +181,11 @@ them back, and nothing here does.
 
 So the fix round states its precondition instead of assuming one: it needs the ledger file **or** the
 report still present in this conversation. Without either, it says so and runs a fresh review rather
-than pretending to be round two. Two rounds maximum. A fix whose correctness cannot be established
-from the delta alone stays `fixed` and never becomes `verified` — an unverifiable claim of
-verification is worse than an honest `fixed`.
+than pretending to be a continuation. There is no fixed round count: continue only while the user
+supplies meaningful new deltas and findings or verification work remains, and stop when no progress
+is possible. A delta that proves the correction can move a finding directly from `open` to `verified`;
+otherwise it stays `fixed` until later evidence verifies it. An unverifiable claim of verification is
+worse than an honest `fixed`.
 
 ## Files
 
@@ -212,7 +215,7 @@ write.
 
 ## Why it is shaped this way
 
-- **Freeze first.** Nothing is analyzed before an immutable reference exists.
+- **Reference first.** Nothing is analyzed before a review reference exists.
 - **Tier and lens come from ordered tests, not from feel.** Two runs over the same diff review it the
   same way and reach the same verdict. Where a rule exists, it beats a better idea in the moment.
 - **Only a defect this change introduced, activated or worsened can block.** Everything else is
@@ -223,8 +226,9 @@ write.
 - **The reader sees the inputs to the verdict**, not just the verdict.
 - **Precision over volume.** Only real, defensible, user-impacting defects. Style findings are banned
   unless they obscure one, and the standard is always the surrounding code.
-- **Budgets are hard caps**: one sweep per lens, one refuter pass over the whole batch, two fix
-  rounds. Stated once each, where they apply.
+- **Budgets are hard caps** for review passes: one sweep per lens and one refuter pass over the whole
+  batch. Fix rounds have no fixed count; they continue only while the user supplies meaningful new
+  deltas and findings or verification work remains.
 - **Read-only.** Fixes are described and never applied.
 - **State is optional, and the skill says which mode it is in.** A review with no ledger and no
   conversation behind it is a new review, and it says so.

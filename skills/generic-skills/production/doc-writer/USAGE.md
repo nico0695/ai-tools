@@ -5,7 +5,7 @@ grounded Markdown document. It asks about what's missing instead of guessing it.
 
 ## When to use it
 
-- You want something documented, written up, or captured before the context is lost.
+- You explicitly want a Markdown document created, written, or captured before the context is lost.
 - You already know the shape: an ADR, an investigation, a report, a system or module doc.
 - You just say "document this" and let it work out the shape.
 
@@ -17,8 +17,10 @@ grounded Markdown document. It asks about what's missing instead of guessing it.
 
 ## How to invoke
 
-By name (`doc-writer`) or naturally: "documentá esto", "document this", "armá un doc", "write it up",
-"dejalo registrado" — or by naming a shape ("necesito un ADR de esto").
+By name (`doc-writer`) or naturally: "documentá esto", "creá documentación", "document this", "armá
+un doc", "hacé un relevamiento", "write it up", or by naming a shape with a creation request
+("creá un ADR de esto"). "Dejalo registrado" only suggests the skill unless it also asks to create
+or write the document.
 
 Add "auto" (`doc-writer auto`, "sin preguntarme") to skip the plan-approval gate. Interactive is the
 default.
