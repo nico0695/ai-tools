@@ -15,3 +15,5 @@ Project-agnostic skills, organized by maturity. Project-specific skills live und
    `USAGE.md` and `README.md`.
 3. The experimental copy stays as the incubation version; the two may diverge. When a skill exists in
    both, `stable/` is the one to install.
+
+`README.md` and `USAGE.md` are for this repo: the installer does not copy them.
