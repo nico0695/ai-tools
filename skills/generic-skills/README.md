@@ -7,6 +7,14 @@ quotes, documents, examples, or requests to analyze a skill are not invocations.
 Suggestions are separate from activation: offer them only when relevant to the current request,
 without starting the skill, interrupting the task, or repeating a suggestion already made.
 
+## [production/](./production/README.md)
+
+Validated copies, ready to install. A skill lands there once its behavior has been audited and
+simplified; the version in the root stays as the incubation copy, and the two are allowed to diverge.
+When both exist, the one in `production/` is the one to install.
+
+See [production/README.md](./production/README.md) for what's there and how to use each one.
+
 Static activation scenarios live in [evals/trigger-cases.json](./evals/trigger-cases.json).
 They record expected routing (`activate`, `suggest`, `none`), not measured activation results.
 
