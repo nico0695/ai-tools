@@ -23,15 +23,17 @@ Explicit invocation, or a request to write a commit message or PR description. I
 itself — without starting — when you ask to prepare a commit or PR without asking for the text
 specifically.
 
-If a request names multiple outputs or Git actions, it asks you to confirm the scope before reading.
+If a request combines several Git actions (commit and push, commit and open a PR), it asks which drafts
+you want before reading. Asking for both drafts, or for a single Git action, needs no extra question.
 
 ## What you'll be asked
 
 One source question up front: which source to draft from (staged changes, the working tree, the
 current branch against its base, or an explicit range), with a proposal based on what you've been
 working on in the session. If a PR is in scope, it also asks whether to include validation steps.
-Additional focused questions are asked only when source, intent, or impact remains unclear;
-information already supplied is not repeated.
+A second question, only if still needed after reading the diff, asks why the change was made and
+what it affects — asked once. If something is still unclear after that, the draft states the
+assumption instead of asking again.
 
 ## Minimal example
 

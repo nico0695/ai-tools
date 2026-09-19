@@ -27,7 +27,7 @@ material produce the same document: which type it is, which sections exist, and 
 An explicit request to create or write a Markdown document: "documentá esto", "creá documentación",
 "document this", "armá un doc", "hacé un relevamiento", "write it up", or a named shape with a
 creation verb such as "creá un ADR" or "write a report". Ambiguous phrases such as "dejalo
-registrado" suggest the skill but do not activate it by themselves.
+registrado" or "capture this" suggest the skill but do not activate it by themselves.
 
 You can also call it by name: `doc-writer`, `doc-writer auto`.
 

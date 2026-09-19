@@ -49,7 +49,7 @@ digest for `artifact` mode: `feat-checkout-a1b2c3d`, `design-doc-9f1a2b3`.
 - **`verdict`** maps from the chat verdict for a reader who only sees this file: `APPROVED` with no
   remaining suspects is `pass`; `APPROVED` with suspects still open is `pass_with_warnings`;
   `ESCALATED` — a confirmed severe finding still open, or an unresolved contradiction — is always
-  `fail`. Exactly one applies.
+  `fail`; a run with `run_status: incomplete` is `unavailable`. Exactly one applies.
 - **`run_status`** is operational: `incomplete` means both valid judge results were not obtained after
   the one retry per judge. It maps the ledger `verdict` to `unavailable`; it never maps to `pass` or
   `fail`.

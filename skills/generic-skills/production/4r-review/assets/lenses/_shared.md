@@ -35,7 +35,7 @@ classifying honestly costs you nothing and misclassifying costs the review its c
 | `behavior-activated` | the defect existed but was unreachable; this change put it on a live path |
 | `worsened` | the defect existed and this change made it more likely or more damaging |
 | `pre-existing` | the defect is inside the target, and this change neither created nor touched it |
-| `unknown` | you cannot tell from the frozen target alone |
+| `unknown` | you cannot tell from the review reference alone |
 
 Only the first three can block. Recording `pre-existing` honestly is what keeps a review from holding
 the repository's history against the person who changed one line of it.
@@ -64,7 +64,7 @@ The standard is the surrounding code, never your own taste.
 ## Worker boundary
 
 You are a read-only reviewer. Do NOT edit any file, run state-changing commands, launch sub-agents,
-or widen scope beyond the frozen target. Run one exhaustive sweep, return your findings rows, and
+or widen scope beyond the review reference. Run one exhaustive sweep, return your findings rows, and
 stop. If the target is clean, return an empty findings list plus evidence of what you inspected.
 
 Some rules are conditional on a project convention — "where the repo has test infrastructure",

@@ -29,10 +29,10 @@ request. Analyzing what changed, on its own, is not a drafting request.
 ```mermaid
 flowchart TD
     A[Request] --> B[Resolve scope: commit, PR, or both]
-    B --> C[Resolve source: focused questions, with session context proposed]
+    B --> C[Resolve source: one question, with session context proposed]
     C --> D[Read the diff]
     D --> E{Why and impact clear from diff/branch/session?}
-    E -->|no| F[Ask once]
+    E -->|no| F[Ask once; remaining gap becomes a stated assumption]
     E -->|yes| G[Draft]
     F --> G
     G --> H[Present: commit and/or PR, each in its own block]
@@ -46,9 +46,10 @@ files), the current branch against its resolved base, and whether the repository
 at all. It also looks at what the session already worked on.
 
 That check feeds a source question — asked every time, even when only one source has changes —
-listing every source that qualifies with its file count, and proposing one based on the session. If the
-request names multiple outputs or Git actions, a scope clarification is required first; the skill never
-infers permission to perform a compound action and never mutates Git.
+listing every source that qualifies with its file count, and proposing one based on the session. Only a
+request that combines several Git actions (commit and push, commit and open a PR) gets a scope question
+first; a request for two drafts goes straight to `both`, and a single Git action maps to its draft. The
+skill never infers permission to run Git and never mutates it.
 An explicit commit range is always an available escape hatch. When a PR is in scope, the same
 question folds in whether to include validation steps, instead of asking that separately later.
 
@@ -84,9 +85,11 @@ steps that each name a concrete check).
 
 ## Focused questions
 
-A run asks the source question and any additional focused questions needed to establish scope, intent,
-and impact. It does not repeat information already supplied, and each question covers one clear gap
-before the run continues.
+A run always asks the source question. It adds a scope question only when the request combines
+several Git actions, and a why question at most once, only if the diff, branch, and session don't
+already make the reason and impact clear. A gap still open after that answer becomes a stated
+assumption in the draft (`Assumed: ...`), not another question. Nothing already supplied is asked
+again.
 
 ## Files
 
@@ -102,9 +105,9 @@ commit-closer/
 ## Why it is shaped this way
 
 - **Read-only with git is not a suggestion, it's absolute.** Drafting text and changing repository
-  state are different jobs; this skill only does the first one. A compound request is clarified before
-  drafting, and no Git write is offered or performed.
-- **The source is asked, not assumed — but asked once, with a proposal.** Guessing which changes
+  state are different jobs; this skill only does the first one. A request combining Git actions is
+  clarified before drafting, and no Git write is offered or performed.
+- **The source is asked, not assumed — always with a proposal.** Guessing which changes
   the user means risks drafting the wrong thing; asking without a proposal every time is friction
   the session's own context can usually resolve.
 - **The commit message favors one line because most changes deserve one line.** A body is a
@@ -117,8 +120,9 @@ commit-closer/
 - **Impact is conditional, not automatic.** A section that appears on every PR regardless of
   content stops meaning anything; it shows up only when the change actually reaches beyond what
   "What" already said.
-- **Focused questions, not a fixed quota.** The skill asks only what is needed to resolve source,
-  intent, and impact, while avoiding repeats and unrelated follow-ups.
+- **Focused questions with a soft cap.** The skill asks only what is needed to resolve source,
+  intent, and impact, and the why question is asked once: a gap left after it becomes a stated
+  assumption, so the run always ends in a draft instead of an open-ended interview.
 - **No project-specific defaults survive here.** Scopes, hook names, and doc paths belonging to one
   project were removed rather than replaced with another guess — a skill this generic keeps nothing
   it can't verify from the repository itself.

@@ -33,17 +33,18 @@ inferential finding one judge invents and the other does not becomes a suspect, 
 | `behavior-activated` | the defect existed but was unreachable; this change put it on a live path |
 | `worsened` | the defect existed and this change made it more likely or more damaging |
 | `pre-existing` | the defect is inside the target, and this change neither created nor touched it |
-| `unknown` | you cannot tell from the frozen target alone |
+| `unknown` | you cannot tell from the review reference alone |
 
 Only the first three can block. In `artifact` mode, `causal_disposition` is `introduced` unless the
 defect demonstrably comes from a source the document cites — then it is `pre-existing`.
 
 ## Round-one assessment contract
 
-For a round-one prompt, return one assessment for each criterion in the supplied criteria block. Use
-`not_assessed` when the criterion does not apply or the target does not provide enough evidence. Use
-the same criterion and location in both judges' results when evaluating the same behavior; this makes
-`correct` versus `broken` disagreements observable.
+For a round-one prompt, return at least one assessment for each criterion in the supplied criteria
+block; a criterion may have several, one per location you assessed. Use `not_assessed` when the
+criterion does not apply or the target does not provide enough evidence. A `correct` assessment must
+name the concrete location you verified (`path:line`, `path:start-end`, or a section anchor), never a
+whole file or the whole target: only a located `correct` can contradict another reviewer's claim.
 
 ```yaml
 assessments:
@@ -54,7 +55,7 @@ assessments:
     proof_refs: ["concrete proof: file:line, command output, spec section"]
 ```
 
-`correct` is an explicit statement that the assessed behavior is sound; `broken` identifies a
+`correct` is an explicit statement that the behavior at that location is sound; `broken` identifies a
 defect and should normally have a matching finding; `not_assessed` is not approval.
 
 ## Findings contract
@@ -89,5 +90,5 @@ phrasing preference.
 ## Worker boundary
 
 You are a read-only reviewer. Do NOT edit anything, run state-changing commands, launch sub-agents, or
-widen scope beyond the frozen target. Run one exhaustive sweep, return your findings rows, and stop. If
+widen scope beyond the review reference. Run one exhaustive sweep, return the output the active prompt requires, and stop. If
 the target is clean, return an empty findings list plus evidence of what you inspected.

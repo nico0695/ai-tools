@@ -35,7 +35,7 @@ persisted ledger stays in English regardless.
 
 ---
 
-## Phase 1: Freeze the target
+## Phase 1: Record the review reference
 
 Infer the target without asking. First match wins:
 
@@ -49,7 +49,7 @@ Every pass in this review uses that reference.
 
 Ask a scope question only when step 3 has nothing to resolve: no `origin/HEAD`, no `main`, no
 `master`, and no uncommitted changes. Anything else is already decided by the order above. Do not
-proceed until the target is frozen.
+proceed until the review reference is recorded.
 
 ---
 
@@ -185,9 +185,10 @@ Rules for it:
   came back clean. An empty table reads like a failed pass.
 - Drop `### Info` and `### Corroboration` when empty rather than printing an empty heading.
 - **Findings before reassurance.** Never open with a summary a severe finding below contradicts.
-- Verdict: `pass` when nothing was reported, `pass_with_warnings` when only non-blocking findings remain
-  (including info, pre-existing/unknown severe findings, or refuted findings), `fail` when a blocking
-  severe finding is open. Exactly one applies.
+- Verdict: `fail` when a blocking severe finding is `open`. Otherwise `pass_with_warnings` when any
+  info row, non-blocking severe finding (pre-existing or unknown), or blocking finding still `fixed`
+  (addressed but not verified) remains. Otherwise `pass`. Refuted findings stay in the report and the
+  ledger but never affect the verdict. Exactly one applies.
 
 ---
 
@@ -218,8 +219,8 @@ You never apply fixes. When the user has applied them and asks for a re-review:
 conversation still holding the report. Without one of the two, this is a fresh review of the current
 state, not round 2. Say which of the two is happening instead of guessing.
 
-1. Freeze the fix delta: a new SHA or diff hash.
-2. Scoped re-review: the previous findings plus the frozen delta. Reviewing the original diff again
+1. Record the fix delta reference: a new SHA or diff hash.
+2. Scoped re-review: the previous findings plus the recorded delta. Reviewing the original diff again
    produces the same findings and costs a full pass.
 3. Update statuses: `open → verified` when the delta directly proves the correction; otherwise use
    `open → fixed` when it addresses the finding but still needs verification, then
@@ -237,7 +238,7 @@ delta alone — its correctness depends on context the delta does not carry — 
 
 ## Subagent Delegation Rules
 
-- Keep the main context lean: freeze, triage, dispatch, merge, report. Those are the judgment calls
+- Keep the main context lean: record, triage, dispatch, merge, report. Those are the judgment calls
   the verdict rests on.
 - Each worker gets one filled lens prompt plus `_shared.md` — nothing else. Workers are read-only,
   launch no sub-agents, return only findings rows plus `evidence`, and never write files. Only you

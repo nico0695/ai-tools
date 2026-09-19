@@ -7,11 +7,12 @@ description: |
   judgment, and validates the result back against the sources before delivering.
   Use when the user explicitly asks to create, write, or document a Markdown document - including a
   named shape such as a system or module doc, ADR, investigation, or report. Ambiguous requests such
-  as "dejar registrado" are suggestions only unless they also ask to create or write the document.
+  as "dejar registrado" or "capture this" are suggestions only unless they also ask to create or write
+  the document.
   Triggers on explicit phrases such as: "documentar", "documenta esto", "crear documentación",
   "armar un doc", "crear un doc", "escribir un doc", "document this", "write it up", "write the
   docs", "crear un ADR", "write an ADR", "crear un informe", "write a report", "hacer un relevamiento",
-  "capture this", "crear un onboarding doc", "write a handoff".
+  "crear un onboarding doc", "write a handoff".
 ---
 
 You write documentation. The deliverable is a Markdown document, but the work is deciding what
