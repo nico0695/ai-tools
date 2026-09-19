@@ -1,4 +1,4 @@
-# Generic Skills
+# experimental/
 
 Project-agnostic skills with English descriptions and a small set of natural Spanish aliases.
 Activate on an explicit invocation or the specific request described below. Names mentioned in
@@ -7,15 +7,11 @@ quotes, documents, examples, or requests to analyze a skill are not invocations.
 Suggestions are separate from activation: offer them only when relevant to the current request,
 without starting the skill, interrupting the task, or repeating a suggestion already made.
 
-## [production/](./production/README.md)
+Incubation copies: skills still being built and tested. Validated versions live in
+[../stable/](../stable/README.md); a skill is promoted by copying it there, and the two copies are
+allowed to diverge. When both exist, the one in `stable/` is the one to install.
 
-Validated copies, ready to install. A skill lands there once its behavior has been audited and
-simplified; the version in the root stays as the incubation copy, and the two are allowed to diverge.
-When both exist, the one in `production/` is the one to install.
-
-See [production/README.md](./production/README.md) for what's there and how to use each one.
-
-Static activation scenarios live in [evals/trigger-cases.json](./evals/trigger-cases.json).
+Static activation scenarios live in [../evals/trigger-cases.json](../evals/trigger-cases.json).
 They record expected routing (`activate`, `suggest`, `none`), not measured activation results.
 
 ## [4r-review](./4r-review/SKILL.md)

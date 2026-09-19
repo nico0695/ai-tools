@@ -1,6 +1,6 @@
-# production/
+# stable/
 
-Validated copies of the generic skills, audited for determinism and genericity and ready to copy into a project.
+Validated copies of the experimental skills, audited for determinism and genericity and ready to copy into a project.
 Each one keeps two docs, for two different readers:
 
 - **`USAGE.md`** — what it does, when to use it, how to invoke it, a minimal example. Read this first.

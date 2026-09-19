@@ -3,13 +3,15 @@
 Repository for reusable AI tooling:
 
 - `agents/`
-- `skills/generic-skills/`
+- `skills/`
 
 ## Structure
 
 ```text
 agents/              reusable agent definitions
-skills/generic-skills/ reusable skills
+skills/stable/       validated skills, ready to install
+skills/experimental/ skills under construction and testing
+skills/evals/        static routing expectations
 install.sh           skills installer
 ```
 
