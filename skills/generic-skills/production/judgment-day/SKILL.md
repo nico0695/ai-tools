@@ -29,8 +29,9 @@ Four rules decide most of what follows. Where they apply, they beat a better ide
 State is optional, not absent. The chat report is the only guaranteed output; a ledger file exists only
 if the user asks for one, and a scoped re-judgment depends on one of the two still being in front of
 you. Every completed lineage ends in exactly one of two terminal states, `APPROVED` or `ESCALATED` —
-no open-ended loop. A run that cannot obtain both valid judge results is operationally `INCOMPLETE` and
-has no target verdict.
+no open-ended loop. An `ESCALATED` report can still be re-judged while the Phase 6 budget remains; once
+no re-judgment remains, it is final. A run that cannot obtain both valid judge results is operationally
+`INCOMPLETE` and has no target verdict.
 
 ## Language Policy
 
@@ -44,7 +45,7 @@ persisted ledger stays in English regardless.
 
 | Mode | Target | After-review path |
 |---|---|---|
-| `code` | a frozen diff, branch, PR, or commit range | confirmed severe findings get suggested fixes; optional scoped re-judgment after the user fixes |
+| `code` | a diff, branch, PR, or commit range, recorded as a review reference | confirmed severe findings get suggested fixes; optional scoped re-judgment after the user fixes |
 | `artifact` | one document: a spec, design, plan, RFC, README, or any single file argued as prose | no fix loop; confirmed findings are handed as a revision list to whoever owns the document |
 
 Infer the mode without asking. First match wins:
@@ -86,9 +87,11 @@ Two rows describe the same defect when they name overlapping location — the sa
 intersecting or adjacent line ranges (code), or the same section anchor (artifact) — **and** a
 compatible claim: the same observable failure, worded differently, is still one defect.
 
-Compare explicit assessments by criterion and location before merging findings. `correct` from one
-judge and `broken` from the other is a `contradiction`; `not_assessed` is an absence of evidence, not
-an approval and does not create a contradiction by itself.
+Compare explicit assessments before merging findings. A `correct` assessment from one judge contradicts
+a `broken` assessment or a severe finding from the other only when both name the same criterion and an
+overlapping location, using the same overlap test as above. A `correct` without a specific location, or
+whose location does not overlap, contradicts nothing: the other judge's finding stays `suspect`.
+`not_assessed` is an absence of evidence, not an approval, and never creates a contradiction.
 
 Assign ids `JD-{NNN}` and classify every finding into exactly one bucket:
 
@@ -96,7 +99,7 @@ Assign ids `JD-{NNN}` and classify every finding into exactly one bucket:
 |---|---|---|
 | `confirmed` | both judges report the same defect, both severe | `status: open`; eligible for fixes; merged severity is the higher of the two |
 | `suspect` | exactly one judge reports it severe, whether or not the other judge noted the same location at `WARNING`/`SUGGESTION` | `status: suspect`; never auto-trusted, never blocking; a milder note from the other judge stays a note on the row, not a separate `info` row |
-| `contradiction` | incompatible claims about the same location — one says correct, one says broken; or mutually exclusive root causes | escalated to the user; never silently pick one side |
+| `contradiction` | incompatible claims about an overlapping location — one says correct, one says broken; or mutually exclusive root causes | escalated to the user; never silently pick one side |
 | `info` | any `WARNING`/`SUGGESTION` from either judge, not already folded into a `suspect` row above | reported once, never blocking, never re-judged |
 
 Blocking additionally requires `causal_disposition` in `introduced`, `behavior-activated`, or
@@ -153,13 +156,14 @@ Rules for it:
   it came back clean.
 - `Verdict: APPROVED` when no confirmed severe finding remains `open` and no contradiction is
   unresolved; remaining suspects cap the ledger's `verdict` at `pass_with_warnings`.
-- `Verdict: ESCALATED` when a confirmed severe finding remains `open` after the fix-round budget is
-  exhausted, or a contradiction stays unresolved past the closing question in Phase 5.
+- `Verdict: ESCALATED` when a confirmed severe finding remains `open`, or a contradiction stays
+  unresolved past the closing question in Phase 5. It is final once no re-judgment remains: the Phase 6
+  budget is spent, the mode is `artifact`, or the user does not request one.
 - Until every contradiction is resolved, the printed verdict is `PENDING ADJUDICATION` — never a final
   `APPROVED`/`ESCALATED` the report has not yet earned.
 - `Run status: INCOMPLETE` is used only when both valid judge results were not obtained after the retry;
   it is not a target verdict and is not mapped to approval or escalation.
-- On an initial report with a confirmed severe finding, keep `Verdict: ESCALATED`. Set `Action:
+- On an initial report with a confirmed severe finding, the verdict is `ESCALATED`. Set `Action:
   CHANGES REQUIRED` when remediation is expected, or `Action: NONE` when no remediation is being
   requested. Explain the context and rationale; `Action` is not a verdict.
 - The chat verdict and the ledger `verdict` field describe the same outcome for two different readers:
@@ -201,10 +205,10 @@ You never apply fixes. When the user has applied them and asks for re-judgment:
 this conversation still holding the report. Without one of the two, this is a fresh Judgment Day run,
 not round 2. Say which of the two is happening instead of guessing.
 
-1. Freeze the fix delta: a new SHA or diff hash.
+1. Record the fix delta reference: a new SHA or diff hash.
 2. Send BOTH judges the Scoped Re-Judgment prompt from `references/judge-prompts.md`, with
    `assets/judge-contract.md` appended the same way as round one: only the frozen findings rows (never
-   which judge originally reported each one) plus the review fix delta — never the original target
+   which judge originally reported each one) plus the fix delta reference — never the original target
    again.
 3. Update statuses per their converged outcome: `open → fixed` when both judges agree the delta
    addresses it, `fixed → verified` when both confirm the delta actually resolves it, or still `open`
@@ -213,7 +217,7 @@ not round 2. Say which of the two is happening instead of guessing.
 4. Re-report using the Phase 4 shape, with `Status` as a column this time.
 
 **Maximum two fix rounds and two scoped re-judgments per lineage.** Any confirmed severe finding still
-open after round two means `Verdict: ESCALATED` — stop. If a fix cannot be verified from the delta
+open after round two means a final `Verdict: ESCALATED` — stop. If a fix cannot be verified from the delta
 alone — its correctness depends on context the delta does not carry — say so and leave it `fixed`, not
 `verified`. An unverifiable claim of verification is worse than an honest `fixed`.
 
@@ -221,7 +225,7 @@ alone — its correctness depends on context the delta does not carry — say so
 
 ## Subagent Delegation Rules
 
-- Keep the main context lean: freeze, launch, merge, adjudicate, report. Only you merge and write.
+- Keep the main context lean: record, launch, merge, adjudicate, report. Only you merge and write.
 - Each judge gets one filled-in prompt — the round-one or re-judgment template plus
   `assets/judge-contract.md` — nothing else. Judges are read-only, launch no sub-agents, return the
   output required by the active prompt and contract plus `evidence`, and never write files.

@@ -19,8 +19,8 @@ grounded Markdown document. It asks about what's missing instead of guessing it.
 
 By name (`doc-writer`) or naturally: "documentá esto", "creá documentación", "document this", "armá
 un doc", "hacé un relevamiento", "write it up", or by naming a shape with a creation request
-("creá un ADR de esto"). "Dejalo registrado" only suggests the skill unless it also asks to create
-or write the document.
+("creá un ADR de esto"). "Dejalo registrado" or "capture this" only suggests the skill unless it also
+asks to create or write the document.
 
 Add "auto" (`doc-writer auto`, "sin preguntarme") to skip the plan-approval gate. Interactive is the
 default.

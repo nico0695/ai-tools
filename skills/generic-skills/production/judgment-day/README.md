@@ -61,7 +61,7 @@ A PR that only touches one document is still `code` — a PR is a change, not a 
 when its content happens to be prose.
 
 `artifact` mode has no fix loop and no re-judgment: a revised document is a new run, because there is no
-delta to freeze against a moving target the way there is with a diff.
+delta to record against a moving target the way there is with a diff.
 
 ## What a judge receives
 
@@ -83,14 +83,15 @@ and prompt may share errors or biases.
 |---|---|---|
 | `confirmed` | both judges report the same defect, both severe | opens; eligible for a fix; severity is the higher of the two |
 | `suspect` | exactly one judge reports it severe | recorded, never blocking, never auto-trusted |
-| `contradiction` | incompatible claims about the same location | escalated to the user, never picked by preference |
+| `contradiction` | incompatible claims about an overlapping location | escalated to the user, never picked by preference |
 | `info` | any `WARNING`/`SUGGESTION` | reported once, gates nothing |
 
 A finding is severe only at `BLOCKER` or `CRITICAL`. One judge severe and the other mild at the same
 location is a `suspect` with a note, not a `contradiction` — a contradiction is two judges disagreeing
-about what happened, not two judges disagreeing about how much it matters. Explicit `correct` versus
-`broken` assessments expose that disagreement even when one judge has no finding row; `not_assessed`
-is not approval.
+about what happened, not two judges disagreeing about how much it matters. An explicit `correct` from
+one judge contradicts the other's `broken` assessment or severe finding only when both name the same
+criterion and an overlapping location; a `correct` with no specific or overlapping location leaves the
+other judge's finding `suspect`. `not_assessed` is not approval.
 
 ## The report
 
@@ -130,14 +131,14 @@ and says plainly which one it found instead of assuming.
 
 When it runs, both judges see only the frozen findings and the fix delta — never which judge originally
 reported which row, because a judge that can see the other's earlier authorship is no longer blind for
-that pass. Capped at two fix rounds and two scoped re-judgments; whatever is still open after that is
-`ESCALATED`.
+that pass. Capped at two fix rounds and two scoped re-judgments. An `ESCALATED` report can still be
+re-judged while that budget remains; whatever is still open after it is a final `ESCALATED`.
 
 ## Files
 
 ```
 judgment-day/
-├── SKILL.md                    the flow: freeze, launch, merge, report, close, re-judgment
+├── SKILL.md                    the flow: record, launch, merge, report, close, re-judgment
 ├── assets/
 │   └── judge-contract.md       severity, evidence class, causal disposition, the findings shape —
 │                                appended to every judge prompt, every run

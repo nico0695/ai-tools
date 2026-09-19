@@ -40,9 +40,10 @@ picks up the repository later.
 - **`review_reference`** is the one field that must be exact. It is what makes the ledger mean
   something later: a ledger whose reference no longer resolves describes a target nobody can
   reconstruct.
-- **`verdict`** — `pass` when no findings at all, `pass_with_warnings` when only non-blocking rows remain
-  (including `info`, pre-existing/unknown severe findings, or refuted findings), `fail` when a blocking
-  severe finding is open. Exactly one applies; the three are disjoint by construction.
+- **`verdict`** — `fail` when a blocking severe finding is `open`. Otherwise `pass_with_warnings` when
+  any `info` row, non-blocking severe finding (pre-existing or unknown), or blocking row still `fixed`
+  remains. Otherwise `pass`. Refuted rows are recorded but never affect the verdict. Exactly one
+  applies; the three are disjoint by construction.
 - **`open_severe_findings`** counts rows with `status: open`. It is the number a person scans for.
 - **Every row that was reported is a row here**, including `info` rows and refuted ones. A ledger
   that only records what survived cannot be audited.

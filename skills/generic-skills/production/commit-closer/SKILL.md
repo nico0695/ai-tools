@@ -32,13 +32,18 @@ regardless of language.
 
 ## Step 1 — Resolve what to draft
 
-If the user names more than one output or Git action, ask one scope question before reading anything:
-confirm which draft artifacts are wanted and state that this skill will not mutate Git. Do not infer a
-compound action from first-match order. For one requested draft, use this routing:
+First match wins:
 
-1. The user asked for a commit message → `commit`.
-2. The user asked for a PR description → `pr`.
-3. The user asked for both, or didn't say which → `both`.
+1. The request combines several Git actions (for example, commit and push, or commit and open a PR) →
+   ask one scope question before reading anything: say that this skill does not run Git, and ask
+   whether to draft the commit message, the PR description, or both.
+2. The user asked for a commit message, or for a single commit action ("commit this") → `commit`.
+3. The user asked for a PR description, or for a single PR action ("open a PR") → `pr`.
+4. The user asked for both drafts, or didn't say which → `both`. Two drafts asked for explicitly never
+   trigger the scope question.
+
+When the request named a Git action (rules 2–3), say in one line that the result is draft text and
+that nothing is run against Git.
 
 ## Step 2 — Resolve the source
 
@@ -57,8 +62,7 @@ source to use without asking.
 Ask a source question every time, even when only one source has changes: list every source that has
 changes, with its file count, and mark one as the proposed default based on the session's context.
 Include the explicit-range option as an escape hatch. If drafting a PR is in scope (`pr` or `both`),
-include whether to add validation steps. Ask additional focused questions when the source, intent, or
-impact remains genuinely unclear; do not repeat information the user already supplied.
+include whether to add validation steps. Do not repeat information the user already supplied.
 
 If no source has any changes, say so and stop.
 
@@ -74,8 +78,9 @@ to understand what changed — don't read every modified file and its dependents
 ## Step 4 — Fill in the why (ask only if still missing)
 
 Check whether the reason for the change and its likely impact are already clear from the diff, the
-branch name, or the conversation. If not, ask one question covering both. Never ask what was
-changed — that comes from the diff.
+branch name, or the conversation. If not, ask one question covering both. If the answer still
+leaves a gap, draft anyway and state the assumption in one line (`Assumed: ...`) instead of asking
+again. Never ask what was changed — that comes from the diff.
 
 ## Step 5 — Draft the commit message
 
@@ -158,13 +163,12 @@ with a short TL;DR: what changed and what needs attention, in one or two sentenc
 ## Rules
 
 - Follow the Language Policy for chat versus drafted output.
-- Never run or suggest a git command that writes. If another workflow explicitly supports `git add`,
-  it must list the exact files and receive explicit confirmation before staging; this skill itself does
-  not stage files.
-- A request to execute multiple Git actions is never treated as permission to execute them; ask the
-  scope question and offer only the corresponding drafts.
-- Ask focused questions until the source, intent, and impact are clear. Do not repeat answered
-  questions or ask unrelated questions; keep each question purposeful and concise.
+- Never run or suggest a git command that writes.
+- A request to execute Git actions is never treated as permission to execute them; it resolves to the
+  corresponding drafts (Step 1).
+- Questions: the Step 1 scope question only for combined Git actions, the Step 2 source question
+  always, and the Step 4 why question at most once. A gap left after that becomes a stated assumption,
+  not another question. Never repeat an answered question or ask an unrelated one.
 - Never present a file table in the PR description.
 - Never mark a validation step as "check that it works" — name what to verify and in what scenario.
 - Keep sentences short. Avoid filler phrases like "it is worth noting" or "it is important to

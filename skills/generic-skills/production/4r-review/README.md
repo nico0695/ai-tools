@@ -1,6 +1,6 @@
 # 4r-review
 
-Risk-tiered code review of a frozen target, across four lenses: **R**isk, **R**eadability,
+Risk-tiered code review of a recorded target, across four lenses: **R**isk, **R**eadability,
 **R**eliability, **R**esilience.
 
 Triage decides how much review the change actually deserves — from none, through a single lens, to
@@ -56,8 +56,9 @@ flowchart TD
 ```
 
 Everything runs against the review reference recorded in step one — a commit SHA, a range resolved to
-SHAs, or a hash of the working-tree diff. A target that moves mid-review is not reviewable, and a
-finding that cannot be tied to a fixed reference cannot be re-checked later.
+SHAs, or a hash of the working-tree diff. If the target changes mid-review, say so and record a new
+reference before continuing; a finding that cannot be tied to a recorded reference cannot be re-checked
+later.
 
 The target is inferred, not asked about: what you named, else uncommitted changes, else the branch
 against its base. The one scope question fires only when that chain has nothing left to resolve.
@@ -123,7 +124,7 @@ produce a value, and the verdict will be computed from it.
 
 `_shared.md` also grants a bounded exception to the worker boundary. Several lens rules are
 conditional on a project convention — "where the repo has test infrastructure", "where the repo
-documents such constraints" — and settling one means looking past the frozen diff, which the boundary
+documents such constraints" — and settling one means looking past the reviewed diff, which the boundary
 otherwise forbids. The allowance is exactly three adjacent files; if that does not settle it, the
 condition is unmet and the rule does not fire. Nobody sweeps the repository to establish a norm.
 
@@ -191,7 +192,7 @@ worse than an honest `fixed`.
 
 ```
 4r-review/
-├── SKILL.md                    freeze · triage · dispatch · merge · report · close · fix round
+├── SKILL.md                    record · triage · dispatch · merge · report · close · fix round
 ├── references/
 │   └── ledger.md               loaded only when you accept saving
 └── assets/lenses/

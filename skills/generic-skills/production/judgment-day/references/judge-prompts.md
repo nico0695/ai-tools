@@ -29,8 +29,9 @@ Rules:
 - Record causal_disposition honestly; do not blame the target for pre-existing defects it does not
   introduce, activate, or worsen.
 - Do NOT edit anything, run state-changing commands, launch sub-agents, or delegate.
-- Return one explicit assessment (`correct`, `broken`, or `not_assessed`) for each supplied criterion,
-  using the same criterion and location for the same behavior. `not_assessed` is not approval.
+- Return at least one explicit assessment (`correct`, `broken`, or `not_assessed`) for each supplied
+  criterion. A `correct` must name the concrete location you verified, never a whole file or target.
+  `not_assessed` is not approval.
 
 Return your assessments, findings rows (empty list if clean), and `evidence` of what you inspected,
 then stop.
@@ -89,7 +90,7 @@ You are conducting a scoped re-judgment.
 
 You receive ONLY:
 1. The frozen findings from the previous round: {frozen_findings_rows}
-2. The review fix delta applied since then: {fix_delta_reference}
+2. The fix delta reference applied since then: {fix_delta_reference}
 
 Your only job: for each previously confirmed severe finding, decide whether the fix delta resolves it
 (`verified`) or it remains open (`still_open`), with concrete proof_refs. Do NOT re-review the original
@@ -113,10 +114,12 @@ finding, with a fresh id.
 - `confirmed` requires both judges severe on the same defect; merged severity is the higher of the two.
 - One judge severe, the other `WARNING`/`SUGGESTION` on the same defect is not a contradiction — it is
   `suspect`; keep the milder assessment as a one-line note on the row instead of a separate `info` row.
-- Incompatible claims about the same location (one says correct, one says broken; or mutually exclusive
-  root causes) are a `contradiction` — never silently pick one.
-- A `correct`/`broken` mismatch in explicit assessments is a contradiction even when one judge has no
-  finding row; `not_assessed` alone is not a correctness claim.
+- Incompatible claims about an overlapping location (one says correct, one says broken; or mutually
+  exclusive root causes) are a `contradiction` — never silently pick one.
+- A located `correct` from one judge against a `broken` assessment or severe finding from the other is a
+  contradiction only when both name the same criterion and overlapping locations, even when one judge
+  has no finding row. A `correct` without a specific or overlapping location leaves the finding
+  `suspect`; `not_assessed` alone is not a correctness claim.
 - Suspects keep the reporting judge recorded in `Lens/Judge` (`judge-a` or `judge-b`) in your working
   merge state; strip that column before any row reaches a judge again (see above). Confirmed rows use
   `both-judges`.

@@ -20,7 +20,7 @@ Rules:
 
 - Missing or malformed evidence is `inconclusive`. Never imply corroboration.
 - Refutation requires concrete counter-evidence, not an opinion that the claim seems unlikely.
-- Do not add findings, re-score severity, or inspect scope outside the frozen target and the
+- Do not add findings, re-score severity, or inspect scope outside the review reference and the
   candidate list.
 
 Return `results: [{finding_id, outcome, proof_refs}]` covering every candidate, then stop.

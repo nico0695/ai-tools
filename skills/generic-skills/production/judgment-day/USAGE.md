@@ -49,6 +49,7 @@ after that one close.
 ```
 ## Judgment Day — feature/payment-retry
 **Mode:** code · **Reference:** a1b2c3d
+**Run status:** COMPLETE · **Action:** CHANGES REQUIRED
 
 ### Confirmed (both judges)
 | Id | Location | Severity | Claim |
