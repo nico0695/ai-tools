@@ -12,7 +12,7 @@ They record expected routing (`activate`, `suggest`, `none`), not measured activ
 
 ## [4r-review](./4r-review/SKILL.md)
 
-Risk-tiered 4R review (Risk, Readability, Reliability, Resilience) of a frozen diff, branch, or PR. Triage decides how much review the target deserves - from none (docs-only) to all four lenses plus a refuter pass that corroborates severe inferential findings. Reports in chat; optionally saves a review ledger. Distinct from code-review: triggered explicitly by name, sized by risk instead of a user-chosen depth.
+Risk-tiered 4R review (Risk, Readability, Reliability, Resilience) of a frozen diff, branch, or PR. Triage decides how much review the target deserves - from none (docs-only) to all four lenses plus a refuter pass that corroborates severe inferential findings. Reports in chat; optionally saves a review ledger. Distinct from standard-code-review: triggered explicitly by name, sized by risk instead of a user-chosen depth.
 
 Activate only when explicitly requested as `4r-review`, `4r`, or "revisión 4R".
 During a requested code review, suggest once if the already inspected diff exceeds 600 added-plus-deleted
@@ -21,7 +21,7 @@ as files without inventing line counts, and do not broaden inspection just to ev
 The existing internal triage threshold of more than 400 lines remains unchanged; it determines review
 depth after activation, not whether to suggest the skill.
 
-## [code-review](./code-review/SKILL.md)
+## [standard-code-review](./standard-code-review/SKILL.md)
 
 Reviews local commits or branch changes and returns evidence-based findings, each with a suggested fix. Light mode flags critical issues only; deep mode adds cross-module impact, convention checks, and a second pass for side effects that only appear when changes combine.
 
