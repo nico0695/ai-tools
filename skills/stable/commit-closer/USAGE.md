@@ -12,8 +12,8 @@ never writes to it. Requests to commit, push, or open a PR are handled as draft 
 
 ## When not to
 
-- You want the code itself reviewed — that's `code-review` or `4r-review`. This skill only drafts
-  text about changes that already happened; it does not evaluate them.
+- You want the code itself reviewed. This skill only drafts text about changes that already
+  happened; it does not evaluate them.
 - You want the change committed or pushed. This skill never runs a git command that writes — you
   apply the message yourself.
 

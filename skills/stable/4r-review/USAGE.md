@@ -12,7 +12,7 @@ checklist on every diff.
 
 ## When not to
 
-- You just asked for "review this" — that's a different skill (`code-review`). Name `4r-review`
+- You just asked for "review this" — that's a different skill (`standard-code-review`). Name `4r-review`
   explicitly if this is the one you want.
 - You want a second, independent opinion on the same change — that's `judgment-day`.
 

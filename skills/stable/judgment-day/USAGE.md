@@ -13,7 +13,7 @@ not for routine checks.
 
 ## When not to
 
-- You want a routine review with one pass — that's a different skill (`code-review`), or a risk-sized
+- You want a routine review with one pass — that's a different skill (`standard-code-review`), or a risk-sized
   single-lens pass (`4r-review`). Name `judgment-day` explicitly if two blind reviewers is what you
   actually want.
 - You want feedback fast. Two full blind sweeps plus a merge costs more than one pass.
