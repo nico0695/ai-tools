@@ -1,4 +1,4 @@
-# Generic Skills
+# experimental/
 
 Project-agnostic skills with English descriptions and a small set of natural Spanish aliases.
 Activate on an explicit invocation or the specific request described below. Names mentioned in
@@ -7,20 +7,16 @@ quotes, documents, examples, or requests to analyze a skill are not invocations.
 Suggestions are separate from activation: offer them only when relevant to the current request,
 without starting the skill, interrupting the task, or repeating a suggestion already made.
 
-## [production/](./production/README.md)
+Incubation copies: skills still being built and tested. Validated versions live in
+[../stable/](../stable/README.md); a skill is promoted by copying it there, and the two copies are
+allowed to diverge. When both exist, the one in `stable/` is the one to install.
 
-Validated copies, ready to install. A skill lands there once its behavior has been audited and
-simplified; the version in the root stays as the incubation copy, and the two are allowed to diverge.
-When both exist, the one in `production/` is the one to install.
-
-See [production/README.md](./production/README.md) for what's there and how to use each one.
-
-Static activation scenarios live in [evals/trigger-cases.json](./evals/trigger-cases.json).
+Static activation scenarios live in [../evals/trigger-cases.json](../evals/trigger-cases.json).
 They record expected routing (`activate`, `suggest`, `none`), not measured activation results.
 
 ## [4r-review](./4r-review/SKILL.md)
 
-Risk-tiered 4R review (Risk, Readability, Reliability, Resilience) of a frozen diff, branch, or PR. Triage decides how much review the target deserves - from none (docs-only) to all four lenses plus a refuter pass that corroborates severe inferential findings. Reports in chat; optionally saves a review ledger. Distinct from code-review: triggered explicitly by name, sized by risk instead of a user-chosen depth.
+Risk-tiered 4R review (Risk, Readability, Reliability, Resilience) of a frozen diff, branch, or PR. Triage decides how much review the target deserves - from none (docs-only) to all four lenses plus a refuter pass that corroborates severe inferential findings. Reports in chat; optionally saves a review ledger. Distinct from standard-code-review: triggered explicitly by name, sized by risk instead of a user-chosen depth.
 
 Activate only when explicitly requested as `4r-review`, `4r`, or "revisión 4R".
 During a requested code review, suggest once if the already inspected diff exceeds 600 added-plus-deleted
@@ -29,7 +25,7 @@ as files without inventing line counts, and do not broaden inspection just to ev
 The existing internal triage threshold of more than 400 lines remains unchanged; it determines review
 depth after activation, not whether to suggest the skill.
 
-## [code-review](./code-review/SKILL.md)
+## [standard-code-review](./standard-code-review/SKILL.md)
 
 Reviews local commits or branch changes and returns evidence-based findings, each with a suggested fix. Light mode flags critical issues only; deep mode adds cross-module impact, convention checks, and a second pass for side effects that only appear when changes combine.
 

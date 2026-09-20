@@ -16,3 +16,5 @@ __pycache__/
 *-ignore*
 
 sdd-lite-todo/
+
+skills/**/*-workspace/

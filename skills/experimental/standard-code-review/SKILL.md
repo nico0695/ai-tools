@@ -1,5 +1,5 @@
 ---
-name: code-review
+name: standard-code-review
 description: |
   Review code changes in diffs, commits, branches, or PRs.
   Use when explicitly invoked or the user asks to review code changes.

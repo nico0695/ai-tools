@@ -16,15 +16,15 @@
       "reason": "Mentioning or quoting a skill is not invoking it."
     },
     {
-      "skill": "code-review",
-      "prompt": "Use code-review for this task.",
-      "context": "The current task is within code-review's supported scope.",
+      "skill": "standard-code-review",
+      "prompt": "Use standard-code-review for this task.",
+      "context": "The current task is within standard-code-review's supported scope.",
       "expected": "activate",
       "reason": "Explicit invocation of the skill."
     },
     {
-      "skill": "code-review",
-      "prompt": "Analyze the description of \"code-review\" and suggest shorter triggers.",
+      "skill": "standard-code-review",
+      "prompt": "Analyze the description of \"standard-code-review\" and suggest shorter triggers.",
       "context": "The skill name is the object of analysis, not an instruction to execute it.",
       "expected": "none",
       "reason": "Mentioning or quoting a skill is not invoking it."
@@ -135,7 +135,7 @@
       "reason": "The user explicitly requests an interview about a plan."
     },
     {
-      "skill": "code-review",
+      "skill": "standard-code-review",
       "prompt": "Revisá los cambios de código de esta rama.",
       "context": "A branch diff is the target.",
       "expected": "activate",
@@ -198,7 +198,7 @@
       "reason": "An opinion request alone does not request an interview."
     },
     {
-      "skill": "code-review",
+      "skill": "standard-code-review",
       "prompt": "Revisá la redacción de este documento.",
       "context": "The target is prose, not code changes.",
       "expected": "none",
@@ -450,14 +450,14 @@
       "reason": "Status output alone is not a request to resolve conflicts."
     },
     {
-      "skill": "code-review",
+      "skill": "standard-code-review",
       "prompt": "Review this code using 4r-review.",
       "context": "A code diff is available.",
       "expected": "none",
       "reason": "The explicitly named review protocol takes precedence."
     },
     {
-      "skill": "code-review",
+      "skill": "standard-code-review",
       "prompt": "Review this code using judgment-day.",
       "context": "A code diff is available.",
       "expected": "none",
