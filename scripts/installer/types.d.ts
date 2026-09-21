@@ -1,4 +1,6 @@
 export type Scope = 'user' | 'project';
+export type UnitKind = 'dir' | 'sync-dir';
+export type ExistingMode = 'unmanaged' | 'update';
 
 export interface Context {
   scope: Scope;
@@ -14,10 +16,11 @@ export interface Item { id: string; description: string; group?: string; }
 export interface Unit {
   item: string;
   provider?: string;
-  kind: 'dir';
+  kind: UnitKind;
   src: string;
   dest: string;
   exclude?: string[];
+  preserve?: string[];
 }
 
 export interface Installer {
@@ -26,6 +29,11 @@ export interface Installer {
   scopes: Scope[];
   providers: string[];
   groups?: Group[];
+  allowEmptyProviders?: boolean;
+  allowSelf?: boolean;
+  allowUninstall?: boolean;
+  existing?: ExistingMode;
   items(): Item[];
   units(item: Item, ctx: Context): Unit[];
+  nextSteps?(ctx: Context): string[];
 }

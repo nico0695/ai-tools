@@ -25,8 +25,10 @@ function orderedItems(installer) {
 
 function groupStates(states) {
   return STATE_ORDER.map((state) => {
-    const providers = states.filter((s) => s.state === state).map((s) => s.provider);
-    return providers.length ? `${state}: ${providers.join(', ')}` : '';
+    const matched = states.filter((s) => s.state === state);
+    if (!matched.length) return '';
+    const providers = matched.map((s) => s.provider || 'project');
+    return `${state}: ${providers.join(', ')}`;
   }).filter(Boolean).join(' · ');
 }
 
@@ -37,8 +39,9 @@ function openTarget(scope, base, { readOnly = false } = {}) {
 
 function presence(installer, item, scope, base, manifest) {
   const ctx = createContext({ scope, base, repo: REPO, providers: installer.providers });
+  const existing = installer.existing ?? 'unmanaged';
   return installer.units(item, ctx)
-    .map((unit) => ({ provider: unit.provider, state: unitState(unit, manifest, base) }))
+    .map((unit) => ({ provider: unit.provider, state: unitState(unit, manifest, base, existing) }))
     .filter((p) => p.state !== 'new');
 }
 
@@ -68,6 +71,7 @@ async function chooseItems(installer, args, interactive, scope, base, manifest) 
     return items.filter((i) => args.skills.includes(i.id));
   }
   if (args.all) return items.filter((i) => args.experimental || !tag(installer, i));
+  if (items.length === 1) return items;
   if (!interactive) throw new Error('use --skills or --all');
   const options = [];
   let marked = false;
@@ -113,11 +117,20 @@ async function chooseProviders(installer, args, interactive, scope, base) {
 
 function printPlan(installer, plan, items, base, scope, providers) {
   log();
-  log(`${bold('Plan')}  ${tilde(base)} (${scope}) · ${providers.join(', ')}`);
+  log(`${bold('Plan')}  ${tilde(base)} (${scope}) · ${providers.join(', ') || 'project'}`);
   for (const item of items) {
-    const states = plan.filter((u) => u.item === item.id).map((u) => ({ provider: u.provider, state: u.state }));
-    const line = states.every((s) => s.state === states[0].state) ? states[0].state : groupStates(states);
-    log(`  ${item.id.padEnd(26)} ${tag(installer, item).padEnd(4)} ${line}`);
+    const pkg = plan.filter((u) => u.item === item.id && !u.provider);
+    const agents = plan.filter((u) => u.item === item.id && u.provider);
+    const tagText = tag(installer, item).padEnd(4);
+    if (pkg.length) {
+      const line = pkg.every((s) => s.state === pkg[0].state) ? pkg[0].state : groupStates(pkg);
+      log(`  ${item.id.padEnd(26)} ${tagText} ${line}`);
+    }
+    if (agents.length) {
+      const states = agents.map((u) => ({ provider: u.provider, state: u.state }));
+      const line = states.every((s) => s.state === states[0].state) ? `${states[0].state}: ${states.map((s) => s.provider).join(', ')}` : groupStates(states);
+      log(`  ${item.id.padEnd(26)} ${tagText} ${line}`);
+    }
   }
   if (plan.some((u) => u.state === 'unmanaged')) log(dim('  unmanaged = exists with that name but was not installed by this tool'));
   log();
@@ -153,6 +166,9 @@ export async function runInstall(installer, args) {
   const scope = await chooseScope(installer, args, interactive);
   if (isCancel(scope)) return cancelled();
   const base = resolveBase(scope, args.project);
+  if (installer.allowSelf === false && samePath(base, REPO)) {
+    throw new Error(`${installer.id} cannot be installed into the ai-tools repo (use --project PATH)`);
+  }
   const { dir, manifest } = openTarget(scope, base);
 
   const items = await chooseItems(installer, args, interactive, scope, base, manifest);
@@ -160,10 +176,10 @@ export async function runInstall(installer, args) {
   if (!items.length) return nothing('nothing selected');
   const providers = await chooseProviders(installer, args, interactive, scope, base);
   if (isCancel(providers)) return cancelled();
-  if (!providers.length) return nothing('no agent selected');
+  if (!providers.length && !installer.allowEmptyProviders) return nothing('no agent selected');
 
   const ctx = createContext({ scope, base, repo: REPO, providers });
-  const plan = buildPlan(items.flatMap((item) => installer.units(item, ctx)), manifest, base);
+  const plan = buildPlan(items.flatMap((item) => installer.units(item, ctx)), manifest, base, installer.existing ?? 'unmanaged');
   printPlan(installer, plan, items, base, scope, providers);
 
   if (plan.every((u) => u.state === 'up to date')) {
@@ -212,11 +228,13 @@ export async function runInstall(installer, args) {
   log(`${bold('Done')}  ${done.size} installed or updated${upToDate ? ` · ${upToDate} up to date` : ''}`);
   if (skipped.length) warn(`skipped (unmanaged): ${skipped.join(', ')}  (--force to overwrite)`);
   if (backupCleared && existsSync(backupRoot)) log(dim(`Replaced copies kept in ${tilde(backupRoot)}`));
+  if (done.size && installer.nextSteps) installer.nextSteps(ctx).forEach((line) => log(dim(line)));
   log(dim(HINTS));
   return !done.size && (skipped.length || failed) ? 1 : 0;
 }
 
 export async function runUninstall(installer, args) {
+  if (installer.allowUninstall === false) throw new Error(`${installer.id} cannot be uninstalled`);
   const interactive = isInteractive() && !args.yes;
   const scope = await chooseScope(installer, args, interactive);
   if (isCancel(scope)) return cancelled();
@@ -270,11 +288,10 @@ export function printList(installer) {
   return 0;
 }
 
-export function printStatus(installer, args) {
-  const targets = [
-    ['Project', 'project', resolveBase('project', args.project)],
-    ['User', 'user', resolveBase('user')],
-  ];
+export function printStatus(installer, args, { footer = true } = {}) {
+  const targets = [];
+  if (installer.scopes.includes('project')) targets.push(['Project', 'project', resolveBase('project', args.project)]);
+  if (installer.scopes.includes('user')) targets.push(['User', 'user', resolveBase('user')]);
   for (const [label, scope, base] of targets) {
     const { manifest } = openTarget(scope, base, { readOnly: true });
     log(`${bold(label)}  ${tilde(base)}`);
@@ -288,11 +305,16 @@ export function printStatus(installer, args) {
     if (!count) log(dim('  (nothing installed)'));
     log();
   }
+  if (!footer) return 0;
+  printStatusFooter();
+  return 0;
+}
+
+export function printStatusFooter() {
   const stale = listTargets(dataHome()).filter((t) => t.base && !existsSync(t.base));
   stale.forEach((t) => warn(`destination no longer exists: ${tilde(t.base)} (data in ${tilde(targetDir(t.id))})`));
   log(dim('unmanaged = exists with that name but was not installed by this tool'));
   log(dim(`Data: ${tilde(dataHome())}`));
-  return 0;
 }
 
 function cancelled() {
