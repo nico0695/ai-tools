@@ -25,3 +25,30 @@ test('unit states', () => {
   assert.equal(unitState(unit('link'), manifest, base), 'unmanaged');
   assert.equal(unitState(unit('gone'), manifest, base), 'missing');
 });
+
+test('existing update never reports unmanaged', () => {
+  const root = tempDir();
+  const base = path.join(root, 'project');
+  const src = writeTree(path.join(root, 'src'), { 'README.md': 'v2', 'skills/s/SKILL.md': 's' });
+  const dest = path.join(base, 'sdd-lite');
+  writeTree(dest, {
+    'README.md': 'v1',
+    'skills/s/SKILL.md': 's',
+    'openspec/changes/x/state.yaml': 'st',
+    'project-context.md': 'ctx',
+  });
+  const manifest = { version: 1, scope: 'project', base, entries: [] };
+  const unit = {
+    item: 'sdd-lite',
+    kind: 'sync-dir',
+    src,
+    dest,
+    preserve: ['project-context.md', 'skill-catalog.md', 'openspec'],
+  };
+  assert.equal(unitState(unit, manifest, base, 'update'), 'update');
+  writeTree(dest, { 'README.md': 'v2' });
+  assert.equal(unitState(unit, manifest, base, 'update'), 'up to date');
+  symlinkSync(src, path.join(base, 'link'));
+  assert.equal(unitState({ ...unit, dest: path.join(base, 'link') }, manifest, base, 'update'), 'update');
+  assert.equal(unitState({ ...unit, dest: path.join(base, 'missing') }, manifest, base, 'update'), 'new');
+});

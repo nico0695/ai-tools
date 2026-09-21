@@ -18,14 +18,15 @@
 ## Overview
 
 The installer copies content from this repo into a project or into the user's home folder, for one
-or more agents (`claude`, `agents`, `cursor`, `continue`, `opencode`). Today it installs skills from
-`skills/stable/` and `skills/experimental/`.
+or more agents (`claude`, `agents`, `cursor`, `continue`, `opencode`). It installs skills from
+`skills/stable/` and `skills/experimental/`, and the `sdd-lite` harness from `harness/stable/`
+into `./sdd-lite/` of a consumer project (not into this catalog, not user-wide).
 
 It is plain JavaScript (ESM) for Node >= 20, with no dependencies and no build step, so the same code
 runs on macOS, Linux and Windows. `install.sh` and `install.cmd` are one-line launchers for
 `scripts/installer/cli.js`.
 
-It is built to host more installers (sdd-lite and agents are planned): an installer only declares
+It is built to host more installers (agents are still planned): an installer only declares
 **what** to install and **where**; the core handles everything else.
 
 ## How It Works
@@ -60,7 +61,8 @@ flowchart LR
 
 ## Main Flow
 
-An install run first answers three questions: the scope (project or user), the items and the agents.
+An install run first picks Skills or Harness (interactive, unless a flag already implies one),
+then answers the remaining questions: the scope (project or user), the items and the agents.
 A flag answers a question in advance; whatever is missing is asked in a menu. Then it builds a plan
 with the state of every unit (one item for one agent) and prints it before touching anything.
 
@@ -77,8 +79,11 @@ flowchart TD
   H -->|otherwise| J[Summary, exit 0]
 ```
 
-Each unit is installed the same way. The new copy is built next to the destination first, so the
-destination is only replaced by a rename, and it is verified against the catalog afterwards.
+Each `kind: 'dir'` unit (skills, and the `sddl-init` copy) is installed the same way. The new
+copy is built next to the destination first, so the destination is only replaced by a rename, and
+it is verified against the catalog afterwards. A `sync-dir` unit (the sdd-lite package) updates
+catalog children in place, leaves `preserve` names (`openspec/`, bootstrap files), and deletes
+orphans.
 
 ```mermaid
 flowchart TD
@@ -148,11 +153,18 @@ export default {
 - `items()` feeds the menu and `--list`; `groups` adds dividers and marks the default selection.
 - `units()` says which folder each item writes for each selected agent; the core derives states,
   plan, `--status` and `--uninstall` from it.
-- Only `kind: 'dir'` exists. A new installer is added to `installers/index.js`.
+- `kind: 'dir'` replaces a folder. `kind: 'sync-dir'` updates a folder in place and keeps
+  `preserve` names (used by sdd-lite for `openspec/` and bootstrap files). A new installer is
+  added to `installers/index.js`.
 
 The skills installer lists folders with a `SKILL.md` (stable first; an experimental skill with the
 same name as a stable one is not offered) and installs each one to `<agent folder>/skills/<name>`,
 without `evals/`, `*-workspace`, `README.md`, `USAGE.md` and `.DS_Store`.
+
+The harness installer copies `harness/stable/sdd-lite` to `./sdd-lite/` (`sync-dir`) and
+`sddl-init` to `<agent>/skills/sddl-init`. It is project-only, cannot be uninstalled by this
+tool, and is not offered when the destination is this catalog repo. After install, run
+`sddl-init` in the agent.
 
 ## Configuration
 
@@ -179,18 +191,21 @@ were skipped or failed; `130` Ctrl-C in a menu.
 
 ## Limitations
 
-- An update replaces the whole folder. Files added by hand inside an installed skill go to `backup/`
-  and are lost on the next run that replaces something in that destination.
+- A `dir` update replaces the whole folder. Files added by hand inside an installed skill go to
+  `backup/` and are lost on the next run that replaces something in that destination. A `sync-dir`
+  update does not replace `preserve` paths.
 - Only the last run's backup is kept, and nothing cleans up destinations whose folder no longer
   exists (`--status` lists them).
 - Windows support (`install.cmd`, retries, case-insensitive paths) is designed but not yet tested on
   Windows. The `EXDEV` fallback has not been tested either.
-- `--skills`, `--all` and `--experimental` are skill-specific flags in the shared CLI; they will need
-  a review when a second installer is added.
+- `--skills`, `--all` and `--experimental` are skill-only; using them with `harness` is an error.
+- The harness cannot be uninstalled by this tool and cannot be installed user-wide or into this
+  catalog repo.
 
 ## Summary
 
 The installer is a small Node core plus one module per installer. A run asks what flags did not
-answer, shows a plan with one state per unit, and replaces folders only through a verified rename,
-keeping the last run's backup. Its only memory is `targets/<id>/manifest.json`, so a destination that
-was not recorded is never removed and is only overwritten when you say so.
+answer, shows a plan with one state per unit, and writes destinations (`dir` by verified rename,
+`sync-dir` in place), keeping the last run's backup. Its only memory is
+`targets/<id>/manifest.json`, so a destination that was not recorded is never removed and is only
+overwritten when you say so.

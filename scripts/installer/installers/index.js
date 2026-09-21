@@ -1,3 +1,4 @@
 import skills from './skills.js';
+import harness from './harness.js';
 
-export default [skills];
+export default [skills, harness];

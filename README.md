@@ -4,20 +4,23 @@ Repository for reusable AI tooling:
 
 - `agents/`
 - `skills/`
+- `harness/`
 
 ## Structure
 
 ```text
-agents/              reusable agent definitions
-skills/stable/       validated skills, ready to install
-skills/experimental/ skills under construction and testing
-skills/evals/        static routing expectations
-scripts/installer/   installer source (Node, no dependencies)
-install.sh           installer launcher (macOS, Linux, Git Bash)
-install.cmd          installer launcher (Windows)
+agents/                 reusable agent definitions
+skills/stable/          validated skills, ready to install
+skills/experimental/    skills under construction and testing
+skills/evals/           static routing expectations
+harness/stable/         validated harnesses, ready to install into a project
+harness/experimental/   harnesses under construction and testing
+scripts/installer/      installer source (Node, no dependencies)
+install.sh              installer launcher (macOS, Linux, Git Bash)
+install.cmd             installer launcher (Windows)
 ```
 
-## Installing skills
+## Installing
 
 Requires Node >= 20.
 
@@ -27,51 +30,62 @@ cd your-project
 /path/to/ai-tools/install.sh        # Windows: \path\to\ai-tools\install.cmd
 ```
 
-Run the installer from the target project to install into its Git root, or pass
-`--user` for a user-wide installation. The interactive menus (arrow keys, space, enter) ask for
-the scope, the skills (stable preselected, experimental below a divider), and the providers
-(Claude Code and Agents are always offered; Cursor, Continue, and OpenCode appear when detected).
+Interactive runs start with Skills or Harness. From this catalog repo, Harness is hidden:
+pass `--project` to another app. `--help` is the full flag reference. How the installer is
+built: [scripts/installer/README.md](./scripts/installer/README.md).
 
-Skills are always copied, so installations survive changes to this repository. Running the
-installer again updates them: before confirming, it compares each destination with the
-catalog and shows one state per skill:
+### Skills
+
+Run the installer from the target project (Git root) or pass `--user` for a user-wide
+install. Menus (arrow keys, space, enter) ask for scope, skills (stable preselected,
+experimental below a divider), and agents (Claude Code and Agents always; Cursor, Continue,
+and OpenCode when detected).
+
+Skills are copied, so they survive changes to this repository. A later run compares each
+destination with the catalog:
 
 - `new`: not installed yet.
 - `up to date` (`=`): identical to the catalog; left untouched.
 - `update` (`*`): installed by this tool and outdated; replaced.
-- `unmanaged` (`~`): something with the same name that this tool did not install; skipped unless
-  you choose to overwrite it (or pass `--force`).
-- `missing` (`!`): registered but deleted from disk; installed again.
+- `unmanaged` (`~`): same name, not installed by this tool; skipped unless you overwrite
+  (or pass `--force`).
+- `missing` (`!`): registered but gone from disk; installed again.
 
-Data lives in `~/.config/ai-tools/targets/<destination>/` (override the root with
-`AI_TOOLS_HOME`): a `manifest.json` with what was installed there, and a `backup/` with what the
-last run replaced. `README.md`, `USAGE.md`, `evals/` and `*-workspace` are not installed.
-
-Non-interactive usage:
+Data lives in `~/.config/ai-tools/targets/<destination>/` (`AI_TOOLS_HOME` overrides the
+root): `manifest.json` plus `backup/` of what the last run replaced. `README.md`,
+`USAGE.md`, `evals/` and `*-workspace` are not installed.
 
 ```bash
-./install.sh --list                        # available skills, stable and experimental
-./install.sh --status                      # what is installed, and whether it is up to date
-./install.sh --user --all -y               # every stable skill, user-wide
+./install.sh --list
+./install.sh --status
+./install.sh --user --all -y
 ./install.sh --user --all --experimental -y
 ./install.sh --project ~/app --skills doc-writer,grill-me --providers claude,agents -y
 ./install.sh --project ~/app --uninstall --skills doc-writer
 ```
 
-Options (`--help` prints the complete reference):
+- `--project PATH` or `--user`.
+- `--skills a,b,c` from either stage; `--all` is every stable skill; `--experimental` adds
+  the experimental ones.
+- `--providers a,b`; default is Claude Code, plus Agents when `.agents/` exists.
+- `--uninstall` removes only what this tool recorded at that destination.
+- `-y` / `--yes` skips prompts and skips `unmanaged` copies.
 
-- `--project PATH` installs in the project scope; `--user` installs user-wide.
-- `--skills a,b,c` selects skills from either stage; `--all` selects every stable skill,
-  and `--experimental` adds the experimental ones.
-- `--providers a,b` selects providers; without it, Claude Code plus Agents when `.agents/` exists.
-- `--list` lists available skills; `--status` shows installations and their state.
-- `--uninstall` removes only what this tool recorded at the selected destination, so other
-  projects and user-wide installations are untouched.
-- `--force` overwrites `unmanaged` entries; `-y` or `--yes` skips prompts and skips them.
+The catalog is `skills/stable/` and `skills/experimental/`
+([skills/README.md](./skills/README.md)). A folder is a skill when it has `SKILL.md`; if
+the name exists in both stages, stable is installed.
 
-Flags only answer questions in advance: whatever is missing is asked interactively, or is an error
-without a terminal (or with `-y`).
+### sdd-lite
 
-The catalog is `skills/stable/` and `skills/experimental/` (see [skills/README.md](./skills/README.md)).
-A directory is a skill when it contains `SKILL.md`; when a name exists in both stages, the
-stable one is installed. How the installer is built: [scripts/installer/README.md](./scripts/installer/README.md).
+```bash
+./install.sh harness --project ~/app
+./install.sh harness --project ~/app --providers claude -y
+```
+
+Copies `harness/stable/sdd-lite` to `./sdd-lite/` and `sddl-init` into the chosen agent.
+Then run `sddl-init` in that agent. Project only: no `--user`, no `--uninstall`. An update
+overwrites the package and leaves `project-context.md`, `skill-catalog.md`, and `openspec/`.
+`--status` also reports harness installs.
+
+Guide: [harness/stable/README.md](./harness/stable/README.md),
+[USER-GUIDE.md](./harness/stable/sdd-lite/USER-GUIDE.md).
