@@ -51,12 +51,12 @@ or knowledge recorded. Mentioning an ADR or asking to explain a README does not 
 
 ## [grill-me](./grill-me/SKILL.md)
 
-Relentless interview that stress-tests a plan, design, or decision until you and the agent reach a shared understanding. Models the plan as a decision tree and asks the current frontier each round, every question with a recommended answer. Looks up facts itself instead of asking for them; the decisions are yours. Works cold, from a spec or diff, or mid-session without re-asking what you already decided. Writes nothing - the output is a final read-back of what was decided, what was assumed, and what got parked for somebody else or for a prototype.
+Interview that stress-tests your own plan, design, or decision until you and the agent share the same understanding. Asks only the decisions that matter, in dependency order, at most five per round, each with a recommended answer. Looks up facts itself; low-impact decisions are adopted as visible defaults, and "I don't know" makes a decision provisional instead of blocking the interview. Works cold, from an artifact, or mid-session without re-asking what you already decided. Writes nothing - the output is a one-message read-back of what was decided, defaulted, and left provisional.
 
-Activate when explicitly invoked or asked to "question me about this plan", "preguntame", or
-"hazme preguntas" about a plan, design, or decision. Suggest when the user wants to uncover
-assumptions or unresolved decisions before implementation. Questions for a third party belong to
-`questionnaire`; a general request for an opinion does not start an interview.
+Activate when explicitly invoked or asked to "grill me", "grillame", "question me about this plan",
+"preguntame", or "hazme preguntas" about a plan, design, or decision. Suggest when the user wants to
+uncover assumptions or unresolved decisions before acting on a plan. Questions meant for a third party,
+a request for an opinion, or an invitation to ask whatever is needed to do a task do not activate it.
 
 ## [judgment-day](./judgment-day/SKILL.md)
 

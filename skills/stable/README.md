@@ -34,3 +34,4 @@ request to perform a write is not executed.
 | `4r-review` | Risk-tiered code review across four lenses, sized to what the change actually risks | [USAGE.md](./4r-review/USAGE.md) | [README.md](./4r-review/README.md) |
 | `judgment-day` | Adversarial dual review: two blind judges, convergence decides what counts | [USAGE.md](./judgment-day/USAGE.md) | [README.md](./judgment-day/README.md) |
 | `commit-closer` | Drafts a commit message and/or PR description from resolved git changes, read-only | [USAGE.md](./commit-closer/USAGE.md) | [README.md](./commit-closer/README.md) |
+| `grill-me` | Interviews you about your own plan, design, or decision until nothing that matters is left silently assumed | [USAGE.md](./grill-me/USAGE.md) | [README.md](./grill-me/README.md) |
