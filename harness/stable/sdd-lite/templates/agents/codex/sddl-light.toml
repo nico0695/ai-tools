@@ -1,6 +1,6 @@
 name = "sddl-light"
 description = "sdd-lite light worker for sddl-archive and sddl-delivery. Do not use for proposal, spec, design, plan, code execution, exploration, or review."
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "low"
 sandbox_mode = "workspace-write"
 developer_instructions = """

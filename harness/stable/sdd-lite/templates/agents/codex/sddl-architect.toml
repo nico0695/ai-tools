@@ -1,6 +1,6 @@
 name = "sddl-architect"
 description = "sdd-lite architect worker for sddl-spec and sddl-design. Do not implement code and do not use for proposal, plan, or review."
-model = "gpt-5.6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 developer_instructions = """

@@ -132,7 +132,7 @@ ai_setups:
 #       model: opus          # raise proposal to the high tier for ambiguous projects
 #       effort: high
 #     codex:
-#       model: gpt-5.6-sol
+#       model: gpt-6.1-sol
 #       effort: high
 #   sddl-executor:
 #     claude:

@@ -8,9 +8,9 @@
 # mechanical stages run cheap, and verification never runs below the code writer.
 #
 # Host tier map (keep both columns aligned when changing a profile):
-#   cheap  -> Claude haiku  / Codex gpt-5.6-luna
-#   mid    -> Claude sonnet / Codex gpt-5.6
-#   high   -> Claude opus   / Codex gpt-5.6-sol
+#   cheap  -> Claude haiku  / Codex gpt-6-luna
+#   mid    -> Claude sonnet / Codex gpt-6.1-terra (executor, reviewer, qa run gpt-6.1-sol)
+#   high   -> Claude opus   / Codex gpt-6.1-sol
 
 version: "2"
 sddl_init_profile: none
@@ -30,7 +30,7 @@ profiles:
     codex:
       file: templates/agents/codex/sddl-light.toml
       install_name: sddl-light.toml
-      model: gpt-5.6-luna
+      model: gpt-6-luna
       effort: low
       sandbox_mode: workspace-write
 
@@ -47,7 +47,7 @@ profiles:
     codex:
       file: templates/agents/codex/sddl-framer.toml
       install_name: sddl-framer.toml
-      model: gpt-5.6
+      model: gpt-6.1-terra
       effort: high
       sandbox_mode: workspace-write
 
@@ -64,7 +64,7 @@ profiles:
     codex:
       file: templates/agents/codex/sddl-explorer.toml
       install_name: sddl-explorer.toml
-      model: gpt-5.6
+      model: gpt-6.1-terra
       effort: medium
       sandbox_mode: read-only
 
@@ -82,7 +82,7 @@ profiles:
     codex:
       file: templates/agents/codex/sddl-architect.toml
       install_name: sddl-architect.toml
-      model: gpt-5.6-sol
+      model: gpt-6.1-sol
       effort: medium
       sandbox_mode: workspace-write
 
@@ -99,7 +99,7 @@ profiles:
     codex:
       file: templates/agents/codex/sddl-sequencer.toml
       install_name: sddl-sequencer.toml
-      model: gpt-5.6
+      model: gpt-6.1-terra
       effort: medium
       sandbox_mode: workspace-write
 
@@ -116,7 +116,7 @@ profiles:
     codex:
       file: templates/agents/codex/sddl-executor.toml
       install_name: sddl-executor.toml
-      model: gpt-5.6
+      model: gpt-6.1-sol
       effort: high
       sandbox_mode: workspace-write
 
@@ -134,7 +134,7 @@ profiles:
     codex:
       file: templates/agents/codex/sddl-reviewer.toml
       install_name: sddl-reviewer.toml
-      model: gpt-5.6
+      model: gpt-6.1-sol
       effort: high
       sandbox_mode: read-only
 
@@ -151,7 +151,7 @@ profiles:
     codex:
       file: templates/agents/codex/sddl-qa.toml
       install_name: sddl-qa.toml
-      model: gpt-5.6
+      model: gpt-6.1-sol
       effort: high
       sandbox_mode: workspace-write
 

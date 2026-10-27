@@ -1,6 +1,6 @@
 name = "sddl-reviewer"
 description = "sdd-lite read-only reviewer for 4R lenses, refuter, and judgment-day judges. Never write review-ledger.md, qa-report.md, or edit code. Do not use for sddl-qa-review (that is sddl-qa)."
-model = "gpt-5.6"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """
