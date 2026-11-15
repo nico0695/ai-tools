@@ -83,6 +83,14 @@ prepare questions for someone else. Suggest when an unresolved decision requires
 another person. "I don't know" alone is insufficient; interviewing the user about their own plan
 belongs to `grill-me`.
 
+## [tech-audit](./tech-audit/SKILL.md)
+
+Read-only technical audit of a JavaScript/TypeScript repository as it stands, not of a change. Discovers the project type and tooling, runs only the project's own safe checks (lint, typecheck, unit tests, dependency audit), ranks hotspots before reading code, and inspects it through three lenses (structure, quality, risk) adapted to frontend, backend, fullstack, library, or static projects. Findings separate what was observed from what is inferred, every one points at evidence, and the scorecard comes last, from ordered rubric tests, with areas it could not evaluate marked as such instead of estimated. Never modifies the audited repository.
+
+Activate when explicitly invoked or asked for a "tech-audit", "auditoría técnica", or to audit a repo or project.
+Suggest when the user wants to assess the overall health or quality of a JS/TS repository. Reviewing a diff,
+commits, a branch, or a PR belongs to the review skills; a question about a single file does not activate it.
+
 ## [resolving-merge-conflicts](./resolving-merge-conflicts/SKILL.md)
 
 Resolves an in-progress merge, rebase, cherry-pick, or revert by tracing what each side was trying to do, instead of picking whichever hunk reads better. Never runs a git write command: it edits the files and hands back the closing command.
