@@ -497,6 +497,55 @@
       "context": "An open decision requires information from another team; no questionnaire is requested. The skill has already been suggested during this task.",
       "expected": "none",
       "reason": "Do not repeat a contextual suggestion."
+    },
+    {
+      "skill": "tech-audit",
+      "prompt": "Use tech-audit for this task.",
+      "context": "The current task is within tech-audit's supported scope.",
+      "expected": "activate",
+      "reason": "Explicit invocation of the skill."
+    },
+    {
+      "skill": "tech-audit",
+      "prompt": "Analyze the description of \"tech-audit\" and suggest shorter triggers.",
+      "context": "The skill name is the object of analysis, not an instruction to execute it.",
+      "expected": "none",
+      "reason": "Mentioning or quoting a skill is not invoking it."
+    },
+    {
+      "skill": "tech-audit",
+      "prompt": "Haceme una auditoría técnica de este repo, depth deep, foco release.",
+      "context": "The working directory is a TypeScript repository.",
+      "expected": "activate",
+      "reason": "Explicit request for a technical audit of the repository."
+    },
+    {
+      "skill": "tech-audit",
+      "prompt": "¿Cómo ves la calidad general de este proyecto? Quiero saber qué tan mantenible es.",
+      "context": "The working directory is a JavaScript/TypeScript repository; no audit is explicitly requested.",
+      "expected": "suggest",
+      "reason": "Assessing overall repository health matches the suggestion trigger."
+    },
+    {
+      "skill": "tech-audit",
+      "prompt": "Revisá los cambios de esta rama antes del merge.",
+      "context": "The current branch has commits against main.",
+      "expected": "none",
+      "reason": "Reviewing a diff or branch belongs to the code review skills, not a repository audit."
+    },
+    {
+      "skill": "tech-audit",
+      "prompt": "¿Por qué este archivo tiene tantos imports?",
+      "context": "A single file is open in the conversation.",
+      "expected": "none",
+      "reason": "A question about one file is not a repository audit."
+    },
+    {
+      "skill": "tech-audit",
+      "prompt": "¿Cómo ves la calidad general de este proyecto? Quiero saber qué tan mantenible es.",
+      "context": "The working directory is a JavaScript/TypeScript repository; no audit is explicitly requested. The skill has already been suggested during this task.",
+      "expected": "none",
+      "reason": "Do not repeat a contextual suggestion."
     }
   ]
 }
